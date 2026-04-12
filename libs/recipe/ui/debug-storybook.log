@@ -1,0 +1,27 @@
+[21:15:35.463] [INFO] storybook v10.3.5
+[21:15:35.915] [DEBUG] Getting package.json info for /Users/gilles/Documents/dev/perso/recipe/package.json...
+[21:15:36.141] [INFO] Starting...
+[21:15:36.228] [DEBUG] Starting preview..
+[21:15:36.232] [INFO] Using implicit CSS loaders
+[21:15:36.501] [ERROR] Failed to build the preview
+[21:15:36.502] [ERROR] [38;2;241;97;97mSB_FRAMEWORK_ANGULAR_0001 (AngularLegacyBuildOptionsError): Your Storybook startup script uses a solution that is not supported anymore.
+You must use Angular builder to have an explicit configuration on the project used in angular.json.
+
+Please run 'npx storybook automigrate' to automatically fix your config.
+
+More info: 
+	- https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#angular-drop-support-for-calling-storybook-directly
+	- https://github.com/storybookjs/storybook/tree/next/code/frameworks/angular#how-do-i-migrate-to-an-angular-storybook-builder
+[39m
+    at checkForLegacyBuildOptions (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/@storybook+angular@10.3.5_7f33af76d2b3288aad62ffdca635ff17/node_modules/@storybook/angular/dist/server/framework-preset-angular-cli.js:159:11)
+    at Object.webpackFinal (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/@storybook+angular@10.3.5_7f33af76d2b3288aad62ffdca635ff17/node_modules/@storybook/angular/dist/server/framework-preset-angular-cli.js:93:3)
+    at async Object.webpack (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/@storybook+builder-webpack5@10.3.5_@rspack+core@1.6.8_@swc+helpers@0.5.18__@swc+core@1._b37961221839615e2a81a448d668dcd7/node_modules/@storybook/builder-webpack5/dist/presets/custom-webpack-preset.js:282:28)
+    at async starter (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/@storybook+builder-webpack5@10.3.5_@rspack+core@1.6.8_@swc+helpers@0.5.18__@swc+core@1._b37961221839615e2a81a448d668dcd7/node_modules/@storybook/builder-webpack5/dist/index.js:753:16)
+    at async Module.start (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/@storybook+builder-webpack5@10.3.5_@rspack+core@1.6.8_@swc+helpers@0.5.18__@swc+core@1._b37961221839615e2a81a448d668dcd7/node_modules/@storybook/builder-webpack5/dist/index.js:857:14)
+    at async storybookDevServer (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/storybook@10.3.5_@testing-library+dom@10.4.1_prettier@3.6.2_react-dom@19.2.5_react@19.2.5__react@19.2.5/node_modules/storybook/dist/core-server/index.js:7503:83)
+    at async buildOrThrow (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/storybook@10.3.5_@testing-library+dom@10.4.1_prettier@3.6.2_react-dom@19.2.5_react@19.2.5__react@19.2.5/node_modules/storybook/dist/core-server/index.js:4508:12)
+    at async buildDevStandalone (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/storybook@10.3.5_@testing-library+dom@10.4.1_prettier@3.6.2_react-dom@19.2.5_react@19.2.5__react@19.2.5/node_modules/storybook/dist/core-server/index.js:8033:41)
+    at async withTelemetry (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/storybook@10.3.5_@testing-library+dom@10.4.1_prettier@3.6.2_react-dom@19.2.5_react@19.2.5__react@19.2.5/node_modules/storybook/dist/_node-chunks/chunk-FIR43JGQ.js:225:12)
+    at async dev (file:///Users/gilles/Documents/dev/perso/recipe/node_modules/.pnpm/storybook@10.3.5_@testing-library+dom@10.4.1_prettier@3.6.2_react-dom@19.2.5_react@19.2.5__react@19.2.5/node_modules/storybook/dist/bin/core.js:2736:3)
+[21:15:36.508] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.

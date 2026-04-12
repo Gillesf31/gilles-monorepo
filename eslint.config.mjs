@@ -25,16 +25,68 @@ export default [
               onlyDependOnLibsWithTags: ['scope:shared'],
             },
             {
-              sourceTag: 'scope:shop',
-              onlyDependOnLibsWithTags: ['scope:shop', 'scope:shared'],
+              sourceTag: 'scope:recipe',
+              onlyDependOnLibsWithTags: ['scope:recipe', 'scope:shared'],
             },
             {
-              sourceTag: 'scope:api',
-              onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
+              sourceTag: 'type:app',
+              onlyDependOnLibsWithTags: ['type:app', 'type:shell'],
             },
             {
-              sourceTag: 'type:data',
-              onlyDependOnLibsWithTags: ['type:data'],
+              sourceTag: 'type:shell',
+              onlyDependOnLibsWithTags: [
+                'type:shell',
+                'type:feature',
+                'type:state',
+                'type:data-access',
+                'type:util',
+              ],
+            },
+            {
+              sourceTag: 'type:feature',
+              onlyDependOnLibsWithTags: [
+                'type:feature',
+                'type:ui',
+                'type:data-access',
+                'type:util',
+                'type:model',
+              ],
+            },
+            {
+              sourceTag: 'type:ui',
+              onlyDependOnLibsWithTags: ['type:ui', 'type:util', 'type:model'],
+            },
+            {
+              sourceTag: 'type:state',
+              onlyDependOnLibsWithTags: [
+                'type:state',
+                'type:data-access',
+                'type:util',
+              ],
+            },
+            {
+              sourceTag: 'type:data-access',
+              onlyDependOnLibsWithTags: [
+                'type:data-access',
+                'type:util',
+                'type:model',
+              ],
+            },
+            {
+              sourceTag: 'type:util',
+              onlyDependOnLibsWithTags: [
+                'type:util',
+                'type:mock',
+                'type:model',
+              ],
+            },
+            {
+              sourceTag: 'type:mock',
+              onlyDependOnLibsWithTags: ['type:mock', 'type:model'],
+            },
+            {
+              sourceTag: 'type:model',
+              onlyDependOnLibsWithTags: ['type:model'],
             },
           ],
         },

@@ -1,0 +1,13 @@
+{
+  "name": "feature-edit",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recipe/feature-edit/src",
+  "prefix": "gilles-monorepo",
+  "projectType": "library",
+  "tags": ["type:feature", "scope:recipe"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

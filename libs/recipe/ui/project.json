@@ -1,0 +1,33 @@
+{
+  "name": "ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recipe/ui/src",
+  "prefix": "gilles-monorepo",
+  "projectType": "library",
+  "tags": ["type:ui", "scope:recipe"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "configDir": "libs/recipe/ui/.storybook",
+        "browserTarget": "recipe:build:development",
+        "compodoc": false,
+        "port": 6006,
+        "styles": ["libs/recipe/ui/src/styles.css"]
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "options": {
+        "configDir": "libs/recipe/ui/.storybook",
+        "browserTarget": "recipe:build:production",
+        "compodoc": false,
+        "outputDir": "dist/storybook/ui",
+        "styles": ["libs/recipe/ui/src/styles.css"]
+      }
+    }
+  }
+}

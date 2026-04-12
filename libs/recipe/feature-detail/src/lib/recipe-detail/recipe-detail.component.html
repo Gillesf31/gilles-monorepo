@@ -1,0 +1,83 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+  <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-6">
+    <div class="max-w-2xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <a
+          routerLink="/"
+          class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          aria-label="Retour à la liste"
+        >←</a>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50">
+          {{ recipe()?.title }}
+        </h1>
+      </div>
+      @if (recipe()) {
+        <div class="flex gap-2">
+          <a
+            [routerLink]="['/recipe', recipe()!.id, 'edit']"
+            class="rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium px-4 py-2 text-sm transition-colors"
+          >Modifier</a>
+          <button
+            (click)="openDeleteModal()"
+            class="rounded-lg border border-red-200 dark:border-red-900 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 font-medium px-4 py-2 text-sm transition-colors"
+          >Supprimer</button>
+        </div>
+      }
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <gilles-monorepo-loader />
+  } @else if (recipe(); as r) {
+    <main class="max-w-2xl mx-auto px-6 py-8 space-y-8">
+
+      <!-- Ingrédients -->
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">
+          Ingrédients
+          <span class="ml-2 text-amber-500 dark:text-amber-400">{{ r.ingredients.length }}</span>
+        </h2>
+        <ul class="space-y-2">
+          @for (ingredient of r.ingredients; track ingredient) {
+            <li class="flex items-start gap-3 text-gray-700 dark:text-gray-300">
+              <span class="text-amber-400 dark:text-amber-500 mt-0.5 shrink-0">•</span>
+              {{ ingredient }}
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Préparation -->
+      <section>
+        <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">
+          Préparation
+        </h2>
+        <ol class="space-y-4">
+          @for (step of r.instructions; track step; let i = $index) {
+            <li class="flex gap-4">
+              <span class="shrink-0 w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 text-sm font-semibold flex items-center justify-center">
+                {{ i + 1 }}
+              </span>
+              <p class="text-gray-700 dark:text-gray-300 pt-0.5 leading-relaxed">{{ step }}</p>
+            </li>
+          }
+        </ol>
+      </section>
+
+    </main>
+  } @else {
+    <div class="max-w-2xl mx-auto px-6 py-16 text-center text-gray-400 dark:text-gray-600">
+      Recette introuvable.
+    </div>
+  }
+</div>
+
+@if (showDeleteModal()) {
+  <gilles-monorepo-confirm-modal
+    title="Supprimer la recette"
+    [message]="'Voulez-vous vraiment supprimer «\u00a0' + recipe()!.title + '\u00a0» ? Cette action est irréversible.'"
+    confirmLabel="Supprimer"
+    (confirmed)="confirmDelete()"
+    (cancelled)="cancelDelete()"
+  />
+}

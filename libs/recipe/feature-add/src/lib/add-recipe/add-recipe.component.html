@@ -1,0 +1,115 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950">
+  <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-6">
+    <div class="max-w-2xl mx-auto flex items-center gap-4">
+      <a
+        routerLink="/"
+        class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        aria-label="Retour à la liste"
+      >←</a>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50">Nouvelle recette</h1>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-6 py-8">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-8">
+
+      <!-- Titre -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2" for="title">
+          Titre
+        </label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="ex. Pasta Carbonara"
+          class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500"
+          [class.border-red-400]="form.controls.title.invalid && form.controls.title.touched"
+        />
+        @if (form.controls.title.invalid && form.controls.title.touched) {
+          <p class="mt-1 text-sm text-red-500">Le titre est obligatoire.</p>
+        }
+      </div>
+
+      <!-- Ingrédients -->
+      <div>
+        <p class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Ingrédients
+        </p>
+        <div class="space-y-2" formArrayName="ingredients">
+          @for (control of ingredients.controls; track $index) {
+            <div class="flex gap-2">
+              <input
+                type="text"
+                [id]="'ingredient-' + $index"
+                [attr.aria-label]="'Ingrédient ' + ($index + 1)"
+                [formControlName]="$index"
+                placeholder="ex. 200g de spaghetti"
+                class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500"
+              />
+              <button
+                type="button"
+                (click)="removeIngredient($index)"
+                [disabled]="ingredients.length === 1"
+                class="px-3 py-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                aria-label="Supprimer l'ingrédient"
+              >✕</button>
+            </div>
+          }
+        </div>
+        <button
+          type="button"
+          (click)="addIngredient()"
+          class="mt-2 text-sm text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-medium transition-colors"
+        >+ Ajouter un ingrédient</button>
+      </div>
+
+      <!-- Préparation -->
+      <div>
+        <p class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Préparation
+        </p>
+        <div class="space-y-2" formArrayName="instructions">
+          @for (control of instructions.controls; track $index) {
+            <div class="flex gap-2 items-start">
+              <span class="mt-2.5 text-xs font-semibold text-gray-400 dark:text-gray-500 w-5 text-right shrink-0">{{ $index + 1 }}.</span>
+              <textarea
+                [id]="'instruction-' + $index"
+                [attr.aria-label]="'Étape ' + ($index + 1)"
+                [formControlName]="$index"
+                placeholder="ex. Faire cuire les spaghetti dans l'eau bouillante salée…"
+                rows="2"
+                class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-400 dark:focus:ring-amber-500 resize-none"
+              ></textarea>
+              <button
+                type="button"
+                (click)="removeInstruction($index)"
+                [disabled]="instructions.length === 1"
+                class="mt-2 px-3 py-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                aria-label="Supprimer l'étape"
+              >✕</button>
+            </div>
+          }
+        </div>
+        <button
+          type="button"
+          (click)="addInstruction()"
+          class="mt-2 text-sm text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-medium transition-colors"
+        >+ Ajouter une étape</button>
+      </div>
+
+      <!-- Enregistrer -->
+      <div class="flex gap-3 pt-2">
+        <button
+          type="submit"
+          class="flex-1 rounded-lg bg-amber-500 dark:bg-amber-600 hover:bg-amber-600 dark:hover:bg-amber-500 text-white font-semibold py-3 transition-colors"
+        >Enregistrer la recette</button>
+        <a
+          routerLink="/"
+          class="px-6 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium py-3 transition-colors text-center"
+        >Annuler</a>
+      </div>
+
+    </form>
+  </main>
+</div>

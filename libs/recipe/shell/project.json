@@ -1,0 +1,13 @@
+{
+  "name": "shell",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recipe/shell/src",
+  "prefix": "gilles-monorepo",
+  "projectType": "library",
+  "tags": ["type:shell", "scope:recipe"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

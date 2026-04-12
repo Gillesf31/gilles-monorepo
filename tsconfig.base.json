@@ -15,14 +15,15 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/api/products": ["libs/api/products/src/index.ts"],
-      "@org/models": ["libs/shared/models/src/index.ts"],
-      "@org/shop/data": ["libs/shop/data/src/index.ts"],
-      "@org/shop/feature-product-detail": [
-        "libs/shop/feature-product-detail/src/index.ts"
-      ],
-      "@org/shop/feature-products": ["libs/shop/feature-products/src/index.ts"],
-      "@org/shop/shared-ui": ["libs/shop/shared-ui/src/index.ts"]
+      "@gilles-monorepo/data-access": ["libs/recipe/data-access/src/index.ts"],
+      "@gilles-monorepo/ui": ["libs/recipe/ui/src/index.ts"],
+      "@gilles-monorepo/feature-list": ["libs/recipe/feature-list/src/index.ts"],
+      "@gilles-monorepo/shell": ["libs/recipe/shell/src/index.ts"],
+      "@gilles-monorepo/recipe-model": ["libs/recipe/model/src/index.ts"],
+      "@gilles-monorepo/feature-add": ["libs/recipe/feature-add/src/index.ts"],
+      "@gilles-monorepo/feature-detail": ["libs/recipe/feature-detail/src/index.ts"],
+      "@gilles-monorepo/feature-edit": ["libs/recipe/feature-edit/src/index.ts"],
+      "@gilles-monorepo/ui-theme": ["libs/shared/ui-theme/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

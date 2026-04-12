@@ -1,0 +1,51 @@
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Router, RouterLink } from '@angular/router';
+import { RecipeService } from '@gilles-monorepo/data-access';
+import { Recipe } from '@gilles-monorepo/recipe-model';
+import { ConfirmModalComponent, LoaderComponent, RecipeCardComponent } from '@gilles-monorepo/ui';
+
+@Component({
+  selector: 'gilles-monorepo-recipe-list',
+  imports: [RecipeCardComponent, ConfirmModalComponent, LoaderComponent, RouterLink],
+  templateUrl: './recipe-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class RecipeListComponent {
+  private readonly recipeService = inject(RecipeService);
+  private readonly router = inject(Router);
+
+  protected readonly recipes = toSignal(this.recipeService.getRecipes());
+  protected readonly isLoading = computed(() => this.recipes() === undefined);
+  protected readonly searchQuery = signal('');
+  protected readonly recipeToDelete = signal<Recipe | null>(null);
+
+  protected readonly filteredRecipes = computed(() => {
+    const recipes = this.recipes() ?? [];
+    const query = this.searchQuery().trim().toLowerCase();
+    if (!query) return recipes;
+    return recipes.filter(r =>
+      r.title.toLowerCase().includes(query) ||
+      r.ingredients.some(i => i.toLowerCase().includes(query)),
+    );
+  });
+
+  protected openDeleteModal(recipe: Recipe): void {
+    this.recipeToDelete.set(recipe);
+  }
+
+  protected confirmDelete(): void {
+    const id = this.recipeToDelete()?.id;
+    if (!id) return;
+    this.recipeService.deleteRecipe(id).subscribe();
+    this.recipeToDelete.set(null);
+  }
+
+  protected cancelDelete(): void {
+    this.recipeToDelete.set(null);
+  }
+
+  protected navigateToDetail(recipe: Recipe): void {
+    this.router.navigate(['/recipe', recipe.id]);
+  }
+}
