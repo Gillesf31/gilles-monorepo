@@ -1,13 +1,28 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { RecipeService } from '@gilles-monorepo/data-access';
+import { RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { Recipe } from '@gilles-monorepo/recipe-model';
-import { ConfirmModalComponent, LoaderComponent, RecipeCardComponent } from '@gilles-monorepo/ui';
+import {
+  ConfirmModalComponent,
+  LoaderComponent,
+  RecipeCardComponent,
+} from '@gilles-monorepo/recipe-ui';
 
 @Component({
   selector: 'gilles-monorepo-recipe-list',
-  imports: [RecipeCardComponent, ConfirmModalComponent, LoaderComponent, RouterLink],
+  imports: [
+    RecipeCardComponent,
+    ConfirmModalComponent,
+    LoaderComponent,
+    RouterLink,
+  ],
   templateUrl: './recipe-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -24,9 +39,10 @@ export class RecipeListComponent {
     const recipes = this.recipes() ?? [];
     const query = this.searchQuery().trim().toLowerCase();
     if (!query) return recipes;
-    return recipes.filter(r =>
-      r.title.toLowerCase().includes(query) ||
-      r.ingredients.some(i => i.toLowerCase().includes(query)),
+    return recipes.filter(
+      (r) =>
+        r.title.toLowerCase().includes(query) ||
+        r.ingredients.some((i) => i.toLowerCase().includes(query)),
     );
   });
 

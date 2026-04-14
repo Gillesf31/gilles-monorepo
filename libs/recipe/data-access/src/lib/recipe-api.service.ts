@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { from, map, Observable } from 'rxjs';
 import { Recipe } from '@gilles-monorepo/recipe-model';
 import { NewRecipe, RecipeService } from './recipe.service';
-import { SUPABASE_CLIENT } from './supabase.token';
+import { SUPABASE_CLIENT } from '@gilles-monorepo/supabase';
 
 interface RecipeRow {
   id: string;

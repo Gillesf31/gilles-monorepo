@@ -1,6 +1,7 @@
 import { isDevMode } from '@angular/core';
 import { Route } from '@angular/router';
-import { provideSupabaseClient, RecipeApiService, RecipeInMemoryService, RecipeService } from '@gilles-monorepo/data-access';
+import { RecipeApiService, RecipeInMemoryService, RecipeService } from '@gilles-monorepo/recipe-data-access';
+import { provideSupabaseClient } from '@gilles-monorepo/supabase';
 import { ThemeService } from '@gilles-monorepo/ui-theme';
 import { ShellComponent } from './shell.component';
 

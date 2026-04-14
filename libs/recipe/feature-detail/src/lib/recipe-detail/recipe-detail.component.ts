@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { RecipeService } from '@gilles-monorepo/data-access';
+import { RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { Recipe } from '@gilles-monorepo/recipe-model';
-import { ConfirmModalComponent, LoaderComponent } from '@gilles-monorepo/ui';
+import {
+  ConfirmModalComponent,
+  LoaderComponent,
+} from '@gilles-monorepo/recipe-ui';
 import { map, startWith, switchMap } from 'rxjs';
 
 interface RecipeState {
@@ -24,14 +33,22 @@ export class RecipeDetailComponent {
 
   private readonly recipeState = toSignal(
     this.route.paramMap.pipe(
-      switchMap(params =>
+      switchMap((params) =>
         this.recipeService.getRecipe(params.get('id') ?? '').pipe(
-          map(recipe => ({ isLoading: false, recipe }) satisfies RecipeState),
-          startWith({ isLoading: true, recipe: undefined } satisfies RecipeState),
-        )
+          map((recipe) => ({ isLoading: false, recipe }) satisfies RecipeState),
+          startWith({
+            isLoading: true,
+            recipe: undefined,
+          } satisfies RecipeState),
+        ),
       ),
     ),
-    { initialValue: { isLoading: true, recipe: undefined } satisfies RecipeState },
+    {
+      initialValue: {
+        isLoading: true,
+        recipe: undefined,
+      } satisfies RecipeState,
+    },
   );
 
   protected readonly isLoading = computed(() => this.recipeState().isLoading);
@@ -46,7 +63,9 @@ export class RecipeDetailComponent {
   protected confirmDelete(): void {
     const id = this.recipe()?.id;
     if (!id) return;
-    this.recipeService.deleteRecipe(id).subscribe(() => this.router.navigate(['/']));
+    this.recipeService
+      .deleteRecipe(id)
+      .subscribe(() => this.router.navigate(['/']));
   }
 
   protected cancelDelete(): void {

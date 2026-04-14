@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NewRecipe, RecipeService } from '@gilles-monorepo/data-access';
+import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { map, switchMap } from 'rxjs';
 
 @Component({

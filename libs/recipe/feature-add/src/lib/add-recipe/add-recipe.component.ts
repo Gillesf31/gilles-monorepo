@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { NewRecipe, RecipeService } from '@gilles-monorepo/data-access';
+import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
 
 @Component({
   selector: 'gilles-monorepo-add-recipe',

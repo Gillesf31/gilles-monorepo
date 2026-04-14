@@ -1,5 +1,5 @@
 {
-  "name": "ui",
+  "name": "recipe-ui",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/recipe/ui/src",
   "prefix": "gilles-monorepo",

@@ -1,10 +1,10 @@
 {
-  "name": "recipe-data-access",
+  "name": "supabase",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/recipe/data-access/src",
-  "prefix": "gilles-monorepo",
+  "sourceRoot": "libs/shared/supabase/src",
+  "prefix": "lib",
   "projectType": "library",
-  "tags": ["type:data-access", "scope:recipe"],
+  "tags": ["type:util", "scope:shared"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
