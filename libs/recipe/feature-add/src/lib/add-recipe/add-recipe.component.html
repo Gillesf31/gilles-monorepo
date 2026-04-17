@@ -57,6 +57,9 @@
             </div>
           }
         </div>
+        @if (ingredients.invalid && ingredients.touched) {
+          <p class="mt-1 text-sm text-red-500">Au moins un ingrédient est obligatoire.</p>
+        }
         <button
           type="button"
           (click)="addIngredient()"

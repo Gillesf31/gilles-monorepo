@@ -15,8 +15,8 @@ export class AddRecipeComponent {
 
   readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    ingredients: new FormArray([this.createItem()]),
-    instructions: new FormArray([this.createItem()]),
+    ingredients: new FormArray([this.createIngredient()], { validators: (fa) => (fa as FormArray<FormControl<string>>).controls.some(c => c.value.trim()) ? null : { required: true } }),
+    instructions: new FormArray([this.createInstruction()]),
   });
 
   get ingredients(): FormArray<FormControl<string>> {
@@ -27,12 +27,16 @@ export class AddRecipeComponent {
     return this.form.controls.instructions;
   }
 
-  private createItem(): FormControl<string> {
+  private createIngredient(): FormControl<string> {
     return new FormControl('', { nonNullable: true, validators: [Validators.required] });
   }
 
+  private createInstruction(): FormControl<string> {
+    return new FormControl('', { nonNullable: true });
+  }
+
   addIngredient(): void {
-    this.ingredients.push(this.createItem());
+    this.ingredients.push(this.createIngredient());
   }
 
   removeIngredient(index: number): void {
@@ -42,7 +46,7 @@ export class AddRecipeComponent {
   }
 
   addInstruction(): void {
-    this.instructions.push(this.createItem());
+    this.instructions.push(this.createInstruction());
   }
 
   removeInstruction(index: number): void {

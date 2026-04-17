@@ -26,16 +26,16 @@ export class EditRecipeComponent {
 
   readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    ingredients: new FormArray([this.createItem()]),
-    instructions: new FormArray([this.createItem()]),
+    ingredients: new FormArray([this.createIngredient()], { validators: (fa) => (fa as FormArray<FormControl<string>>).controls.some(c => c.value.trim()) ? null : { required: true } }),
+    instructions: new FormArray([this.createInstruction()]),
   });
 
   private readonly _ = effect(() => {
     const recipe = this.recipe();
     if (!recipe) return;
     this.form.controls.title.setValue(recipe.title);
-    this.form.setControl('ingredients', new FormArray(recipe.ingredients.map(v => this.createItem(v))));
-    this.form.setControl('instructions', new FormArray(recipe.instructions.map(v => this.createItem(v))));
+    this.form.setControl('ingredients', new FormArray(recipe.ingredients.map(v => this.createIngredient(v)), { validators: (fa) => (fa as FormArray<FormControl<string>>).controls.some(c => c.value.trim()) ? null : { required: true } }));
+    this.form.setControl('instructions', new FormArray(recipe.instructions.map(v => this.createInstruction(v))));
   });
 
   protected get ingredients(): FormArray<FormControl<string>> {
@@ -46,12 +46,16 @@ export class EditRecipeComponent {
     return this.form.controls.instructions;
   }
 
-  private createItem(value = ''): FormControl<string> {
+  private createIngredient(value = ''): FormControl<string> {
     return new FormControl(value, { nonNullable: true, validators: [Validators.required] });
   }
 
+  private createInstruction(value = ''): FormControl<string> {
+    return new FormControl(value, { nonNullable: true });
+  }
+
   protected addIngredient(): void {
-    this.ingredients.push(this.createItem());
+    this.ingredients.push(this.createIngredient());
   }
 
   protected removeIngredient(index: number): void {
@@ -61,7 +65,7 @@ export class EditRecipeComponent {
   }
 
   protected addInstruction(): void {
-    this.instructions.push(this.createItem());
+    this.instructions.push(this.createInstruction());
   }
 
   protected removeInstruction(index: number): void {
