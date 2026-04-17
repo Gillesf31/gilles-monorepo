@@ -27,6 +27,20 @@ This repository demonstrates a production-ready Angular monorepo with:
 - **E2E Testing**
   - `shop-e2e` - Playwright tests for the shop application
 
+## ⚙️ Configuration
+
+Before running the app, set up your environment files:
+
+```bash
+# Copy the templates
+cp apps/recipe/src/environments/environment.template.ts apps/recipe/src/environments/environment.ts
+cp apps/recipe/src/environments/environment.prod.template.ts apps/recipe/src/environments/environment.prod.ts
+```
+
+Then open each file and fill in your [Supabase](https://supabase.com) project credentials (Project URL and anon key from **Project Settings > API**).
+
+> These files are gitignored and will never be committed.
+
 ## 🚀 Quick Start
 
 ```bash
