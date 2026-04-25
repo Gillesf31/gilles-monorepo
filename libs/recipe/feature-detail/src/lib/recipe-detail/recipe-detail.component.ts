@@ -10,6 +10,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { Recipe } from '@gilles-monorepo/recipe-model';
 import {
+  BtnComponent,
   ConfirmModalComponent,
   LoaderComponent,
 } from '@gilles-monorepo/recipe-ui';
@@ -22,7 +23,7 @@ interface RecipeState {
 
 @Component({
   selector: 'gilles-monorepo-recipe-detail',
-  imports: [RouterLink, ConfirmModalComponent, LoaderComponent],
+  imports: [RouterLink, BtnComponent, ConfirmModalComponent, LoaderComponent],
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

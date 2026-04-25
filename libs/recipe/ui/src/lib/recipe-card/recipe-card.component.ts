@@ -5,9 +5,11 @@ import {
   output,
 } from '@angular/core';
 import { Recipe } from '@gilles-monorepo/recipe-model';
+import { BtnComponent } from '../btn/btn.component';
 
 @Component({
   selector: 'gilles-monorepo-recipe-card',
+  imports: [BtnComponent],
   templateUrl: './recipe-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -4,9 +4,11 @@ import {
   input,
   output,
 } from '@angular/core';
+import { BtnComponent } from '../btn/btn.component';
 
 @Component({
   selector: 'gilles-monorepo-confirm-modal',
+  imports: [BtnComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -26,18 +28,10 @@ import {
         </h2>
         <p class="text-gray-500 dark:text-gray-400 text-sm">{{ message() }}</p>
         <div class="flex gap-3 justify-end">
-          <button
-            type="button"
-            (click)="cancelled.emit()"
-            class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
-          >
+          <button gillesMonorepoBtn variant="secondary" type="button" (click)="cancelled.emit()">
             {{ cancelLabel() }}
           </button>
-          <button
-            type="button"
-            (click)="confirmed.emit()"
-            class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors"
-          >
+          <button gillesMonorepoBtn variant="danger-filled" type="button" (click)="confirmed.emit()">
             {{ confirmLabel() }}
           </button>
         </div>

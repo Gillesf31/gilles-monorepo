@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background: amber, rounded for maskable safe zone -->
+  <rect width="512" height="512" rx="96" fill="#d97706"/>
+
+  <!-- FORK — center x=180 -->
+  <!-- tine left -->
+  <rect x="155" y="108" width="16" height="125" rx="8" fill="white"/>
+  <!-- tine center -->
+  <rect x="180" y="108" width="16" height="125" rx="8" fill="white"/>
+  <!-- tine right -->
+  <rect x="205" y="108" width="16" height="125" rx="8" fill="white"/>
+  <!-- tine bridge -->
+  <rect x="155" y="216" width="66" height="22" rx="6" fill="white"/>
+  <!-- handle -->
+  <rect x="171" y="216" width="34" height="192" rx="17" fill="white"/>
+
+  <!-- KNIFE — center x=332 -->
+  <!-- blade: straight right, curved left edge -->
+  <path d="M320,108 Q312,196 312,240 L350,240 L350,108 Q342,98 332,100 Q324,102 320,108 Z" fill="white"/>
+  <!-- handle -->
+  <rect x="312" y="240" width="38" height="168" rx="19" fill="white"/>
+</svg>

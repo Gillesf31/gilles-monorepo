@@ -3,11 +3,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
+import { BtnComponent } from '@gilles-monorepo/recipe-ui';
 import { map, switchMap } from 'rxjs';
 
 @Component({
   selector: 'gilles-monorepo-edit-recipe',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, BtnComponent],
   templateUrl: './edit-recipe.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

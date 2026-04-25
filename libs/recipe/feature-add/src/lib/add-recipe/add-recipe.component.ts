@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
+import { BtnComponent } from '@gilles-monorepo/recipe-ui';
 
 @Component({
   selector: 'gilles-monorepo-add-recipe',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, BtnComponent],
   templateUrl: './add-recipe.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

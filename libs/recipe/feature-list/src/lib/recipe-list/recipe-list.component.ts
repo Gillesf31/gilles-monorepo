@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { Recipe } from '@gilles-monorepo/recipe-model';
 import {
+  BtnComponent,
   ConfirmModalComponent,
   LoaderComponent,
   RecipeCardComponent,
@@ -19,6 +20,7 @@ import {
   selector: 'gilles-monorepo-recipe-list',
   imports: [
     RecipeCardComponent,
+    BtnComponent,
     ConfirmModalComponent,
     LoaderComponent,
     RouterLink,
