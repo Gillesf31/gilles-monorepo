@@ -1,0 +1,22 @@
+<ul class="space-y-2">
+  @for (ingredient of ingredients(); track ingredient; let i = $index) {
+    <li class="flex items-start gap-3">
+      <input
+        type="checkbox"
+        [id]="'ingredient-' + i"
+        [checked]="isChecked(i)"
+        (change)="toggle(i)"
+        class="mt-1 shrink-0 w-4 h-4 rounded accent-amber-500 cursor-pointer"
+      />
+      <label
+        [for]="'ingredient-' + i"
+        class="cursor-pointer transition-all duration-200"
+        [class.line-through]="isChecked(i)"
+        [class.text-gray-400]="isChecked(i)"
+        [class.dark:text-gray-600]="isChecked(i)"
+        [class.text-gray-700]="!isChecked(i)"
+        [class.dark:text-gray-300]="!isChecked(i)"
+      >{{ ingredient }}</label>
+    </li>
+  }
+</ul>

@@ -4,6 +4,7 @@ export type BtnVariant = 'primary' | 'secondary' | 'danger' | 'danger-filled' | 
 export type BtnSize = 'sm' | 'md' | 'lg';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'button[gillesMonorepoBtn]',
   template: `<ng-content />`,
   host: { '[class]': 'classes()' },

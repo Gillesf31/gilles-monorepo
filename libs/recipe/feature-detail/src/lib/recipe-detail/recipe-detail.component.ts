@@ -12,6 +12,7 @@ import { Recipe } from '@gilles-monorepo/recipe-model';
 import {
   BtnComponent,
   ConfirmModalComponent,
+  IngredientListComponent,
   LoaderComponent,
 } from '@gilles-monorepo/recipe-ui';
 import { map, startWith, switchMap } from 'rxjs';
@@ -23,7 +24,7 @@ interface RecipeState {
 
 @Component({
   selector: 'gilles-monorepo-recipe-detail',
-  imports: [RouterLink, BtnComponent, ConfirmModalComponent, LoaderComponent],
+  imports: [RouterLink, BtnComponent, ConfirmModalComponent, IngredientListComponent, LoaderComponent],
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

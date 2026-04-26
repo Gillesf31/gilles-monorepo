@@ -34,14 +34,7 @@
           Ingrédients
           <span class="ml-2 text-amber-500 dark:text-amber-400">{{ r.ingredients.length }}</span>
         </h2>
-        <ul class="space-y-2">
-          @for (ingredient of r.ingredients; track ingredient) {
-            <li class="flex items-start gap-3 text-gray-700 dark:text-gray-300">
-              <span class="text-amber-400 dark:text-amber-500 mt-0.5 shrink-0">•</span>
-              {{ ingredient }}
-            </li>
-          }
-        </ul>
+        <gilles-monorepo-ingredient-list [resetDelay]="1000" [ingredients]="r.ingredients" />
       </section>
 
       <!-- Préparation -->
