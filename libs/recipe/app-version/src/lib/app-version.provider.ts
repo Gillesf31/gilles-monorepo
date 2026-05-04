@@ -1,4 +1,25 @@
-import { Injectable, NgZone, inject, provideEnvironmentInitializer } from '@angular/core';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import {
+  Injectable,
+  NgZone,
+  computed,
+  inject,
+  makeEnvironmentProviders,
+  provideEnvironmentInitializer,
+  signal,
+} from '@angular/core';
+import {
+  EMPTY,
+  Observable,
+  catchError,
+  exhaustMap,
+  filter,
+  fromEvent,
+  map,
+  merge,
+  of,
+  tap,
+} from 'rxjs';
 
 type AppVersion = {
   version?: string;
@@ -7,11 +28,15 @@ type AppVersion = {
 };
 
 @Injectable({ providedIn: 'root' })
-class AppVersionService {
+export class AppVersionService {
+  private readonly http = inject(HttpClient);
   private readonly zone = inject(NgZone);
   private readonly storageKey = 'recipe-app-version';
-  private checkInProgress = false;
+  private readonly dismissedStorageKey = 'recipe-app-version-dismissed';
+  private readonly pendingVersion = signal<string | null>(null);
   private started = false;
+
+  readonly updateAvailable = computed(() => !!this.pendingVersion());
 
   start(): void {
     if (this.started) {
@@ -19,35 +44,52 @@ class AppVersionService {
     }
 
     this.started = true;
-    void this.checkForUpdate();
 
     this.zone.runOutsideAngular(() => {
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          void this.checkForUpdate();
-        }
-      });
-
-      window.addEventListener('focus', () => {
-        void this.checkForUpdate();
-      });
+      merge(
+        of(null),
+        fromEvent(document, 'visibilitychange').pipe(
+          filter(() => document.visibilityState === 'visible')
+        ),
+        fromEvent(window, 'focus')
+      )
+        .pipe(
+          exhaustMap(() => this.fetchVersion()),
+          filter((version): version is string => !!version),
+          tap((version) => {
+            this.zone.run(() => {
+              this.applyVersion(version);
+            });
+          })
+        )
+        .subscribe();
     });
   }
 
-  private async checkForUpdate(): Promise<void> {
-    if (this.checkInProgress) {
+  updateNow(): void {
+    const version = this.pendingVersion();
+
+    if (!version) {
       return;
     }
 
-    this.checkInProgress = true;
+    localStorage.setItem(this.storageKey, version);
+    this.reloadWithFreshUrl(version);
+  }
 
+  dismissUpdate(): void {
+    const version = this.pendingVersion();
+
+    if (!version) {
+      return;
+    }
+
+    localStorage.setItem(this.dismissedStorageKey, version);
+    this.pendingVersion.set(null);
+  }
+
+  private applyVersion(remoteVersion: string): void {
     try {
-      const remoteVersion = await this.fetchVersion();
-
-      if (!remoteVersion) {
-        return;
-      }
-
       const currentVersion = localStorage.getItem(this.storageKey);
 
       if (!currentVersion) {
@@ -56,30 +98,32 @@ class AppVersionService {
       }
 
       if (currentVersion !== remoteVersion) {
-        localStorage.setItem(this.storageKey, remoteVersion);
-        this.reloadWithFreshUrl(remoteVersion);
+        const dismissedVersion = localStorage.getItem(this.dismissedStorageKey);
+
+        if (dismissedVersion !== remoteVersion) {
+          this.pendingVersion.set(remoteVersion);
+        }
       }
     } catch {
       // Version checks should never block using the installed app.
-    } finally {
-      this.checkInProgress = false;
     }
   }
 
-  private async fetchVersion(): Promise<string | null> {
-    const response = await fetch(`/version.json?t=${Date.now()}`, {
-      cache: 'no-store',
-      headers: {
-        Accept: 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const appVersion = (await response.json()) as AppVersion;
-    return appVersion.version ?? appVersion.commit ?? appVersion.builtAt ?? null;
+  private fetchVersion(): Observable<string | null> {
+    return this.http
+      .get<AppVersion>('/version.json', {
+        headers: {
+          Accept: 'application/json',
+          'Cache-Control': 'no-cache',
+        },
+        params: {
+          t: Date.now(),
+        },
+      })
+      .pipe(
+        map((appVersion) => appVersion.version ?? appVersion.commit ?? appVersion.builtAt ?? null),
+        catchError(() => EMPTY)
+      );
   }
 
   private reloadWithFreshUrl(version: string): void {
@@ -91,7 +135,10 @@ class AppVersionService {
 }
 
 export function provideAppVersionCheck() {
-  return provideEnvironmentInitializer(() => {
-    inject(AppVersionService).start();
-  });
+  return makeEnvironmentProviders([
+    provideHttpClient(),
+    provideEnvironmentInitializer(() => {
+      inject(AppVersionService).start();
+    }),
+  ]);
 }

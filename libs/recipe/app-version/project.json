@@ -2,7 +2,7 @@
   "name": "app-version",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/recipe/app-version/src",
-  "prefix": "lib",
+  "prefix": "gilles-monorepo",
   "projectType": "library",
   "tags": ["scope:recipe", "type:feature"],
   "targets": {
