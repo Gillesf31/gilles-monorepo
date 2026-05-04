@@ -19,17 +19,17 @@ export class BtnComponent {
 
     const variantClasses: Record<BtnVariant, string> = {
       primary:
-        'rounded-lg bg-amber-500 dark:bg-amber-600 hover:bg-amber-600 dark:hover:bg-amber-500 text-white font-semibold transition-colors',
+        'rounded-full bg-zinc-950 text-white shadow-sm shadow-zinc-950/10 hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300 font-semibold transition-colors',
       secondary:
-        'rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium transition-colors',
+        'rounded-full border border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-800 font-medium transition-colors',
       danger:
-        'rounded-lg border border-red-200 dark:border-red-900 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 font-medium transition-colors',
+        'rounded-full border border-rose-200 bg-white text-rose-600 hover:bg-rose-50 dark:border-rose-900/70 dark:bg-zinc-900 dark:text-rose-300 dark:hover:bg-rose-950/50 font-medium transition-colors',
       'danger-filled':
-        'rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-colors',
+        'rounded-full bg-rose-600 hover:bg-rose-700 text-white font-medium transition-colors',
       ghost:
-        'rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 font-medium transition-colors',
+        'rounded-full text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/50 font-medium transition-colors',
       remove:
-        'rounded-lg p-2 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-30 disabled:cursor-not-allowed transition-colors',
+        'rounded-full p-2 text-zinc-400 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-zinc-500 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 transition-colors',
     };
 
     const sizeClasses: Record<BtnSize, string> = {

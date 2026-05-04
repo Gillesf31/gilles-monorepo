@@ -10,20 +10,20 @@
       cdkDrag
       [cdkDragDisabled]="!reorderable()"
       [cdkDragPreviewContainer]="'parent'"
-      class="ingredient-row flex items-start gap-3 rounded-lg transition-colors"
+      class="ingredient-row flex items-start gap-3 rounded-2xl transition-colors"
       [class.bg-white]="reorderable()"
-      [class.dark:bg-gray-900]="reorderable()"
+      [class.dark:bg-zinc-900]="reorderable()"
       [class.border]="reorderable()"
-      [class.border-gray-200]="reorderable()"
-      [class.dark:border-gray-800]="reorderable()"
-      [class.p-3]="reorderable()"
+      [class.border-zinc-200]="reorderable()"
+      [class.dark:border-zinc-800]="reorderable()"
+      [class.p-4]="reorderable()"
       [class.shadow-sm]="reorderable()"
     >
       @if (reorderable()) {
         <button
           cdkDragHandle
           type="button"
-          class="mt-0.5 grid h-8 w-8 shrink-0 cursor-grab place-items-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 active:cursor-grabbing dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          class="mt-0.5 grid h-8 w-8 shrink-0 cursor-grab place-items-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 active:cursor-grabbing dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
           [attr.aria-label]="'Déplacer ' + ingredient"
         >
           <span class="text-lg leading-none">≡</span>
@@ -34,16 +34,16 @@
         [id]="'ingredient-' + i"
         [checked]="isChecked(i)"
         (change)="toggle(i)"
-        class="mt-1 shrink-0 w-5 h-5 rounded accent-amber-500 cursor-pointer"
+        class="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded accent-emerald-600"
       />
       <label
         [for]="'ingredient-' + i"
         class="cursor-pointer text-lg leading-7 transition-all duration-200"
         [class.line-through]="isChecked(i)"
-        [class.text-gray-400]="isChecked(i)"
-        [class.dark:text-gray-600]="isChecked(i)"
-        [class.text-gray-700]="!isChecked(i)"
-        [class.dark:text-gray-300]="!isChecked(i)"
+        [class.text-zinc-400]="isChecked(i)"
+        [class.dark:text-zinc-600]="isChecked(i)"
+        [class.text-zinc-700]="!isChecked(i)"
+        [class.dark:text-zinc-300]="!isChecked(i)"
       >{{ ingredient }}</label>
     </li>
   }

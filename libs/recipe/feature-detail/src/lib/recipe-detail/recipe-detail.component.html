@@ -1,21 +1,21 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-950">
-  <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-6">
-    <div class="max-w-2xl mx-auto flex items-center justify-between gap-4">
+<div class="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(244,63,94,0.12),transparent_30rem),linear-gradient(180deg,#fafafa_0%,#f4f4f5_100%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(244,63,94,0.16),transparent_30rem),linear-gradient(180deg,#09090b_0%,#18181b_100%)]">
+  <header class="border-b border-zinc-200/80 bg-white/75 px-6 py-7 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70">
+    <div class="max-w-3xl mx-auto flex items-start justify-between gap-4">
       <div class="flex items-center gap-4">
         <a
           routerLink="/"
-          class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          class="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-500 shadow-sm transition-colors hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
           aria-label="Retour à la liste"
         >←</a>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50">
+        <h1 class="text-3xl font-black leading-tight text-zinc-950 dark:text-zinc-50 sm:text-4xl">
           {{ recipe()?.title }}
         </h1>
       </div>
       @if (recipe()) {
-        <div class="flex gap-2">
+        <div class="flex shrink-0 gap-2">
           <a
             [routerLink]="['/recipe', recipe()!.id, 'edit']"
-            class="rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium px-4 py-2 text-sm transition-colors"
+            class="rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >Modifier</a>
           <button gillesMonorepoBtn variant="danger" (click)="openDeleteModal()">Supprimer</button>
         </div>
@@ -26,19 +26,18 @@
   @if (isLoading()) {
     <gilles-monorepo-loader />
   } @else if (recipe(); as r) {
-    <main class="max-w-2xl mx-auto px-6 py-8 space-y-8">
+    <main class="max-w-3xl mx-auto space-y-10 px-6 py-10">
 
-      <!-- Ingrédients -->
       <section>
         <div class="mb-3 flex items-center justify-between gap-3">
-          <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          <h2 class="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-500">
             Ingrédients
-            <span class="ml-2 text-amber-500 dark:text-amber-400">{{ r.ingredients.length }}</span>
+            <span class="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">{{ r.ingredients.length }}</span>
           </h2>
           @if (hasCustomIngredientOrder()) {
             <button
               type="button"
-              class="rounded-md px-2.5 py-1 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+              class="rounded-full px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
               (click)="resetIngredientOrder()"
             >
               Réinitialiser
@@ -53,18 +52,17 @@
         />
       </section>
 
-      <!-- Préparation -->
       <section>
-        <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">
+        <h2 class="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-500">
           Préparation
         </h2>
-        <ol class="space-y-4">
+        <ol class="space-y-5">
           @for (step of r.instructions; track step; let i = $index) {
             <li class="flex gap-4">
-              <span class="shrink-0 w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 text-sm font-semibold flex items-center justify-center">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-950 text-sm font-semibold text-white dark:bg-emerald-400 dark:text-zinc-950">
                 {{ i + 1 }}
               </span>
-              <p class="text-gray-700 dark:text-gray-300 pt-0.5 leading-relaxed">{{ step }}</p>
+              <p class="pt-0.5 text-lg leading-8 text-zinc-700 dark:text-zinc-300">{{ step }}</p>
             </li>
           }
         </ol>
@@ -72,7 +70,7 @@
 
     </main>
   } @else {
-    <div class="max-w-2xl mx-auto px-6 py-16 text-center text-gray-400 dark:text-gray-600">
+    <div class="max-w-2xl mx-auto px-6 py-16 text-center text-zinc-500">
       Recette introuvable.
     </div>
   }
