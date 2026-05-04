@@ -32,7 +32,10 @@
       ],
       "@gilles-monorepo/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
       "@gilles-monorepo/supabase": ["libs/shared/supabase/src/index.ts"],
-      "@gilles-monorepo/recipe-ui": ["libs/recipe/ui/src/index.ts"]
+      "@gilles-monorepo/recipe-ui": ["libs/recipe/ui/src/index.ts"],
+      "@gilles-monorepo/app-version": [
+        "libs/recipe/app-version/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

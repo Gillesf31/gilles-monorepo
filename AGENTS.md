@@ -21,3 +21,17 @@
 - The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
 
 <!-- nx configuration end-->
+
+# Recipe Workspace Architecture
+
+- Keep application projects thin. Do not put services, data access, domain logic, UI logic, or feature behavior in `apps/*`.
+- Application projects should only compose bootstrap concerns such as app config, root routes, global metadata, assets, and environment wiring.
+- Put behavior in libraries with the correct Nx tags:
+  - `type:shell`: route-level composition and providers that assemble the app experience.
+  - `type:feature`: user-facing feature behavior, feature providers, smart components, and app behavior modules.
+  - `type:ui`: reusable presentation components.
+  - `type:data-access`: API clients, persistence, and repository-style services.
+  - `type:util`: generic helpers without feature ownership.
+  - `type:model`: shared types and pure model definitions.
+- Respect the dependency direction enforced by `@nx/enforce-module-boundaries`: apps depend on shell libraries; shell libraries compose feature/data/util libraries; features do not depend back on shells or apps.
+- When adding app-wide behavior, implement it in a feature or other appropriate library and provide it from the shell, not directly from the app.

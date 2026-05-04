@@ -71,7 +71,8 @@
         "parallel": false,
         "commands": [
           "pnpm nx build recipe --configuration=production",
-          "scp -r dist/apps/recipe/browser/* gilles@192.168.2.249:/var/www/recipes/"
+          "node tools/write-build-version.mjs dist/apps/recipe/browser/version.json",
+          "rsync -av --delete dist/apps/recipe/browser/ gilles@192.168.2.249:/var/www/recipes/"
         ]
       }
     },

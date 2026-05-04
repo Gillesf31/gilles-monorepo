@@ -1,0 +1,13 @@
+{
+  "name": "app-version",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recipe/app-version/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:recipe", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

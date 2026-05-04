@@ -1,5 +1,6 @@
 import { isDevMode } from '@angular/core';
 import { Route } from '@angular/router';
+import { provideAppVersionCheck } from '@gilles-monorepo/app-version';
 import { RecipeApiService, RecipeInMemoryService, RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { provideSupabaseClient } from '@gilles-monorepo/supabase';
 import { ThemeService } from '@gilles-monorepo/ui-theme';
@@ -11,6 +12,7 @@ export function createShellRoutes(supabaseUrl: string, supabaseAnonKey: string):
     path: '',
     component: ShellComponent,
     providers: [
+      provideAppVersionCheck(),
       provideSupabaseClient(supabaseUrl, supabaseAnonKey),
       ThemeService,
       {
