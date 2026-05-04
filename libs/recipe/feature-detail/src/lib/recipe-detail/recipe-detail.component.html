@@ -30,11 +30,27 @@
 
       <!-- Ingrédients -->
       <section>
-        <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">
-          Ingrédients
-          <span class="ml-2 text-amber-500 dark:text-amber-400">{{ r.ingredients.length }}</span>
-        </h2>
-        <gilles-monorepo-ingredient-list [resetDelay]="1000" [ingredients]="r.ingredients" />
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            Ingrédients
+            <span class="ml-2 text-amber-500 dark:text-amber-400">{{ r.ingredients.length }}</span>
+          </h2>
+          @if (hasCustomIngredientOrder()) {
+            <button
+              type="button"
+              class="rounded-md px-2.5 py-1 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+              (click)="resetIngredientOrder()"
+            >
+              Réinitialiser
+            </button>
+          }
+        </div>
+        <gilles-monorepo-ingredient-list
+          [resetDelay]="1000"
+          [ingredients]="sessionIngredients()"
+          [reorderable]="true"
+          (ingredientMoved)="moveIngredient($event)"
+        />
       </section>
 
       <!-- Préparation -->
