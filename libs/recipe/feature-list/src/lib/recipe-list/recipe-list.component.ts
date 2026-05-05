@@ -8,7 +8,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { RecipeService } from '@gilles-monorepo/recipe-data-access';
-import { Recipe } from '@gilles-monorepo/recipe-model';
+import { formatRecipeIngredient, Recipe } from '@gilles-monorepo/recipe-model';
 import {
   BtnComponent,
   ConfirmModalComponent,
@@ -44,7 +44,9 @@ export class RecipeListComponent {
     return recipes.filter(
       (r) =>
         r.title.toLowerCase().includes(query) ||
-        r.ingredients.some((i) => i.toLowerCase().includes(query)),
+        r.ingredients.some((ingredient) =>
+          formatRecipeIngredient(ingredient).toLowerCase().includes(query),
+        ),
     );
   });
 

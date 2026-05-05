@@ -12,6 +12,10 @@ import {
   CdkDragHandle,
   CdkDropList,
 } from '@angular/cdk/drag-drop';
+import {
+  formatRecipeIngredient,
+  type RecipeIngredient,
+} from '@gilles-monorepo/recipe-model';
 
 @Component({
   selector: 'gilles-monorepo-ingredient-list',
@@ -33,18 +37,22 @@ import {
     }
 
     .cdk-drag-animating,
-    .ingredient-drop-list.cdk-drop-list-dragging .ingredient-row:not(.cdk-drag-placeholder) {
+    .ingredient-drop-list.cdk-drop-list-dragging
+      .ingredient-row:not(.cdk-drag-placeholder) {
       transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientListComponent {
-  readonly ingredients = input.required<string[]>();
+  readonly ingredients = input.required<RecipeIngredient[]>();
   readonly reorderable = input(false);
   readonly resetDelay = input<number>(600);
   readonly allChecked = output<void>();
-  readonly ingredientMoved = output<{ previousIndex: number; currentIndex: number }>();
+  readonly ingredientMoved = output<{
+    previousIndex: number;
+    currentIndex: number;
+  }>();
 
   protected readonly checked = signal<Set<number>>(new Set());
 
@@ -77,7 +85,11 @@ export class IngredientListComponent {
     return this.checked().has(index);
   }
 
-  protected drop(event: CdkDragDrop<string[]>): void {
+  protected formatIngredient(ingredient: RecipeIngredient): string {
+    return formatRecipeIngredient(ingredient);
+  }
+
+  protected drop(event: CdkDragDrop<RecipeIngredient[]>): void {
     if (!this.reorderable() || event.previousIndex === event.currentIndex) {
       return;
     }
@@ -85,7 +97,9 @@ export class IngredientListComponent {
     this.checked.update((set) => {
       const next = new Set<number>();
       for (const index of set) {
-        next.add(this.moveIndex(index, event.previousIndex, event.currentIndex));
+        next.add(
+          this.moveIndex(index, event.previousIndex, event.currentIndex),
+        );
       }
       return next;
     });
@@ -96,16 +110,28 @@ export class IngredientListComponent {
     });
   }
 
-  private moveIndex(index: number, previousIndex: number, currentIndex: number): number {
+  private moveIndex(
+    index: number,
+    previousIndex: number,
+    currentIndex: number,
+  ): number {
     if (index === previousIndex) {
       return currentIndex;
     }
 
-    if (previousIndex < currentIndex && index > previousIndex && index <= currentIndex) {
+    if (
+      previousIndex < currentIndex &&
+      index > previousIndex &&
+      index <= currentIndex
+    ) {
       return index - 1;
     }
 
-    if (previousIndex > currentIndex && index >= currentIndex && index < previousIndex) {
+    if (
+      previousIndex > currentIndex &&
+      index >= currentIndex &&
+      index < previousIndex
+    ) {
       return index + 1;
     }
 

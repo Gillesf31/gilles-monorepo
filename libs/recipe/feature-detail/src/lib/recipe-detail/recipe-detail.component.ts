@@ -10,7 +10,7 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecipeService } from '@gilles-monorepo/recipe-data-access';
-import { Recipe } from '@gilles-monorepo/recipe-model';
+import { Recipe, type RecipeIngredient } from '@gilles-monorepo/recipe-model';
 import {
   BtnComponent,
   ConfirmModalComponent,
@@ -26,7 +26,13 @@ interface RecipeState {
 
 @Component({
   selector: 'gilles-monorepo-recipe-detail',
-  imports: [RouterLink, BtnComponent, ConfirmModalComponent, IngredientListComponent, LoaderComponent],
+  imports: [
+    RouterLink,
+    BtnComponent,
+    ConfirmModalComponent,
+    IngredientListComponent,
+    LoaderComponent,
+  ],
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -57,12 +63,17 @@ export class RecipeDetailComponent {
 
   protected readonly isLoading = computed(() => this.recipeState().isLoading);
   protected readonly recipe = computed(() => this.recipeState().recipe);
-  protected readonly sessionIngredients = signal<string[]>([]);
+  protected readonly sessionIngredients = signal<RecipeIngredient[]>([]);
   protected readonly hasCustomIngredientOrder = computed(() => {
     const recipe = this.recipe();
     const ingredients = this.sessionIngredients();
 
-    return !!recipe && ingredients.some((ingredient, index) => ingredient !== recipe.ingredients[index]);
+    return (
+      !!recipe &&
+      ingredients.some(
+        (ingredient, index) => ingredient !== recipe.ingredients[index],
+      )
+    );
   });
 
   protected readonly showDeleteModal = signal(false);
@@ -88,7 +99,10 @@ export class RecipeDetailComponent {
     this.showDeleteModal.set(false);
   }
 
-  protected moveIngredient(event: { previousIndex: number; currentIndex: number }): void {
+  protected moveIngredient(event: {
+    previousIndex: number;
+    currentIndex: number;
+  }): void {
     this.sessionIngredients.update((ingredients) => {
       const next = [...ingredients];
       moveItemInArray(next, event.previousIndex, event.currentIndex);

@@ -1,12 +1,36 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
-import { BtnComponent } from '@gilles-monorepo/recipe-ui';
+import { type RecipeIngredient } from '@gilles-monorepo/recipe-model';
+import {
+  BtnComponent,
+  IngredientEditorComponent,
+} from '@gilles-monorepo/recipe-ui';
+
+function hasIngredientName(
+  control: AbstractControl<RecipeIngredient[]>,
+): { required: true } | null {
+  return control.value.some((ingredient) => ingredient.name.trim())
+    ? null
+    : { required: true };
+}
 
 @Component({
   selector: 'gilles-monorepo-add-recipe',
-  imports: [ReactiveFormsModule, RouterLink, BtnComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    BtnComponent,
+    IngredientEditorComponent,
+  ],
   templateUrl: './add-recipe.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -15,12 +39,21 @@ export class AddRecipeComponent {
   private readonly router = inject(Router);
 
   readonly form = new FormGroup({
-    title: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    ingredients: new FormArray([this.createIngredient()], { validators: (fa) => (fa as FormArray<FormControl<string>>).controls.some(c => c.value.trim()) ? null : { required: true } }),
+    title: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    ingredients: new FormControl<RecipeIngredient[]>(
+      [this.createIngredient()],
+      {
+        nonNullable: true,
+        validators: [hasIngredientName],
+      },
+    ),
     instructions: new FormArray([this.createInstruction()]),
   });
 
-  get ingredients(): FormArray<FormControl<string>> {
+  get ingredients(): FormControl<RecipeIngredient[]> {
     return this.form.controls.ingredients;
   }
 
@@ -28,22 +61,18 @@ export class AddRecipeComponent {
     return this.form.controls.instructions;
   }
 
-  private createIngredient(): FormControl<string> {
-    return new FormControl('', { nonNullable: true, validators: [Validators.required] });
+  protected setIngredients(ingredients: RecipeIngredient[]): void {
+    this.ingredients.setValue(ingredients);
+    this.ingredients.markAsDirty();
+    this.ingredients.markAsTouched();
+  }
+
+  private createIngredient(): RecipeIngredient {
+    return { name: '', quantity: '', unit: '' };
   }
 
   private createInstruction(): FormControl<string> {
     return new FormControl('', { nonNullable: true });
-  }
-
-  addIngredient(): void {
-    this.ingredients.push(this.createIngredient());
-  }
-
-  removeIngredient(index: number): void {
-    if (this.ingredients.length > 1) {
-      this.ingredients.removeAt(index);
-    }
   }
 
   addInstruction(): void {
@@ -65,7 +94,13 @@ export class AddRecipeComponent {
     const value = this.form.getRawValue();
     const recipe: NewRecipe = {
       title: value.title,
-      ingredients: value.ingredients.filter(Boolean),
+      ingredients: value.ingredients
+        .map((ingredient) => ({
+          name: ingredient.name.trim(),
+          quantity: ingredient.quantity.trim(),
+          unit: ingredient.unit.trim(),
+        }))
+        .filter((ingredient) => ingredient.name),
       instructions: value.instructions.filter(Boolean),
     };
 

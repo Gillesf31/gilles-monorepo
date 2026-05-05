@@ -1,18 +1,27 @@
 import { inject } from '@angular/core';
 import { from, map, Observable } from 'rxjs';
-import { Recipe } from '@gilles-monorepo/recipe-model';
+import {
+  normalizeRecipeIngredients,
+  Recipe,
+  type RecipeIngredientValue,
+} from '@gilles-monorepo/recipe-model';
 import { NewRecipe, RecipeService } from './recipe.service';
 import { SUPABASE_CLIENT } from '@gilles-monorepo/supabase';
 
 interface RecipeRow {
   id: string;
   title: string;
-  ingredients: string[];
+  ingredients: RecipeIngredientValue[];
   instructions: string[];
 }
 
 function toRecipe(row: RecipeRow): Recipe {
-  return new Recipe(row.id, row.title, row.ingredients, row.instructions);
+  return new Recipe(
+    row.id,
+    row.title,
+    normalizeRecipeIngredients(row.ingredients),
+    row.instructions,
+  );
 }
 
 export class RecipeApiService extends RecipeService {
@@ -24,7 +33,7 @@ export class RecipeApiService extends RecipeService {
         .from('recipes')
         .select('*')
         .order('created_at', { ascending: false })
-        .throwOnError()
+        .throwOnError(),
     ).pipe(map(({ data }) => (data as RecipeRow[]).map(toRecipe)));
   }
 
@@ -35,7 +44,7 @@ export class RecipeApiService extends RecipeService {
         .select('*')
         .eq('id', id)
         .single()
-        .throwOnError()
+        .throwOnError(),
     ).pipe(map(({ data }) => (data ? toRecipe(data as RecipeRow) : undefined)));
   }
 
@@ -43,20 +52,20 @@ export class RecipeApiService extends RecipeService {
     return from(
       this.supabase
         .from('recipes')
-        .insert({ title: recipe.title, ingredients: recipe.ingredients, instructions: recipe.instructions })
+        .insert({
+          title: recipe.title,
+          ingredients: recipe.ingredients,
+          instructions: recipe.instructions,
+        })
         .select()
         .single()
-        .throwOnError()
+        .throwOnError(),
     ).pipe(map(({ data }) => toRecipe(data as RecipeRow)));
   }
 
   deleteRecipe(id: string): Observable<void> {
     return from(
-      this.supabase
-        .from('recipes')
-        .delete()
-        .eq('id', id)
-        .throwOnError()
+      this.supabase.from('recipes').delete().eq('id', id).throwOnError(),
     ).pipe(map(() => undefined));
   }
 
@@ -64,11 +73,15 @@ export class RecipeApiService extends RecipeService {
     return from(
       this.supabase
         .from('recipes')
-        .update({ title: recipe.title, ingredients: recipe.ingredients, instructions: recipe.instructions })
+        .update({
+          title: recipe.title,
+          ingredients: recipe.ingredients,
+          instructions: recipe.instructions,
+        })
         .eq('id', id)
         .select()
         .single()
-        .throwOnError()
+        .throwOnError(),
     ).pipe(map(({ data }) => toRecipe(data as RecipeRow)));
   }
 }
