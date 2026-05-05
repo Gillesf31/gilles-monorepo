@@ -24,7 +24,7 @@
           cdkDragHandle
           type="button"
           class="mt-0.5 grid h-8 w-8 shrink-0 cursor-grab place-items-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 active:cursor-grabbing dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-          [attr.aria-label]="'Déplacer ' + ingredient"
+          [attr.aria-label]="'Déplacer ' + formatIngredient(ingredient)"
         >
           <span class="text-lg leading-none">≡</span>
         </button>
@@ -44,7 +44,8 @@
         [class.dark:text-zinc-600]="isChecked(i)"
         [class.text-zinc-700]="!isChecked(i)"
         [class.dark:text-zinc-300]="!isChecked(i)"
-      >{{ ingredient }}</label>
+        >{{ formatIngredient(ingredient) }}</label
+      >
     </li>
   }
 </ul>

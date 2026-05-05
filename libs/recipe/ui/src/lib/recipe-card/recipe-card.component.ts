@@ -4,7 +4,11 @@ import {
   input,
   output,
 } from '@angular/core';
-import { Recipe } from '@gilles-monorepo/recipe-model';
+import {
+  formatRecipeIngredient,
+  Recipe,
+  type RecipeIngredient,
+} from '@gilles-monorepo/recipe-model';
 import { BtnComponent } from '../btn/btn.component';
 
 @Component({
@@ -19,4 +23,8 @@ export class RecipeCardComponent {
   readonly recipe = input.required<Recipe>();
   readonly deleted = output<void>();
   readonly selected = output<void>();
+
+  protected formatIngredient(ingredient: RecipeIngredient): string {
+    return formatRecipeIngredient(ingredient);
+  }
 }

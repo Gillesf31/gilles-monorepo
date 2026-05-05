@@ -29,7 +29,7 @@ export class BtnComponent {
       ghost:
         'rounded-full text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/50 font-medium transition-colors',
       remove:
-        'rounded-full p-2 text-zinc-400 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-30 dark:text-zinc-500 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 transition-colors',
+        'rounded-full p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-30 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 transition-colors',
     };
 
     const sizeClasses: Record<BtnSize, string> = {

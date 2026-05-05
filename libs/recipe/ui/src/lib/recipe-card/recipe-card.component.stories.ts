@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { Recipe } from '@gilles-monorepo/recipe-model';
+import {
+  normalizeRecipeIngredients,
+  Recipe,
+} from '@gilles-monorepo/recipe-model';
 import { RecipeCardComponent } from './recipe-card.component';
 
 const meta: Meta<RecipeCardComponent> = {
@@ -13,13 +16,13 @@ type Story = StoryObj<RecipeCardComponent>;
 const pastaRecipe = new Recipe(
   '1',
   'Pasta Carbonara',
-  [
+  normalizeRecipeIngredients([
     '200g spaghetti',
     '100g guanciale',
     '3 egg yolks',
     '50g Pecorino Romano',
     'Black pepper',
-  ],
+  ]),
   [
     'Cook spaghetti in salted boiling water until al dente.',
     'Fry guanciale in a pan over medium heat until crispy.',
@@ -41,7 +44,11 @@ export const FewIngredients: Story = {
     recipe: new Recipe(
       '2',
       'Classic French Omelette',
-      ['3 eggs', '1 tbsp butter', 'Salt and pepper'],
+      normalizeRecipeIngredients([
+        '3 eggs',
+        '1 tbsp butter',
+        'Salt and pepper',
+      ]),
       [
         'Beat eggs with salt and pepper.',
         'Melt butter in a pan over medium-high heat.',
@@ -57,7 +64,7 @@ export const ManyIngredients: Story = {
     recipe: new Recipe(
       '3',
       'Chicken Tikka Masala',
-      [
+      normalizeRecipeIngredients([
         '500g chicken breast',
         '200ml yogurt',
         '400ml tomato passata',
@@ -69,7 +76,7 @@ export const ManyIngredients: Story = {
         '1 tsp turmeric',
         '1 tsp paprika',
         'Fresh coriander',
-      ],
+      ]),
       [
         'Marinate chicken in yogurt and spices for at least 1 hour.',
         'Grill or bake chicken until cooked through.',
