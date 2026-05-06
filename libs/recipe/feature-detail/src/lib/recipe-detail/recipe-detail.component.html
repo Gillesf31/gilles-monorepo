@@ -29,24 +29,65 @@
     <main class="max-w-3xl mx-auto space-y-10 px-6 py-10">
 
       <section>
-        <div class="mb-3 flex items-center justify-between gap-3">
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 class="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-500">
             Ingrédients
             <span class="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">{{ r.ingredients.length }}</span>
           </h2>
-          @if (hasCustomIngredientOrder()) {
-            <button
-              type="button"
-              class="rounded-full px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-              (click)="resetIngredientOrder()"
-            >
-              Réinitialiser
-            </button>
-          }
+          <div class="flex flex-wrap items-center gap-2">
+            @if (canScaleIngredients()) {
+              <div
+                class="inline-flex rounded-full border border-zinc-200 bg-white p-1 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+                aria-label="Choisir un multiplicateur"
+              >
+                @for (preset of multiplierPresets; track preset) {
+                  <button
+                    type="button"
+                    class="rounded-full px-3 py-1 text-xs font-semibold transition-colors"
+                    [class.bg-emerald-600]="isMultiplierPresetActive(preset)"
+                    [class.text-white]="isMultiplierPresetActive(preset)"
+                    [class.text-zinc-500]="!isMultiplierPresetActive(preset)"
+                    [class.hover:bg-zinc-100]="!isMultiplierPresetActive(preset)"
+                    [class.hover:text-zinc-900]="!isMultiplierPresetActive(preset)"
+                    [class.dark:text-zinc-400]="!isMultiplierPresetActive(preset)"
+                    [class.dark:hover:bg-zinc-800]="!isMultiplierPresetActive(preset)"
+                    [class.dark:hover:text-zinc-100]="!isMultiplierPresetActive(preset)"
+                    (click)="setMultiplier(preset)"
+                  >
+                    x{{ preset }}
+                  </button>
+                }
+              </div>
+              <label
+                for="ingredient-multiplier"
+                class="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-500 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+              >
+                <span>Multiplicateur</span>
+                <input
+                  id="ingredient-multiplier"
+                  type="number"
+                  min="0.25"
+                  step="0.25"
+                  [value]="multiplier()"
+                  (change)="updateMultiplier($event)"
+                  class="w-16 bg-transparent text-right font-semibold text-zinc-900 outline-none [appearance:textfield] dark:text-zinc-100"
+                />
+              </label>
+            }
+            @if (hasCustomIngredientOrder()) {
+              <button
+                type="button"
+                class="rounded-full px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                (click)="resetIngredientOrder()"
+              >
+                Réinitialiser
+              </button>
+            }
+          </div>
         </div>
         <gilles-monorepo-ingredient-list
           [resetDelay]="1000"
-          [ingredients]="sessionIngredients()"
+          [ingredients]="scaledIngredients()"
           [reorderable]="true"
           (ingredientMoved)="moveIngredient($event)"
         />

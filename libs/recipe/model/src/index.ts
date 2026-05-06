@@ -1,10 +1,13 @@
 export {
   formatRecipeIngredient,
+  hasRecipeIngredientUnits,
   normalizeRecipeIngredient,
   normalizeRecipeIngredients,
-  Recipe,
-} from './lib/recipe.model';
+  scaleRecipeIngredient,
+  scaleRecipeIngredients,
+} from './lib/recipe-ingredient.utils';
+export { Recipe } from './lib/recipe.model';
 export type {
   RecipeIngredient,
   RecipeIngredientValue,
-} from './lib/recipe.model';
+} from './lib/recipe-ingredient.model';

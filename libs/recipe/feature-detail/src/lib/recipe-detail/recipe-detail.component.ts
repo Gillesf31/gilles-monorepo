@@ -10,7 +10,12 @@ import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RecipeService } from '@gilles-monorepo/recipe-data-access';
-import { Recipe, type RecipeIngredient } from '@gilles-monorepo/recipe-model';
+import {
+  hasRecipeIngredientUnits,
+  Recipe,
+  scaleRecipeIngredients,
+  type RecipeIngredient,
+} from '@gilles-monorepo/recipe-model';
 import {
   BtnComponent,
   ConfirmModalComponent,
@@ -64,6 +69,16 @@ export class RecipeDetailComponent {
   protected readonly isLoading = computed(() => this.recipeState().isLoading);
   protected readonly recipe = computed(() => this.recipeState().recipe);
   protected readonly sessionIngredients = signal<RecipeIngredient[]>([]);
+  protected readonly multiplier = signal(1);
+  protected readonly multiplierPresets = [1, 2, 3] as const;
+  protected readonly canScaleIngredients = computed(() =>
+    hasRecipeIngredientUnits(this.sessionIngredients()),
+  );
+  protected readonly scaledIngredients = computed(() =>
+    this.canScaleIngredients()
+      ? scaleRecipeIngredients(this.sessionIngredients(), this.multiplier())
+      : this.sessionIngredients(),
+  );
   protected readonly hasCustomIngredientOrder = computed(() => {
     const recipe = this.recipe();
     const ingredients = this.sessionIngredients();
@@ -81,6 +96,9 @@ export class RecipeDetailComponent {
   private readonly syncIngredients = effect(() => {
     const recipe = this.recipe();
     this.sessionIngredients.set(recipe ? [...recipe.ingredients] : []);
+    if (!recipe || !hasRecipeIngredientUnits(recipe.ingredients)) {
+      this.multiplier.set(1);
+    }
   });
 
   protected openDeleteModal(): void {
@@ -113,5 +131,24 @@ export class RecipeDetailComponent {
   protected resetIngredientOrder(): void {
     const recipe = this.recipe();
     this.sessionIngredients.set(recipe ? [...recipe.ingredients] : []);
+  }
+
+  protected setMultiplier(multiplier: number): void {
+    this.multiplier.set(this.normalizeMultiplier(multiplier));
+  }
+
+  protected updateMultiplier(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const multiplier = this.normalizeMultiplier(Number(input.value));
+    this.multiplier.set(multiplier);
+    input.value = String(multiplier);
+  }
+
+  protected isMultiplierPresetActive(preset: number): boolean {
+    return this.multiplier() === preset;
+  }
+
+  private normalizeMultiplier(multiplier: number): number {
+    return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1;
   }
 }
