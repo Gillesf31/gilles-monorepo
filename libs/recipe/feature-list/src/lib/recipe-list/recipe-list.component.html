@@ -1,23 +1,67 @@
-<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.14),transparent_34rem),linear-gradient(180deg,#fafafa_0%,#f4f4f5_100%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.18),transparent_34rem),linear-gradient(180deg,#09090b_0%,#18181b_100%)]">
-  <header class="border-b border-zinc-200/80 bg-white/75 px-6 py-8 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70">
-    <div class="max-w-6xl mx-auto flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+<div
+  class="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.14),transparent_34rem),linear-gradient(180deg,#fafafa_0%,#f4f4f5_100%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.18),transparent_34rem),linear-gradient(180deg,#09090b_0%,#18181b_100%)]"
+>
+  <header
+    class="border-b border-zinc-200/80 bg-white/75 px-6 py-8 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70"
+  >
+    <div
+      class="max-w-6xl mx-auto flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+    >
       <div>
-        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 dark:text-emerald-300">Carnet de cuisine</p>
-        <h1 class="text-4xl font-black text-zinc-950 dark:text-zinc-50 sm:text-5xl">Mes recettes</h1>
+        <p
+          class="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700 dark:text-emerald-300"
+        >
+          Carnet de cuisine
+        </p>
+        <h1
+          class="text-4xl font-black text-zinc-950 dark:text-zinc-50 sm:text-5xl"
+        >
+          Mes recettes
+        </h1>
         @if (!isLoading()) {
-          <p class="mt-3 max-w-xl text-sm leading-6 text-zinc-600 dark:text-zinc-400">{{ recipes()!.length === 0 ? 'Aucune' : recipes()!.length === 1 ? 'Une' : recipes()!.length }} {{ recipes()!.length <= 1 ? 'recette' : 'recettes' }} dans votre collection</p>
+          <p
+            class="mt-3 max-w-xl text-sm leading-6 text-zinc-600 dark:text-zinc-400"
+          >
+            {{
+              recipes()!.length === 0
+                ? 'Aucune'
+                : recipes()!.length === 1
+                  ? 'Une'
+                  : recipes()!.length
+            }}
+            {{ recipes()!.length <= 1 ? 'recette' : 'recettes' }} dans votre
+            collection
+          </p>
         }
       </div>
-      <a
-        routerLink="/add"
-        class="self-start rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/10 transition-colors hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300 sm:self-auto"
-      >Ajouter une recette</a>
+      <div class="flex flex-wrap gap-2 self-start sm:self-auto">
+        <a
+          routerLink="/courses"
+          class="rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          >Liste de courses</a
+        >
+        <a
+          routerLink="/add"
+          class="rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/10 transition-colors hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300"
+          >Ajouter une recette</a
+        >
+      </div>
     </div>
 
     <div class="max-w-6xl mx-auto mt-7">
       <div class="relative">
-        <svg class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400 pointer-events-none dark:text-zinc-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        <svg
+          class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400 pointer-events-none dark:text-zinc-500"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input
           type="search"
@@ -36,23 +80,44 @@
     } @else if (filteredRecipes().length > 0) {
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         @for (recipe of filteredRecipes(); track recipe.id) {
-          <gilles-monorepo-recipe-card [recipe]="recipe" (deleted)="openDeleteModal(recipe)" (selected)="navigateToDetail(recipe)" />
+          <gilles-monorepo-recipe-card
+            [recipe]="recipe"
+            (deleted)="openDeleteModal(recipe)"
+            (selected)="navigateToDetail(recipe)"
+          />
         }
       </div>
     } @else if (searchQuery()) {
       <div class="text-center py-16">
-        <p class="text-lg text-zinc-500 dark:text-zinc-500">Aucune recette ne correspond à <span class="font-medium text-zinc-800 dark:text-zinc-300">"{{ searchQuery() }}"</span></p>
-        <button gillesMonorepoBtn variant="ghost" (click)="searchQuery.set('')" class="mt-3">Effacer la recherche</button>
+        <p class="text-lg text-zinc-500 dark:text-zinc-500">
+          Aucune recette ne correspond à
+          <span class="font-medium text-zinc-800 dark:text-zinc-300"
+            >"{{ searchQuery() }}"</span
+          >
+        </p>
+        <button
+          gillesMonorepoBtn
+          variant="ghost"
+          (click)="searchQuery.set('')"
+          class="mt-3"
+        >
+          Effacer la recherche
+        </button>
       </div>
     } @else {
       <div class="text-center py-16">
         <p class="mb-4 text-5xl">🍽️</p>
-        <p class="mb-2 text-xl font-semibold text-zinc-800 dark:text-zinc-200">Aucune recette pour l'instant</p>
-        <p class="mb-6 text-zinc-500 dark:text-zinc-500">Commencez par ajouter votre première recette.</p>
+        <p class="mb-2 text-xl font-semibold text-zinc-800 dark:text-zinc-200">
+          Aucune recette pour l'instant
+        </p>
+        <p class="mb-6 text-zinc-500 dark:text-zinc-500">
+          Commencez par ajouter votre première recette.
+        </p>
         <a
           routerLink="/add"
           class="inline-block rounded-full bg-zinc-950 px-6 py-3 font-semibold text-white transition-colors hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300"
-        >Ajouter une recette</a>
+          >Ajouter une recette</a
+        >
       </div>
     }
   </main>
@@ -61,7 +126,11 @@
 @if (recipeToDelete()) {
   <gilles-monorepo-confirm-modal
     title="Supprimer la recette"
-    [message]="'Voulez-vous vraiment supprimer «\u00a0' + recipeToDelete()!.title + '\u00a0» ? Cette action est irréversible.'"
+    [message]="
+      'Voulez-vous vraiment supprimer «\u00a0' +
+      recipeToDelete()!.title +
+      '\u00a0» ? Cette action est irréversible.'
+    "
     confirmLabel="Supprimer"
     (confirmed)="confirmDelete()"
     (cancelled)="cancelDelete()"

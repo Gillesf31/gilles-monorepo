@@ -1,0 +1,269 @@
+<div
+  class="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.12),transparent_32rem),linear-gradient(180deg,#fafafa_0%,#f4f4f5_100%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_32rem),linear-gradient(180deg,#09090b_0%,#18181b_100%)]"
+>
+  <header
+    class="border-b border-zinc-200/80 bg-white/75 px-6 py-7 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70"
+  >
+    <div
+      class="max-w-6xl mx-auto flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+    >
+      <div class="flex items-start gap-4">
+        <a
+          routerLink="/"
+          class="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-500 shadow-sm transition-colors hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+          aria-label="Retour à la liste"
+          >←</a
+        >
+        <div>
+          <p
+            class="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-sky-700 dark:text-sky-300"
+          >
+            Courses
+          </p>
+          <h1
+            class="text-4xl font-black text-zinc-950 dark:text-zinc-50 sm:text-5xl"
+          >
+            Liste de courses
+          </h1>
+          <p
+            class="mt-3 max-w-xl text-sm leading-6 text-zinc-600 dark:text-zinc-400"
+          >
+            {{ selectedCountLabel() }}
+          </p>
+        </div>
+      </div>
+      @if (!isLoading() && recipes()?.length) {
+        <div class="flex flex-wrap gap-2">
+          <button
+            gillesMonorepoBtn
+            variant="ghost"
+            (click)="clearSelectedRecipes()"
+          >
+            Vider
+          </button>
+          <button gillesMonorepoBtn (click)="selectAllRecipes()">
+            Tout sélectionner
+          </button>
+        </div>
+      }
+    </div>
+  </header>
+
+  <main
+    class="max-w-6xl mx-auto grid gap-8 px-6 py-10 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]"
+  >
+    @if (isLoading()) {
+      <div class="lg:col-span-2">
+        <gilles-monorepo-loader />
+      </div>
+    } @else if (recipes()?.length === 0) {
+      <section class="lg:col-span-2 py-16 text-center">
+        <p class="mb-2 text-xl font-semibold text-zinc-800 dark:text-zinc-200">
+          Aucune recette pour créer une liste
+        </p>
+        <p class="mb-6 text-zinc-500 dark:text-zinc-500">
+          Ajoutez une recette avant de préparer vos courses.
+        </p>
+        <a routerLink="/add" gillesMonorepoBtn>Ajouter une recette</a>
+      </section>
+    } @else {
+      <section>
+        <h2
+          class="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-500"
+        >
+          Recettes
+        </h2>
+        <div class="space-y-3">
+          @for (recipe of recipes(); track recipe.id) {
+            <div
+              class="block rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-sky-200 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-sky-900"
+            >
+              <div class="flex items-start gap-3">
+                <input
+                  [id]="'shopping-recipe-' + recipe.id"
+                  type="checkbox"
+                  class="mt-1 h-5 w-5 rounded border-zinc-300 text-sky-600 focus:ring-sky-500 dark:border-zinc-700 dark:bg-zinc-950"
+                  [checked]="isRecipeSelected(recipe)"
+                  (change)="toggleRecipe(recipe, $event)"
+                />
+                <label
+                  [for]="'shopping-recipe-' + recipe.id"
+                  class="min-w-0 flex-1 cursor-pointer"
+                >
+                  <span
+                    class="block font-semibold text-zinc-950 dark:text-zinc-50"
+                    >{{ recipe.title }}</span
+                  >
+                  <span
+                    class="mt-1 block text-sm text-zinc-500 dark:text-zinc-500"
+                    >{{ recipe.ingredients.length }} ingrédients</span
+                  >
+                </label>
+              </div>
+              <div class="mt-4 flex items-center justify-between gap-3">
+                <span
+                  class="text-xs font-medium uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-600"
+                  >Multiplicateur</span
+                >
+                <div
+                  class="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-800 dark:bg-zinc-950"
+                >
+                  <button
+                    type="button"
+                    class="grid h-8 w-8 place-items-center rounded-full text-zinc-500 transition-colors hover:bg-white hover:text-zinc-950 disabled:opacity-40 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+                    [disabled]="!isRecipeSelected(recipe)"
+                    [attr.aria-label]="
+                      'Réduire la quantité pour ' + recipe.title
+                    "
+                    (click)="decreaseMultiplier(recipe)"
+                  >
+                    &minus;
+                  </button>
+                  <input
+                    type="number"
+                    min="0.25"
+                    [step]="multiplierStep"
+                    [disabled]="!isRecipeSelected(recipe)"
+                    [value]="multiplierFor(recipe)"
+                    (input)="updateMultiplier(recipe, $event)"
+                    class="h-8 w-16 bg-transparent text-center text-sm font-semibold text-zinc-900 outline-none transition disabled:opacity-50 dark:text-zinc-100"
+                  />
+                  <button
+                    type="button"
+                    class="grid h-8 w-8 place-items-center rounded-full text-zinc-500 transition-colors hover:bg-white hover:text-zinc-950 disabled:opacity-40 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+                    [disabled]="!isRecipeSelected(recipe)"
+                    [attr.aria-label]="
+                      'Augmenter la quantité pour ' + recipe.title
+                    "
+                    (click)="increaseMultiplier(recipe)"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section>
+        <div
+          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <h2
+            class="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500 dark:text-zinc-500"
+          >
+            Courses
+            @if (allShoppingListItems().length) {
+              <span
+                class="ml-2 rounded-full bg-sky-100 px-2 py-0.5 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
+                >{{ allShoppingListItems().length }}</span
+              >
+            }
+          </h2>
+          @if (checkedCount() > 0) {
+            <button
+              type="button"
+              class="self-start rounded-full px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 sm:self-auto"
+              (click)="clearCheckedItems()"
+            >
+              Réinitialiser les cases
+            </button>
+          }
+        </div>
+
+        <form
+          class="mb-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+          (submit)="
+            addCustomItem(customItemName, customItemQuantity, customItemUnit);
+            $event.preventDefault()
+          "
+        >
+          <h3 class="text-sm font-semibold text-zinc-950 dark:text-zinc-50">
+            Ajouter un article
+          </h3>
+          <div
+            class="mt-3 grid gap-2 sm:grid-cols-[5rem_7rem_minmax(0,1fr)_auto]"
+          >
+            <input
+              #customItemQuantity
+              type="text"
+              inputmode="decimal"
+              placeholder="Qté"
+              class="min-w-0 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder-zinc-600 dark:focus:border-sky-500 dark:focus:ring-sky-950"
+            />
+            <input
+              #customItemUnit
+              type="text"
+              placeholder="Unité"
+              class="min-w-0 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder-zinc-600 dark:focus:border-sky-500 dark:focus:ring-sky-950"
+            />
+            <input
+              #customItemName
+              type="text"
+              placeholder="Article"
+              class="min-w-0 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder-zinc-600 dark:focus:border-sky-500 dark:focus:ring-sky-950"
+            />
+            <button gillesMonorepoBtn type="submit">Ajouter</button>
+          </div>
+        </form>
+
+        @if (allShoppingListItems().length > 0) {
+          <div class="space-y-2">
+            @for (item of allShoppingListItems(); track item.id) {
+              <div
+                class="flex items-start gap-3 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+              >
+                <input
+                  [id]="'shopping-item-' + item.id"
+                  type="checkbox"
+                  class="mt-1 h-5 w-5 rounded border-zinc-300 text-sky-600 focus:ring-sky-500 dark:border-zinc-700 dark:bg-zinc-950"
+                  [checked]="isItemChecked(item)"
+                  (change)="toggleItem(item, $event)"
+                />
+                <label
+                  [for]="'shopping-item-' + item.id"
+                  class="min-w-0 flex-1 cursor-pointer"
+                >
+                  <span
+                    class="block text-lg font-semibold leading-6 text-zinc-950 dark:text-zinc-50"
+                    [class.line-through]="isItemChecked(item)"
+                    [class.text-zinc-400]="isItemChecked(item)"
+                    [class.dark:text-zinc-600]="isItemChecked(item)"
+                  >
+                    {{ formatItem(item) }}
+                  </span>
+                  <span
+                    class="mt-1 block text-sm text-zinc-500 dark:text-zinc-500"
+                    >{{ recipeSourceLabel(item) }}</span
+                  >
+                </label>
+                @if (isCustomItem(item)) {
+                  <button
+                    type="button"
+                    class="grid h-8 w-8 shrink-0 place-items-center rounded-full text-zinc-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950 dark:hover:text-rose-300"
+                    [attr.aria-label]="'Retirer ' + formatItem(item)"
+                    (click)="removeCustomItem(item)"
+                  >
+                    &times;
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div
+            class="rounded-2xl border border-dashed border-zinc-300 bg-white/70 px-6 py-14 text-center dark:border-zinc-800 dark:bg-zinc-900/60"
+          >
+            <p class="text-lg font-semibold text-zinc-800 dark:text-zinc-200">
+              Sélectionnez une ou plusieurs recettes
+            </p>
+            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-500">
+              Ou ajoutez directement un article à la liste.
+            </p>
+          </div>
+        }
+      </section>
+    }
+  </main>
+</div>

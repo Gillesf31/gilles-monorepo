@@ -1,8 +1,5 @@
 import { BehaviorSubject, Observable, map, of } from 'rxjs';
-import {
-  normalizeRecipeIngredients,
-  Recipe,
-} from '@gilles-monorepo/recipe-model';
+import { Recipe } from '@gilles-monorepo/recipe-model';
 import { NewRecipe, RecipeService } from './recipe.service';
 
 // ─── Dev scenario ────────────────────────────────────────────────────────────
@@ -17,13 +14,13 @@ const SCENARIOS = {
     new Recipe(
       '1',
       'Pasta Carbonara',
-      normalizeRecipeIngredients([
-        '200g de spaghetti',
-        '100g de guanciale',
-        "3 jaunes d'œuf",
-        '50g de Pecorino Romano',
-        'Poivre noir',
-      ]),
+      [
+        { quantity: '200', unit: 'g', name: 'spaghetti' },
+        { quantity: '100', unit: 'g', name: 'guanciale' },
+        { quantity: '3', unit: '', name: "jaunes d'œuf" },
+        { quantity: '50', unit: 'g', name: 'Pecorino Romano' },
+        { quantity: '', unit: '', name: 'Poivre noir' },
+      ],
       [
         "Faire cuire les spaghetti dans de l'eau bouillante salée jusqu'à ce qu'ils soient al dente.",
         "Faire revenir le guanciale à feu moyen jusqu'à ce qu'il soit croustillant.",
@@ -40,12 +37,12 @@ const SCENARIOS = {
       '1',
       'Pasta Carbonara',
       [
-        '200g de spaghetti',
-        '100g de guanciale',
-        "3 jaunes d'œuf",
-        '50g de Pecorino Romano',
-        'Poivre noir',
-      ].map((ingredient) => ({ name: ingredient, quantity: '', unit: '' })),
+        { quantity: '200', unit: 'g', name: 'spaghetti' },
+        { quantity: '100', unit: 'g', name: 'guanciale' },
+        { quantity: '3', unit: '', name: "jaunes d'œuf" },
+        { quantity: '50', unit: 'g', name: 'Pecorino Romano' },
+        { quantity: '', unit: '', name: 'Poivre noir' },
+      ],
       [
         "Faire cuire les spaghetti dans de l'eau bouillante salée jusqu'à ce qu'ils soient al dente.",
         "Faire revenir le guanciale à feu moyen jusqu'à ce qu'il soit croustillant.",
@@ -59,18 +56,18 @@ const SCENARIOS = {
       '2',
       'Poulet Tikka Masala',
       [
-        '500g de blanc de poulet',
-        '200ml de yaourt',
-        '400ml de coulis de tomates',
-        '200ml de crème liquide',
-        '1 oignon',
-        "3 gousses d'ail",
-        '1 c. à café de garam masala',
-        '1 c. à café de cumin',
-        '1 c. à café de curcuma',
-        '1 c. à café de paprika',
-        'Coriandre fraîche',
-      ].map((ingredient) => ({ name: ingredient, quantity: '', unit: '' })),
+        { quantity: '500', unit: 'g', name: 'blanc de poulet' },
+        { quantity: '200', unit: 'ml', name: 'yaourt' },
+        { quantity: '400', unit: 'ml', name: 'coulis de tomates' },
+        { quantity: '200', unit: 'ml', name: 'crème liquide' },
+        { quantity: '1', unit: '', name: 'oignon' },
+        { quantity: '3', unit: '', name: "gousses d'ail" },
+        { quantity: '1', unit: 'c. à café', name: 'garam masala' },
+        { quantity: '1', unit: 'c. à café', name: 'cumin' },
+        { quantity: '1', unit: 'c. à café', name: 'curcuma' },
+        { quantity: '1', unit: 'c. à café', name: 'paprika' },
+        { quantity: '', unit: '', name: 'Coriandre fraîche' },
+      ],
       [
         'Faire mariner le poulet dans le yaourt et les épices pendant au moins 1 heure.',
         "Griller ou cuire le poulet au four à 200°C jusqu'à ce qu'il soit cuit.",
@@ -85,13 +82,13 @@ const SCENARIOS = {
       '3',
       "Toast à l'avocat",
       [
-        '2 tranches de pain au levain',
-        '1 avocat mûr',
-        '1 citron',
-        'Flocons de piment',
-        'Sel et poivre',
-        '2 œufs (facultatif)',
-      ].map((ingredient) => ({ name: ingredient, quantity: '', unit: '' })),
+        { quantity: '2', unit: 'tranches', name: 'pain au levain' },
+        { quantity: '1', unit: '', name: 'avocat mûr' },
+        { quantity: '1', unit: '', name: 'citron' },
+        { quantity: '', unit: '', name: 'Flocons de piment' },
+        { quantity: '', unit: '', name: 'Sel et poivre' },
+        { quantity: '2', unit: '', name: 'œufs (facultatif)' },
+      ],
       [
         "Faire griller les tranches de pain jusqu'à ce qu'elles soient dorées et croustillantes.",
         "Couper l'avocat en deux, retirer le noyau et récupérer la chair dans un bol.",
@@ -104,12 +101,12 @@ const SCENARIOS = {
       '4',
       'Omelette française',
       [
-        '3 œufs',
-        '1 c. à soupe de beurre',
-        'Sel et poivre',
-        'Ciboulette fraîche',
-        'Gruyère (facultatif)',
-      ].map((ingredient) => ({ name: ingredient, quantity: '', unit: '' })),
+        { quantity: '3', unit: '', name: 'œufs' },
+        { quantity: '1', unit: 'c. à soupe', name: 'beurre' },
+        { quantity: '', unit: '', name: 'Sel et poivre' },
+        { quantity: '', unit: '', name: 'Ciboulette fraîche' },
+        { quantity: '', unit: '', name: 'Gruyère (facultatif)' },
+      ],
       [
         "Casser les œufs dans un bol, assaisonner de sel et de poivre, et battre jusqu'à obtenir un mélange lisse.",
         'Faire fondre le beurre dans une poêle antiadhésive à feu moyen-vif.',

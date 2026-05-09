@@ -1,298 +1,176 @@
-# Nx Angular Repository
+# Recipe
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Angular recipe manager built in an Nx workspace.
 
-✨ A repository showcasing key [Nx](https://nx.dev) features for Angular monorepos ✨
-<!-- BEGIN: nx-cloud -->
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/setup/connect-workspace/guide). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
-<!-- END: nx-cloud -->
-## 📦 Project Overview
+The app stores recipes in Supabase in production and uses an in-memory recipe service during local development. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
 
-This repository demonstrates a production-ready Angular monorepo with:
+## Requirements
 
-- **2 Applications**
+- Node.js compatible with Angular 21
+- pnpm
+- Supabase project URL and anon key
 
-  - `shop` - Angular e-commerce application with product listings and detail views
-  - `api` - Backend API with Docker support serving product data
-
-- **6 Libraries**
-
-  - `@org/feature-products` - Product listing feature (Angular)
-  - `@org/feature-product-detail` - Product detail feature (Angular)
-  - `@org/data` - Data access layer for shop features
-  - `@org/shared-ui` - Shared UI components
-  - `@org/models` - Shared data models
-  - `@org/products` - API product service library
-
-- **E2E Testing**
-  - `shop-e2e` - Playwright tests for the shop application
-
-## ⚙️ Configuration
-
-Before running the app, set up your environment files:
+This repository enforces pnpm through `only-allow`. Run Nx through pnpm so commands use the workspace-local Nx version:
 
 ```bash
-# Copy the templates
+pnpm nx <command>
+```
+
+## Setup
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Create local environment files:
+
+```bash
 cp apps/recipe/src/environments/environment.template.ts apps/recipe/src/environments/environment.ts
 cp apps/recipe/src/environments/environment.prod.template.ts apps/recipe/src/environments/environment.prod.ts
 ```
 
-Then open each file and fill in your [Supabase](https://supabase.com) project credentials (Project URL and anon key from **Project Settings > API**).
+Fill both files with the Supabase project URL and anon key from Supabase Project Settings > API.
 
-> These files are gitignored and will never be committed.
+Environment files are gitignored; only the `*.template.ts` files are committed.
 
-## 🚀 Quick Start
+## Development
 
-```bash
-# Clone the repository
-git clone <your-fork-url>
-cd <your-repository-name>
-
-# Install dependencies
-# (Note: You may need --legacy-peer-deps)
-npm install
-
-# Serve the Angular shop application (this will simultaneously serve the API backend)
-npx nx serve shop
-
-# ...or you can serve the API separately
-npx nx serve api
-
-# Build all projects
-npx nx run-many -t build
-
-# Run tests
-npx nx run-many -t test
-
-# Lint all projects
-npx nx run-many -t lint
-
-# Run e2e tests
-npx nx e2e shop-e2e
-
-# Run tasks in parallel
-
-npx nx run-many -t lint test build e2e --parallel=3
-
-# Visualize the project graph
-npx nx graph
-```
-
-## ⭐ Featured Nx Capabilities
-
-This repository showcases several powerful Nx features:
-
-### 1. 🔒 Module Boundaries
-
-Enforces architectural constraints using tags. Each project has specific dependencies it can use:
-
-- `scope:shared` - Can be used by all projects
-- `scope:shop` - Shop-specific libraries
-- `scope:api` - API-specific libraries
-- `type:feature` - Feature libraries
-- `type:data` - Data access libraries
-- `type:ui` - UI component libraries
-
-**Try it out:**
+Serve the recipe app:
 
 ```bash
-# See the current project graph and boundaries
-npx nx graph
-
-# View a specific project's details
-npx nx show project shop --web
+pnpm nx serve recipe
 ```
 
-[Learn more about module boundaries →](https://nx.dev/features/enforce-module-boundaries)
-
-### 2. 🐳 Docker Integration
-
-The API project includes Docker support with automated targets and release management:
+Build the production app:
 
 ```bash
-# Build Docker image
-npx nx docker:build api
-
-# Run Docker container
-npx nx docker:run api
-
-# Release with automatic Docker image versioning
-npx nx release
+pnpm nx build recipe --configuration=production
 ```
 
-**Nx Release for Docker:** The repository is configured to use Nx Release for managing Docker image versioning and publishing. When running `nx release`, Docker images for the API project are automatically versioned and published based on the release configuration in `nx.json`. This integrates seamlessly with semantic versioning and changelog generation.
-
-[Learn more about Docker integration →](https://nx.dev/recipes/nx-release/release-docker-images)
-
-### 3. 🎭 Playwright E2E Testing
-
-End-to-end testing with Playwright is pre-configured:
+Run the repo validation targets:
 
 ```bash
-# Run e2e tests
-npx nx e2e shop-e2e
-
-# Run e2e tests in CI mode
-npx nx e2e-ci shop-e2e
+pnpm nx run-many -t lint test typecheck build --parallel=3
 ```
 
-[Learn more about E2E testing →](https://nx.dev/technologies/test-tools/playwright/introduction#e2e-testing)
-
-### 4. ⚡ Vitest for Unit Testing
-
-Fast unit testing with Vite for Angular libraries:
+Run tests only:
 
 ```bash
-# Test a specific library
-npx nx test data
-
-# Test all projects
-npx nx run-many -t test
+pnpm nx run-many -t test --parallel=3
 ```
 
-[Learn more about Vite testing →](https://nx.dev/recipes/vite)
-
-### 5. 🔧 Self-Healing CI
-
-The CI pipeline includes `nx fix-ci` which automatically identifies and suggests fixes for common issues:
+Run e2e tests:
 
 ```bash
-# In CI, this command provides automated fixes
-npx nx fix-ci
+pnpm nx e2e recipe-e2e
 ```
 
-This feature helps maintain a healthy CI pipeline by automatically detecting and suggesting solutions for:
-
-- Missing dependencies
-- Incorrect task configurations
-- Cache invalidation issues
-- Common build failures
-
-[Learn more about self-healing CI →](https://nx.dev/ci/features/self-healing-ci)
-
-## 📁 Project Structure
-
-```
-├── apps/
-│   ├── shop/           [scope:shop]    - Angular e-commerce app
-│   ├── shop-e2e/                       - E2E tests for shop
-│   └── api/            [scope:api]     - Backend API with Docker
-├── libs/
-│   ├── shop/
-│   │   ├── feature-products/        [scope:shop,type:feature] - Product listing
-│   │   ├── feature-product-detail/  [scope:shop,type:feature] - Product details
-│   │   ├── data/                    [scope:shop,type:data]    - Data access
-│   │   └── shared-ui/               [scope:shop,type:ui]      - UI components
-│   ├── api/
-│   │   └── products/    [scope:api]    - Product service
-│   └── shared/
-│       └── models/      [scope:shared,type:data] - Shared models
-├── nx.json             - Nx configuration
-├── tsconfig.json       - TypeScript configuration
-└── eslint.config.mjs   - ESLint with module boundary rules
-```
-
-## 🏷️ Understanding Tags
-
-This repository uses tags to enforce module boundaries:
-
-| Project            | Tags                         | Can Import From              |
-| ------------------ | ---------------------------- | ---------------------------- |
-| `shop`             | `scope:shop`                 | `scope:shop`, `scope:shared` |
-| `api`              | `scope:api`                  | `scope:api`, `scope:shared`  |
-| `feature-products` | `scope:shop`, `type:feature` | `scope:shop`, `scope:shared` |
-| `data`             | `scope:shop`, `type:data`    | `scope:shared`               |
-| `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
-
-## 📚 Useful Commands
+Explore the project graph:
 
 ```bash
-# Project exploration
-npx nx graph                                    # Interactive dependency graph
-npx nx list                                     # List installed plugins
-npx nx show project shop --web                 # View project details
-
-# Development
-npx nx serve shop                              # Serve Angular app
-npx nx serve api                               # Serve backend API
-npx nx build shop                              # Build Angular app
-npx nx test data                               # Test a specific library
-npx nx lint feature-products                   # Lint a specific library
-
-# Running multiple tasks
-npx nx run-many -t build                       # Build all projects
-npx nx run-many -t test --parallel=3          # Test in parallel
-npx nx run-many -t lint test build            # Run multiple targets
-
-# Affected commands (great for CI)
-npx nx affected -t build                       # Build only affected projects
-npx nx affected -t test                        # Test only affected projects
-
-# Docker operations
-npx nx docker:build api                        # Build Docker image
-npx nx docker:run api                          # Run Docker container
+pnpm nx graph
 ```
 
-## 🎯 Adding New Features
-
-### Generate a new Angular application:
+Inspect a project's resolved targets:
 
 ```bash
-npx nx g @nx/angular:app my-app
+pnpm nx show project recipe --json
 ```
 
-### Generate a new Angular library:
+## Projects
+
+Applications:
+
+- `recipe` - Angular browser app in `apps/recipe`
+- `recipe-e2e` - Playwright e2e project in `apps/recipe-e2e`
+
+Recipe libraries:
+
+- `shell` - route-level composition, app providers, and feature routing
+- `feature-list` - recipe list screen
+- `feature-add` - add recipe screen
+- `feature-detail` - recipe detail screen
+- `feature-edit` - edit recipe screen
+- `app-version` - update notification behavior
+- `recipe-data-access` - recipe service contracts and Supabase/in-memory implementations
+- `recipe-model` - shared recipe types and pure ingredient helpers
+- `recipe-ui` - reusable recipe presentation components
+
+Shared libraries:
+
+- `supabase` - Supabase client provider token
+- `ui-theme` - theme service and toggle UI
+
+## Architecture
+
+Application projects stay thin. Keep bootstrap concerns in `apps/*`: app config, root routes, global metadata, assets, and environment wiring.
+
+Put behavior in libraries with Nx tags:
+
+- `type:shell` - route-level composition and providers
+- `type:feature` - user-facing feature behavior and smart components
+- `type:ui` - reusable presentation components
+- `type:data-access` - API clients, persistence, and repository-style services
+- `type:util` - generic helpers without feature ownership
+- `type:model` - shared types and pure model definitions
+
+Dependency direction is enforced by `@nx/enforce-module-boundaries`:
+
+- apps depend on shell libraries
+- shell libraries compose features, data access, utilities, and providers
+- feature libraries depend on UI, data access, util, and model libraries
+- UI libraries depend on UI, util, and model libraries
+- data-access libraries depend on data-access, util, and model libraries
+- model libraries depend only on model libraries
+
+When adding app-wide behavior, implement it in the appropriate library and provide it from the shell.
+
+## Useful Nx Commands
+
+List projects:
 
 ```bash
-npx nx g @nx/angular:lib my-lib
+pnpm nx show projects
 ```
 
-### Generate a new Angular component:
+Find projects with a target:
 
 ```bash
-npx nx g @nx/angular:component my-component --project=my-lib
+pnpm nx show projects --withTarget test
 ```
 
-### Generate a new API library:
+Run a target for one project:
 
 ```bash
-npx nx g @nx/node:lib my-api-lib
+pnpm nx run recipe-ui:test
 ```
 
-You can use `npx nx list` to see all available plugins and `npx nx list <plugin-name>` to see all generators for a specific plugin.
+Run targets for affected projects:
 
-## Nx Cloud
+```bash
+pnpm nx affected -t lint test typecheck build
+```
 
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+Show Nx help for a command before using unfamiliar flags:
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+pnpm nx run-many --help
+```
 
-## Install Nx Console
+## Deployment
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+The `recipe` app has a `deploy` target:
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+pnpm nx deploy recipe
+```
 
-## 🔗 Learn More
+It builds the production app, writes `version.json`, and syncs `dist/apps/recipe/browser/` to the configured remote host. Check `apps/recipe/project.json` before changing the deployment destination.
 
-- [Nx Documentation](https://nx.dev)
-- [Angular Monorepo Tutorial](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial)
-- [Module Boundaries](https://nx.dev/features/enforce-module-boundaries)
-- [Docker Integration](https://nx.dev/recipes/nx-release/release-docker-images)
-- [Playwright Testing](https://nx.dev/technologies/test-tools/playwright/introduction#e2e-testing)
-- [Vite with Angular](https://nx.dev/recipes/vite)
-- [Nx Cloud](https://nx.dev/ci/intro/why-nx-cloud)
-- [Releasing Packages](https://nx.dev/features/manage-releases)
+## Notes
 
-## 💬 Community
-
-Join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [X (Twitter)](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-- [Blog](https://nx.dev/blog)
+- Nx Cloud is configured through `nxCloudId` in `nx.json`.
+- There is currently no committed GitHub Actions workflow.
+- The root `package.json` does not currently define convenience scripts beyond `preinstall`; use `pnpm nx ...` directly.

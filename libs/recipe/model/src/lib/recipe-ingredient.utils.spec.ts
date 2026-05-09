@@ -23,25 +23,18 @@ describe('recipe ingredient scaling', () => {
 
   it('scales integer quantities', () => {
     expect(
-      scaleRecipeIngredient(
-        { quantity: '200', unit: 'g', name: 'farine' },
-        2,
-      ),
+      scaleRecipeIngredient({ quantity: '200', unit: 'g', name: 'farine' }, 2),
     ).toEqual({ quantity: '400', unit: 'g', name: 'farine' });
   });
 
   it('scales decimal quantities with dot and comma separators', () => {
     expect(
-      scaleRecipeIngredient(
-        { quantity: '1.25', unit: 'l', name: 'lait' },
-        2,
-      ).quantity,
+      scaleRecipeIngredient({ quantity: '1.25', unit: 'l', name: 'lait' }, 2)
+        .quantity,
     ).toBe('2.5');
     expect(
-      scaleRecipeIngredient(
-        { quantity: '1,25', unit: 'l', name: 'lait' },
-        2,
-      ).quantity,
+      scaleRecipeIngredient({ quantity: '1,25', unit: 'l', name: 'lait' }, 2)
+        .quantity,
     ).toBe('2,5');
   });
 
@@ -61,6 +54,27 @@ describe('recipe ingredient scaling', () => {
         1,
       ),
     ).toEqual({ quantity: '1/2', unit: 'tasse', name: 'sucre' });
+  });
+
+  it('leaves quantities unchanged with invalid multipliers', () => {
+    const ingredient: RecipeIngredient = {
+      quantity: '1/2',
+      unit: 'tasse',
+      name: 'sucre',
+    };
+
+    expect(scaleRecipeIngredient(ingredient, 0)).toBe(ingredient);
+    expect(scaleRecipeIngredient(ingredient, Number.NaN)).toBe(ingredient);
+  });
+
+  it('leaves fractions with a zero denominator unchanged', () => {
+    const ingredient: RecipeIngredient = {
+      quantity: '1/0',
+      unit: 'tasse',
+      name: 'sucre',
+    };
+
+    expect(scaleRecipeIngredient(ingredient, 2)).toBe(ingredient);
   });
 
   it('leaves free text, ranges, mixed quantities, and empty quantities unchanged', () => {
