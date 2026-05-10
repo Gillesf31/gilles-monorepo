@@ -68,11 +68,8 @@ describe(ShoppingListComponent.name, () => {
   it('renders a merged shopping list from selected recipes', () => {
     fixture.detectChanges();
 
-    const checkboxes = fixture.nativeElement.querySelectorAll(
-      'section:first-of-type input[type="checkbox"]',
-    );
-    checkboxes[0].click();
-    checkboxes[1].click();
+    fixture.nativeElement.querySelector('#shopping-recipe-pasta').click();
+    fixture.nativeElement.querySelector('#shopping-recipe-soup').click();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('300 g spaghetti');
