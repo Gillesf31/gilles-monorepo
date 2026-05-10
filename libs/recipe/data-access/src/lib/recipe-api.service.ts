@@ -6,7 +6,7 @@ import {
   type RecipeIngredientValue,
 } from '@gilles-monorepo/recipe-model';
 import { NewRecipe, RecipeService } from './recipe.service';
-import { SUPABASE_CLIENT } from '@gilles-monorepo/supabase';
+import { SUPABASE_CLIENT } from '@gilles-monorepo/util-supabase';
 
 interface RecipeRow {
   id: string;

@@ -1,8 +1,8 @@
 {
-  "name": "ui-theme",
+  "name": "util-supabase",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/shared/ui-theme/src",
-  "prefix": "gilles-monorepo",
+  "sourceRoot": "libs/shared/util-supabase/src",
+  "prefix": "lib",
   "projectType": "library",
   "tags": ["type:util", "scope:shared"],
   "targets": {

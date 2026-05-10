@@ -7,7 +7,9 @@ export class ThemeService {
 
   init(): void {
     const saved = localStorage.getItem(STORAGE_KEY);
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)',
+    ).matches;
     this.apply(saved ? saved === 'dark' : prefersDark);
   }
 

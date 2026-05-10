@@ -3,7 +3,7 @@ import type {
   ShoppingListItem,
   ShoppingListState,
 } from '@gilles-monorepo/recipe-model';
-import { SUPABASE_CLIENT } from '@gilles-monorepo/supabase';
+import { SUPABASE_CLIENT } from '@gilles-monorepo/util-supabase';
 import { from, map, Observable } from 'rxjs';
 import {
   EMPTY_SHOPPING_LIST_STATE,

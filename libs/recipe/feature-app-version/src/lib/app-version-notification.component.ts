@@ -34,7 +34,9 @@ import { AppVersionService } from './app-version.provider';
             <p class="text-sm font-semibold text-zinc-950 dark:text-zinc-100">
               Nouvelle version disponible
             </p>
-            <p class="mt-0.5 text-sm leading-5 text-zinc-600 dark:text-zinc-300">
+            <p
+              class="mt-0.5 text-sm leading-5 text-zinc-600 dark:text-zinc-300"
+            >
               Rechargez l'application pour utiliser la dernière version.
             </p>
             <div class="mt-3 flex items-center gap-2">

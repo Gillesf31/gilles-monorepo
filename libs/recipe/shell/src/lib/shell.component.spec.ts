@@ -2,8 +2,8 @@ import { signal } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { AppVersionService } from '@gilles-monorepo/app-version';
-import { ThemeService } from '@gilles-monorepo/ui-theme';
+import { AppVersionService } from '@gilles-monorepo/feature-app-version';
+import { ThemeService } from '@gilles-monorepo/feature-theme';
 import { ShellComponent } from './shell.component';
 
 describe(ShellComponent.name, () => {

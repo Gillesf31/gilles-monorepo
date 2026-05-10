@@ -33,5 +33,6 @@
   - `type:data-access`: API clients, persistence, and repository-style services.
   - `type:util`: generic helpers without feature ownership.
   - `type:model`: shared types and pure model definitions.
+- Library project names and folders should reflect their type tag. Prefer names such as `feature-*`, `*-ui`, `*-data-access`, `util-*`, and `*-model` so the project role is visible from both Nx metadata and the filesystem. When changing an existing library role or type naming, use Nx-aware move/rename flows first and then verify imports and tags with `pnpm nx show project <name> --json`.
 - Respect the dependency direction enforced by `@nx/enforce-module-boundaries`: apps depend on shell libraries; shell libraries compose feature/data/util libraries; features do not depend back on shells or apps.
 - When adding app-wide behavior, implement it in a feature or other appropriate library and provide it from the shell, not directly from the app.

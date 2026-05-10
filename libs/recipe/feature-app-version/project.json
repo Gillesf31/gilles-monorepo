@@ -1,10 +1,10 @@
 {
-  "name": "supabase",
+  "name": "feature-app-version",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/shared/supabase/src",
-  "prefix": "lib",
+  "sourceRoot": "libs/recipe/feature-app-version/src",
+  "prefix": "gilles-monorepo",
   "projectType": "library",
-  "tags": ["type:util", "scope:shared"],
+  "tags": ["scope:recipe", "type:feature"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

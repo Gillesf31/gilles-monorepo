@@ -1,6 +1,6 @@
 import { isDevMode } from '@angular/core';
 import { Route } from '@angular/router';
-import { provideAppVersionCheck } from '@gilles-monorepo/app-version';
+import { provideAppVersionCheck } from '@gilles-monorepo/feature-app-version';
 import {
   RecipeApiService,
   RecipeInMemoryService,
@@ -9,8 +9,8 @@ import {
   ShoppingListInMemoryService,
   ShoppingListService,
 } from '@gilles-monorepo/recipe-data-access';
-import { provideSupabaseClient } from '@gilles-monorepo/supabase';
-import { ThemeService } from '@gilles-monorepo/ui-theme';
+import { provideSupabaseClient } from '@gilles-monorepo/util-supabase';
+import { ThemeService } from '@gilles-monorepo/feature-theme';
 import { ShellComponent } from './shell.component';
 
 export function createShellRoutes(

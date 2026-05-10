@@ -1,10 +1,10 @@
 {
-  "name": "app-version",
+  "name": "feature-theme",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/recipe/app-version/src",
+  "sourceRoot": "libs/shared/feature-theme/src",
   "prefix": "gilles-monorepo",
   "projectType": "library",
-  "tags": ["scope:recipe", "type:feature"],
+  "tags": ["type:feature", "scope:shared"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

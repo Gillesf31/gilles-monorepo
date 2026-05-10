@@ -30,12 +30,18 @@
       "@gilles-monorepo/feature-edit": [
         "libs/recipe/feature-edit/src/index.ts"
       ],
-      "@gilles-monorepo/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
-      "@gilles-monorepo/supabase": ["libs/shared/supabase/src/index.ts"],
       "@gilles-monorepo/recipe-ui": ["libs/recipe/ui/src/index.ts"],
-      "@gilles-monorepo/app-version": ["libs/recipe/app-version/src/index.ts"],
       "@gilles-monorepo/feature-shopping-list": [
         "libs/recipe/feature-shopping-list/src/index.ts"
+      ],
+      "@gilles-monorepo/feature-theme": [
+        "libs/shared/feature-theme/src/index.ts"
+      ],
+      "@gilles-monorepo/util-supabase": [
+        "libs/shared/util-supabase/src/index.ts"
+      ],
+      "@gilles-monorepo/feature-app-version": [
+        "libs/recipe/feature-app-version/src/index.ts"
       ]
     }
   },

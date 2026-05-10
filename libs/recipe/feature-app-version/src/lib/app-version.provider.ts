@@ -49,9 +49,9 @@ export class AppVersionService {
       merge(
         of(null),
         fromEvent(document, 'visibilitychange').pipe(
-          filter(() => document.visibilityState === 'visible')
+          filter(() => document.visibilityState === 'visible'),
         ),
-        fromEvent(window, 'focus')
+        fromEvent(window, 'focus'),
       )
         .pipe(
           exhaustMap(() => this.fetchVersion()),
@@ -60,7 +60,7 @@ export class AppVersionService {
             this.zone.run(() => {
               this.applyVersion(version);
             });
-          })
+          }),
         )
         .subscribe();
     });
@@ -121,8 +121,14 @@ export class AppVersionService {
         },
       })
       .pipe(
-        map((appVersion) => appVersion.version ?? appVersion.commit ?? appVersion.builtAt ?? null),
-        catchError(() => EMPTY)
+        map(
+          (appVersion) =>
+            appVersion.version ??
+            appVersion.commit ??
+            appVersion.builtAt ??
+            null,
+        ),
+        catchError(() => EMPTY),
       );
   }
 

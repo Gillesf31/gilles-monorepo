@@ -93,15 +93,15 @@ Recipe libraries:
 - `feature-add` - add recipe screen
 - `feature-detail` - recipe detail screen
 - `feature-edit` - edit recipe screen
-- `app-version` - update notification behavior
+- `feature-app-version` - update notification behavior
 - `recipe-data-access` - recipe service contracts and Supabase/in-memory implementations
 - `recipe-model` - shared recipe types and pure ingredient helpers
 - `recipe-ui` - reusable recipe presentation components
 
 Shared libraries:
 
-- `supabase` - Supabase client provider token
-- `ui-theme` - theme service and toggle UI
+- `util-supabase` - Supabase client provider token
+- `feature-theme` - theme service and toggle UI
 
 ## Architecture
 
