@@ -16,10 +16,8 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { type RecipeIngredient } from '@gilles-monorepo/recipe-model';
-import {
-  BtnComponent,
-  IngredientEditorComponent,
-} from '@gilles-monorepo/recipe-ui';
+import { IngredientEditorComponent } from '@gilles-monorepo/recipe-ingredient-ui';
+import { BtnComponent } from '@gilles-monorepo/recipe-ui';
 import { map, switchMap } from 'rxjs';
 
 function hasIngredientName(
@@ -72,12 +70,14 @@ export class EditRecipeComponent {
       },
     ),
     instructions: new FormArray([this.createInstruction()]),
+    isWorkInProgress: new FormControl(false, { nonNullable: true }),
   });
 
   private readonly _ = effect(() => {
     const recipe = this.recipe();
     if (!recipe) return;
     this.form.controls.title.setValue(recipe.title);
+    this.form.controls.isWorkInProgress.setValue(recipe.isWorkInProgress);
     this.ingredients.setValue(
       recipe.ingredients.map((ingredient) => ({ ...ingredient })),
     );
@@ -136,6 +136,7 @@ export class EditRecipeComponent {
         }))
         .filter((ingredient) => ingredient.name),
       instructions: value.instructions.filter(Boolean),
+      isWorkInProgress: value.isWorkInProgress,
     };
 
     this.recipeService.updateRecipe(this.id(), recipe).subscribe(() => {

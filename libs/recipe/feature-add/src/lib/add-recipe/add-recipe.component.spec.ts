@@ -37,6 +37,7 @@ describe(AddRecipeComponent.name, () => {
         { name: '  Pommes de terre  ', quantity: ' 1 ', unit: ' kg ' },
       ],
       instructions: ['Cuire au four.'],
+      isWorkInProgress: true,
     });
 
     fixture.componentInstance.submit();
@@ -45,6 +46,7 @@ describe(AddRecipeComponent.name, () => {
       title: '  Gratin  ',
       ingredients: [{ name: 'Pommes de terre', quantity: '1', unit: 'kg' }],
       instructions: ['Cuire au four.'],
+      isWorkInProgress: true,
     });
     expect(navigate).toHaveBeenCalledWith(['/']);
   });

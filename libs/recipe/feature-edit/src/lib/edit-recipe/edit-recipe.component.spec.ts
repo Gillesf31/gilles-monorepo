@@ -54,6 +54,7 @@ describe(EditRecipeComponent.name, () => {
       title: '  Soupe tomate  ',
       ingredients: [{ name: ' Tomates ', quantity: ' 4 ', unit: '' }],
       instructions: ['Mixer longtemps.'],
+      isWorkInProgress: true,
     });
     fixture.nativeElement
       .querySelector('form')
@@ -63,6 +64,7 @@ describe(EditRecipeComponent.name, () => {
       title: '  Soupe tomate  ',
       ingredients: [{ name: 'Tomates', quantity: '4', unit: '' }],
       instructions: ['Mixer longtemps.'],
+      isWorkInProgress: true,
     });
     expect(navigate).toHaveBeenCalledWith(['/recipe', recipe.id]);
   });

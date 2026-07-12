@@ -11,6 +11,7 @@ describe(RecipeInMemoryService.name, () => {
         title: 'Crêpes',
         ingredients: [{ name: 'Farine', quantity: '250', unit: 'g' }],
         instructions: ['Mélanger les ingrédients.'],
+        isWorkInProgress: true,
       }),
     );
 
@@ -23,13 +24,15 @@ describe(RecipeInMemoryService.name, () => {
 
     const updated = await firstValueFrom(
       service.updateRecipe(created.id, {
-        title: 'Crêpes fines',
-        ingredients: created.ingredients,
-        instructions: created.instructions,
+      title: 'Crêpes fines',
+      ingredients: created.ingredients,
+      instructions: created.instructions,
+      isWorkInProgress: false,
       }),
     );
 
     expect(updated.title).toBe('Crêpes fines');
+    expect(updated.isWorkInProgress).toBe(false);
 
     await firstValueFrom(service.deleteRecipe(created.id));
 

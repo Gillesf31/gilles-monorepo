@@ -115,6 +115,22 @@ const SCENARIOS = {
         'Faire glisser dans une assiette côté replié vers le bas et garnir de ciboulette.',
       ],
     ),
+    new Recipe(
+      '5',
+      'Gâteau au citron',
+      [
+        { quantity: '200', unit: 'g', name: 'farine' },
+        { quantity: '150', unit: 'g', name: 'sucre' },
+        { quantity: '3', unit: '', name: 'œufs' },
+        { quantity: '2', unit: '', name: 'citrons' },
+      ],
+      [
+        'Mélanger les ingrédients secs.',
+        'Incorporer les œufs, le jus et le zeste des citrons.',
+        'Cuire au four à 180 °C pendant 35 minutes.',
+      ],
+      true,
+    ),
   ],
 } satisfies Record<string, Recipe[]>;
 
@@ -139,6 +155,7 @@ export class RecipeInMemoryService extends RecipeService {
       recipe.title,
       recipe.ingredients,
       recipe.instructions,
+      recipe.isWorkInProgress,
     );
     this.recipes$.next(
       this.recipes$.value.map((r) => (r.id === id ? updated : r)),
@@ -152,6 +169,7 @@ export class RecipeInMemoryService extends RecipeService {
       recipe.title,
       recipe.ingredients,
       recipe.instructions,
+      recipe.isWorkInProgress,
     );
     this.recipes$.next([...this.recipes$.value, newRecipe]);
     return of(newRecipe);

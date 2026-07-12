@@ -6,5 +6,6 @@ export class Recipe {
     readonly title: string,
     readonly ingredients: RecipeIngredient[],
     readonly instructions: string[],
+    readonly isWorkInProgress = false,
   ) {}
 }

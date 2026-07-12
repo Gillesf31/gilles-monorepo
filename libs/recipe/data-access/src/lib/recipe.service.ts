@@ -1,7 +1,10 @@
 import { Observable } from 'rxjs';
 import { Recipe } from '@gilles-monorepo/recipe-model';
 
-export type NewRecipe = Pick<Recipe, 'title' | 'ingredients' | 'instructions'>;
+export type NewRecipe = Pick<
+  Recipe,
+  'title' | 'ingredients' | 'instructions' | 'isWorkInProgress'
+>;
 
 export abstract class RecipeService {
   abstract getRecipes(): Observable<Recipe[]>;

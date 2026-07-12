@@ -13,6 +13,7 @@ interface RecipeRow {
   title: string;
   ingredients: RecipeIngredientValue[];
   instructions: string[];
+  is_work_in_progress?: boolean;
 }
 
 function toRecipe(row: RecipeRow): Recipe {
@@ -21,6 +22,7 @@ function toRecipe(row: RecipeRow): Recipe {
     row.title,
     normalizeRecipeIngredients(row.ingredients),
     row.instructions,
+    row.is_work_in_progress ?? false,
   );
 }
 
@@ -56,6 +58,7 @@ export class RecipeApiService extends RecipeService {
           title: recipe.title,
           ingredients: recipe.ingredients,
           instructions: recipe.instructions,
+          is_work_in_progress: recipe.isWorkInProgress,
         })
         .select()
         .single()
@@ -77,6 +80,7 @@ export class RecipeApiService extends RecipeService {
           title: recipe.title,
           ingredients: recipe.ingredients,
           instructions: recipe.instructions,
+          is_work_in_progress: recipe.isWorkInProgress,
         })
         .eq('id', id)
         .select()

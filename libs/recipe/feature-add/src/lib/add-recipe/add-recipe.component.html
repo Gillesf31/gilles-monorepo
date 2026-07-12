@@ -107,6 +107,22 @@
         </button>
       </div>
 
+      <label
+        class="flex cursor-pointer items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/70 dark:bg-amber-950/30 dark:text-amber-100"
+      >
+        <input
+          type="checkbox"
+          formControlName="isWorkInProgress"
+          class="mt-0.5 h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500 dark:border-amber-700 dark:bg-zinc-900 dark:checked:bg-amber-400"
+        />
+        <span>
+          <span class="block font-semibold">Recette à tester</span>
+          <span class="block text-amber-800 dark:text-amber-200"
+            >Je ne suis pas encore certain·e de cette recette.</span
+          >
+        </span>
+      </label>
+
       <div class="flex gap-3 pt-2">
         <button gillesMonorepoBtn size="lg" type="submit" class="flex-1">
           Enregistrer la recette

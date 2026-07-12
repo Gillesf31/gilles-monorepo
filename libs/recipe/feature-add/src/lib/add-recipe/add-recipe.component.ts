@@ -10,10 +10,8 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { NewRecipe, RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { type RecipeIngredient } from '@gilles-monorepo/recipe-model';
-import {
-  BtnComponent,
-  IngredientEditorComponent,
-} from '@gilles-monorepo/recipe-ui';
+import { IngredientEditorComponent } from '@gilles-monorepo/recipe-ingredient-ui';
+import { BtnComponent } from '@gilles-monorepo/recipe-ui';
 
 function hasIngredientName(
   control: AbstractControl<RecipeIngredient[]>,
@@ -51,6 +49,7 @@ export class AddRecipeComponent {
       },
     ),
     instructions: new FormArray([this.createInstruction()]),
+    isWorkInProgress: new FormControl(false, { nonNullable: true }),
   });
 
   get ingredients(): FormControl<RecipeIngredient[]> {
@@ -102,6 +101,7 @@ export class AddRecipeComponent {
         }))
         .filter((ingredient) => ingredient.name),
       instructions: value.instructions.filter(Boolean),
+      isWorkInProgress: value.isWorkInProgress,
     };
 
     this.recipeService.addRecipe(recipe).subscribe(() => {
