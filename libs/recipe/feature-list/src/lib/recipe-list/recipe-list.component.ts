@@ -9,11 +9,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { RecipeService } from '@gilles-monorepo/recipe-data-access';
 import { formatRecipeIngredient, Recipe } from '@gilles-monorepo/recipe-model';
+import { RecipeCardComponent } from '@gilles-monorepo/recipe-card-ui';
 import {
   BtnComponent,
   ConfirmModalComponent,
   LoaderComponent,
-  RecipeCardComponent,
 } from '@gilles-monorepo/recipe-ui';
 
 @Component({

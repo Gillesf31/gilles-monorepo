@@ -4,7 +4,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { BtnComponent } from '../btn/btn.component';
+import { BtnComponent } from '@gilles-monorepo/recipe-ui';
 
 export interface EditableIngredient {
   name: string;

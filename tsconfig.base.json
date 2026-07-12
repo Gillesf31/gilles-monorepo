@@ -42,7 +42,11 @@
       ],
       "@gilles-monorepo/feature-app-version": [
         "libs/recipe/feature-app-version/src/index.ts"
-      ]
+      ],
+      "@gilles-monorepo/recipe-ingredient-ui": [
+        "libs/recipe/ingredient-ui/src/index.ts"
+      ],
+      "@gilles-monorepo/recipe-card-ui": ["libs/recipe/card-ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

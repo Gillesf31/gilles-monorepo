@@ -39,6 +39,18 @@ export const Default: Story = {
   },
 };
 
+export const WorkInProgress: Story = {
+  args: {
+    recipe: new Recipe(
+      'work-in-progress',
+      'Gâteau au citron',
+      normalizeRecipeIngredients(['2 citrons', '200 g farine', '3 œufs']),
+      ['Mélanger les ingrédients.', 'Cuire au four.'],
+      true,
+    ),
+  },
+};
+
 export const FewIngredients: Story = {
   args: {
     recipe: new Recipe(

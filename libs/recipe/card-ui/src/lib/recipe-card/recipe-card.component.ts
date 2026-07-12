@@ -9,7 +9,7 @@ import {
   Recipe,
   type RecipeIngredient,
 } from '@gilles-monorepo/recipe-model';
-import { BtnComponent } from '../btn/btn.component';
+import { BtnComponent } from '@gilles-monorepo/recipe-ui';
 
 @Component({
   selector: 'gilles-monorepo-recipe-card',

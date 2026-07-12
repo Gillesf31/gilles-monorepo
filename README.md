@@ -96,7 +96,9 @@ Recipe libraries:
 - `feature-app-version` - update notification behavior
 - `recipe-data-access` - recipe service contracts and Supabase/in-memory implementations
 - `recipe-model` - shared recipe types and pure ingredient helpers
-- `recipe-ui` - reusable recipe presentation components
+- `recipe-ui` - reusable recipe UI primitives
+- `recipe-card-ui` - reusable recipe card presentation component
+- `recipe-ingredient-ui` - reusable ingredient editor and ingredient list components
 
 Shared libraries:
 
