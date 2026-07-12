@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { moveItemInArray } from '@angular/cdk/drag-drop';
@@ -16,10 +18,10 @@ import {
   scaleRecipeIngredients,
   type RecipeIngredient,
 } from '@gilles-monorepo/recipe-model';
+import { IngredientListComponent } from '@gilles-monorepo/recipe-ingredient-ui';
 import {
   BtnComponent,
   ConfirmModalComponent,
-  IngredientListComponent,
   LoaderComponent,
 } from '@gilles-monorepo/recipe-ui';
 import { map, startWith, switchMap } from 'rxjs';
@@ -41,10 +43,14 @@ interface RecipeState {
   templateUrl: './recipe-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecipeDetailComponent {
+export class RecipeDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly recipeService = inject(RecipeService);
+  private readonly destroyRef = inject(DestroyRef);
+  private wakeLock: WakeLockSentinel | null = null;
+  private wakeLockRequestInFlight = false;
+  private isDestroyed = false;
 
   private readonly recipeState = toSignal(
     this.route.paramMap.pipe(
@@ -68,6 +74,7 @@ export class RecipeDetailComponent {
 
   protected readonly isLoading = computed(() => this.recipeState().isLoading);
   protected readonly recipe = computed(() => this.recipeState().recipe);
+  protected readonly isWakeLockActive = signal(false);
   protected readonly sessionIngredients = signal<RecipeIngredient[]>([]);
   protected readonly multiplier = signal(1);
   protected readonly multiplierPresets = [1, 2, 3] as const;
@@ -100,6 +107,22 @@ export class RecipeDetailComponent {
       this.multiplier.set(1);
     }
   });
+
+  ngOnInit(): void {
+    if (typeof document === 'undefined') return;
+
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    this.destroyRef.onDestroy(() => {
+      this.isDestroyed = true;
+      document.removeEventListener(
+        'visibilitychange',
+        this.handleVisibilityChange,
+      );
+      void this.releaseWakeLock();
+    });
+
+    void this.requestWakeLock();
+  }
 
   protected openDeleteModal(): void {
     this.showDeleteModal.set(true);
@@ -146,6 +169,75 @@ export class RecipeDetailComponent {
 
   protected isMultiplierPresetActive(preset: number): boolean {
     return this.multiplier() === preset;
+  }
+
+  private readonly handleVisibilityChange = (): void => {
+    if (document.visibilityState === 'visible') {
+      void this.requestWakeLock();
+      return;
+    }
+
+    void this.releaseWakeLock();
+  };
+
+  private async requestWakeLock(): Promise<void> {
+    if (
+      this.isDestroyed ||
+      this.wakeLock ||
+      this.wakeLockRequestInFlight ||
+      !this.isDocumentVisible() ||
+      !this.supportsScreenWakeLock()
+    ) {
+      return;
+    }
+
+    this.wakeLockRequestInFlight = true;
+
+    try {
+      const wakeLock = await navigator.wakeLock.request('screen');
+
+      if (this.isDestroyed || !this.isDocumentVisible()) {
+        await wakeLock.release();
+        return;
+      }
+
+      this.wakeLock = wakeLock;
+      this.isWakeLockActive.set(true);
+      wakeLock.addEventListener('release', this.handleWakeLockRelease, {
+        once: true,
+      });
+    } catch {
+      // The device or browser may refuse a wake lock. The recipe remains usable.
+    } finally {
+      this.wakeLockRequestInFlight = false;
+    }
+  }
+
+  private async releaseWakeLock(): Promise<void> {
+    const wakeLock = this.wakeLock;
+    this.wakeLock = null;
+    this.isWakeLockActive.set(false);
+
+    if (!wakeLock) return;
+
+    try {
+      await wakeLock.release();
+    } catch {
+      // A released sentinel cannot be released again.
+    }
+  }
+
+  private readonly handleWakeLockRelease = (): void => {
+    this.wakeLock = null;
+    this.isWakeLockActive.set(false);
+  };
+
+  private isDocumentVisible(): boolean {
+    return typeof document !== 'undefined' && document.visibilityState === 'visible';
+  }
+
+  private supportsScreenWakeLock(): boolean {
+    return typeof navigator !== 'undefined' && 'wakeLock' in navigator;
   }
 
   private normalizeMultiplier(multiplier: number): number {
