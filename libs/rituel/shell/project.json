@@ -1,0 +1,13 @@
+{
+  "name": "rituel-shell",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/rituel/shell/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:rituel", "type:shell"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

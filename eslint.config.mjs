@@ -29,6 +29,10 @@ export default [
               onlyDependOnLibsWithTags: ['scope:recipe', 'scope:shared'],
             },
             {
+              sourceTag: 'scope:rituel',
+              onlyDependOnLibsWithTags: ['scope:rituel', 'scope:shared'],
+            },
+            {
               sourceTag: 'type:app',
               onlyDependOnLibsWithTags: ['type:app', 'type:shell'],
             },

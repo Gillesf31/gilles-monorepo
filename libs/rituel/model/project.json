@@ -1,0 +1,9 @@
+{
+  "name": "rituel-model",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/rituel/model/src",
+  "projectType": "library",
+  "tags": ["scope:rituel", "type:model"],
+  "// targets": "to see all targets run: nx show project rituel-model --web",
+  "targets": {}
+}

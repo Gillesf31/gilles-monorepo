@@ -1,0 +1,9 @@
+{
+  "name": "rituel-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/rituel/data-access/src",
+  "projectType": "library",
+  "tags": ["scope:rituel", "type:data-access"],
+  "// targets": "to see all targets run: nx show project rituel-data-access --web",
+  "targets": {}
+}

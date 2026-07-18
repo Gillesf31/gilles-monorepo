@@ -1,0 +1,83 @@
+<section class="create-routine" aria-labelledby="create-routine-title">
+  <a class="back-link" routerLink="/">Back to routines</a>
+
+  <div class="intro">
+    <p class="eyebrow">New routine</p>
+    <h1 id="create-routine-title">Give it a place in the rhythm.</h1>
+    <p>
+      Start with the first date. Rituel will use this cadence for every next
+      reminder.
+    </p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label for="routine-name">What needs doing?</label>
+      <input
+        id="routine-name"
+        type="text"
+        formControlName="name"
+        autocomplete="off"
+        aria-describedby="routine-name-error"
+      />
+      @if (form.controls.name.invalid && (form.controls.name.touched ||
+      submitted())) {
+      <p id="routine-name-error" class="field-error">
+        Give this routine a name.
+      </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="routine-note">A note <span>(optional)</span></label>
+      <textarea id="routine-note" formControlName="note" rows="3"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="routine-first-due-date">First due date</label>
+      <input
+        id="routine-first-due-date"
+        type="date"
+        formControlName="firstDueDate"
+        aria-describedby="routine-first-due-date-error"
+      />
+      @if (form.controls.firstDueDate.invalid &&
+      (form.controls.firstDueDate.touched || submitted())) {
+      <p id="routine-first-due-date-error" class="field-error">
+        Choose the first due date.
+      </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="routine-frequency">How often?</label>
+      <select
+        id="routine-frequency"
+        formControlName="frequency"
+        aria-describedby="routine-frequency-error"
+      >
+        <option [ngValue]="null">Choose a rhythm</option>
+        @for (frequency of frequencyOptions; track frequency.value) {
+        <option [value]="frequency.value">{{ frequency.label }}</option>
+        }
+      </select>
+      @if (form.controls.frequency.invalid && (form.controls.frequency.touched
+      || submitted())) {
+      <p id="routine-frequency-error" class="field-error">
+        Choose how often this routine repeats.
+      </p>
+      }
+    </div>
+
+    @if (saveError()) {
+    <p class="save-error" role="alert">{{ saveError() }}</p>
+    }
+
+    <div class="actions">
+      <a class="button button--secondary" routerLink="/">Cancel</a>
+      <button type="submit" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving…' : 'Save routine' }}
+      </button>
+    </div>
+  </form>
+</section>

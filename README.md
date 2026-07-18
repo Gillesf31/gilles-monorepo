@@ -1,8 +1,8 @@
-# Recipe
+# Gilles Monorepo
 
-Angular recipe manager built in an Nx workspace.
+An Nx workspace for several Angular applications, currently Recipe and Rituel.
 
-The app stores recipes in Supabase in production and uses an in-memory recipe service during local development. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
+Recipe stores recipes in Supabase in production and uses an in-memory recipe service during local development. Rituel manages recurring home maintenance. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ Install dependencies:
 pnpm install
 ```
 
-Create local environment files:
+Recipe uses Supabase. Create its local environment files:
 
 ```bash
 cp apps/recipe/src/environments/environment.template.ts apps/recipe/src/environments/environment.ts
@@ -37,10 +37,11 @@ Environment files are gitignored; only the `*.template.ts` files are committed.
 
 ## Development
 
-Serve the recipe app:
+Serve an application:
 
 ```bash
 pnpm nx serve recipe
+pnpm nx serve rituel
 ```
 
 Build the production app:
@@ -65,6 +66,7 @@ Run e2e tests:
 
 ```bash
 pnpm nx e2e recipe-e2e
+pnpm nx e2e rituel-e2e
 ```
 
 Explore the project graph:
@@ -76,7 +78,7 @@ pnpm nx graph
 Inspect a project's resolved targets:
 
 ```bash
-pnpm nx show project recipe --json
+pnpm nx show project rituel --json
 ```
 
 ## Projects
@@ -85,6 +87,8 @@ Applications:
 
 - `recipe` - Angular browser app in `apps/recipe`
 - `recipe-e2e` - Playwright e2e project in `apps/recipe-e2e`
+- `rituel` - Angular browser app for recurring home maintenance in `apps/rituel`
+- `rituel-e2e` - Playwright e2e project in `apps/rituel-e2e`
 
 Recipe libraries:
 
@@ -96,9 +100,13 @@ Recipe libraries:
 - `feature-app-version` - update notification behavior
 - `recipe-data-access` - recipe service contracts and Supabase/in-memory implementations
 - `recipe-model` - shared recipe types and pure ingredient helpers
-- `recipe-ui` - reusable recipe UI primitives
-- `recipe-card-ui` - reusable recipe card presentation component
+- `recipe-ui` - reusable recipe presentation components, including recipe cards
 - `recipe-ingredient-ui` - reusable ingredient editor and ingredient list components
+
+Rituel libraries:
+
+- `rituel-shell` - route-level composition for Rituel
+- `feature-dashboard` - dashboard for routines due now and coming up
 
 Shared libraries:
 
@@ -108,6 +116,10 @@ Shared libraries:
 ## Architecture
 
 Application projects stay thin. Keep bootstrap concerns in `apps/*`: app config, root routes, global metadata, assets, and environment wiring.
+
+### Styling
+
+Use Tailwind utility classes for component styling whenever possible. Reserve custom CSS for cases Tailwind cannot express cleanly, such as global styles, complex animations, or reusable design tokens.
 
 Put behavior in libraries with Nx tags:
 

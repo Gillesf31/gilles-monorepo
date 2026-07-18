@@ -46,7 +46,17 @@
       "@gilles-monorepo/recipe-ingredient-ui": [
         "libs/recipe/ingredient-ui/src/index.ts"
       ],
-      "@gilles-monorepo/recipe-card-ui": ["libs/recipe/card-ui/src/index.ts"]
+      "@gilles-monorepo/rituel-shell": ["libs/rituel/shell/src/index.ts"],
+      "@gilles-monorepo/feature-dashboard": [
+        "libs/rituel/feature-dashboard/src/index.ts"
+      ],
+      "@gilles-monorepo/rituel-model": ["libs/rituel/model/src/index.ts"],
+      "@gilles-monorepo/rituel-data-access": [
+        "libs/rituel/data-access/src/index.ts"
+      ],
+      "@gilles-monorepo/feature-create-task": [
+        "libs/rituel/feature-create-task/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

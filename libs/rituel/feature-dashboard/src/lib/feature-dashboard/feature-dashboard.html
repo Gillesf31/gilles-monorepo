@@ -1,0 +1,110 @@
+<section class="dashboard" aria-labelledby="dashboard-title">
+  <div class="intro">
+    <div>
+      <p class="eyebrow">Your household rhythm</p>
+      <h1 id="dashboard-title">Give the small things their moment.</h1>
+      <p class="lede">
+        Rituel keeps the work that quietly cares for home from slipping into the
+        background.
+      </p>
+      <a class="create-routine-link" routerLink="/tasks/new">Add a routine</a>
+    </div>
+
+    <div class="cadence" aria-label="This week's routine cadence">
+      <p>This week</p>
+      <div class="cadence-line">
+        @for (day of week; track $index) {
+        <span [class.is-active]="day.active">
+          <i></i>
+          {{ day.label }}
+        </span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <section class="overdue" aria-labelledby="overdue-title">
+    <div class="section-heading">
+      <p class="eyebrow">Needs attention</p>
+      <h2 id="overdue-title">A little overdue.</h2>
+    </div>
+
+    @if (overdue().length) {
+    <div class="routine-list">
+      @for (routine of overdue(); track routine.id) {
+      <article class="routine-card routine-card--overdue">
+        <div class="routine-content">
+          <div class="routine-topline">
+            <p class="routine-cadence">
+              {{ frequencyLabel(routine.frequency) }}
+            </p>
+            <p class="routine-next">Due {{ routine.nextDueDate }}</p>
+          </div>
+          <h3>{{ routine.name }}</h3>
+          @if (routine.note) {
+          <p>{{ routine.note }}</p>
+          }
+        </div>
+      </article>
+      }
+    </div>
+    } @else {
+    <p class="empty-state">Nothing is overdue. Your home is in good hands.</p>
+    }
+  </section>
+
+  <section class="today" aria-labelledby="today-title">
+    <div class="section-heading">
+      <p class="eyebrow">Due now</p>
+      <h2 id="today-title">One thing, well timed.</h2>
+    </div>
+
+    @if (dueToday().length) { @for (routine of dueToday(); track routine.id) {
+    <article class="routine-card routine-card--today">
+      <div class="routine-marker" aria-hidden="true"></div>
+      <div class="routine-content">
+        <div class="routine-topline">
+          <p class="routine-cadence">{{ frequencyLabel(routine.frequency) }}</p>
+          <p class="routine-next">Today</p>
+        </div>
+        <h3>{{ routine.name }}</h3>
+        @if (routine.note) {
+        <p>{{ routine.note }}</p>
+        }
+      </div>
+    </article>
+    } } @else {
+    <p class="empty-state">Nothing needs attention today.</p>
+    }
+  </section>
+
+  <section class="upcoming" aria-labelledby="upcoming-title">
+    <div class="section-heading">
+      <p class="eyebrow">Coming up</p>
+      <h2 id="upcoming-title">Keep the rhythm visible.</h2>
+    </div>
+
+    @if (upcoming().length) {
+    <div class="routine-list">
+      @for (routine of upcoming(); track routine.id) {
+      <article class="routine-card routine-card--upcoming">
+        <div class="routine-content">
+          <div class="routine-topline">
+            <p class="routine-cadence">
+              {{ frequencyLabel(routine.frequency) }}
+            </p>
+            <p class="routine-next">Due {{ routine.nextDueDate }}</p>
+          </div>
+          <h3>{{ routine.name }}</h3>
+          @if (routine.note) {
+          <p>{{ routine.note }}</p>
+          }
+        </div>
+      </article>
+      }
+    </div>
+    } @else {
+    <p class="empty-state">No routines are coming up yet.</p>
+    }
+  </section>
+</section>

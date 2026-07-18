@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --rituel-background: #f5f5ef;
+  --rituel-ink: #183d3c;
+  --rituel-ink-strong: #173d3b;
+  --rituel-muted: #547271;
+  --rituel-muted-label: #537574;
+  --rituel-subtle: #6e8886;
+  --rituel-surface: #fffefa;
+  --rituel-border: #d9e4de;
+  --rituel-input-border: #b8cfbf;
+  --rituel-action-bg: #173d3b;
+  --rituel-action-text: #fffefa;
+  --rituel-action-hover: #1b5552;
+  --rituel-cadence-surface: #e2f0e5;
+  --rituel-cadence-border: #c7dfd2;
+  --rituel-cadence-dot: #9cbdb0;
+  --rituel-accent: #e97057;
+  --rituel-accent-soft: #f6c9b8;
+  --rituel-focus: rgb(233 112 87 / 55%);
+  --rituel-focus-soft: rgb(233 112 87 / 35%);
+  --rituel-separator: #cedbd4;
+  --rituel-today-bg: #173d3b;
+  --rituel-today-text: #f6f5ef;
+  --rituel-today-muted: #b7d4c7;
+  --rituel-today-secondary: #ccdfd5;
+  --rituel-overdue-bg: #fff4ee;
+  --rituel-overdue-border: #d06b57;
+  --rituel-error: #9f3f2d;
+  --rituel-warning: #f3c35c;
+  --rituel-warning-glow: rgb(243 195 92 / 20%);
+  background: var(--rituel-background);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+html.dark {
+  color-scheme: dark;
+  --rituel-background: #101815;
+  --rituel-ink: #e5eee9;
+  --rituel-ink-strong: #e5eee9;
+  --rituel-muted: #adc0b7;
+  --rituel-muted-label: #a4b8ae;
+  --rituel-subtle: #b9cbc3;
+  --rituel-surface: #18251f;
+  --rituel-border: #31473e;
+  --rituel-input-border: #496258;
+  --rituel-action-bg: #8fd0b5;
+  --rituel-action-text: #102019;
+  --rituel-action-hover: #b5e3cf;
+  --rituel-cadence-surface: #1d342b;
+  --rituel-cadence-border: #3b5c4e;
+  --rituel-cadence-dot: #78968a;
+  --rituel-accent: #ff9c83;
+  --rituel-accent-soft: #633b32;
+  --rituel-focus: rgb(255 156 131 / 70%);
+  --rituel-focus-soft: rgb(255 156 131 / 45%);
+  --rituel-separator: #354d43;
+  --rituel-today-bg: #1b3b31;
+  --rituel-today-text: #e9f3ed;
+  --rituel-today-muted: #b6d7c8;
+  --rituel-today-secondary: #cde1d7;
+  --rituel-overdue-bg: #3b2420;
+  --rituel-overdue-border: #a95e50;
+  --rituel-error: #ffa28c;
+  --rituel-warning: #f7cd72;
+  --rituel-warning-glow: rgb(247 205 114 / 25%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--rituel-background);
+  color: var(--rituel-ink);
+}
+
+button,
+a {
+  font: inherit;
+}
