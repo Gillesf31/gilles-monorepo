@@ -24,6 +24,7 @@
 
 # Recipe Workspace Architecture
 
+- Prefer Tailwind utility classes for all component styling. Use custom CSS only when Tailwind cannot express the need cleanly, such as global styles, complex animations, or reusable design tokens.
 - Keep application projects thin. Do not put services, data access, domain logic, UI logic, or feature behavior in `apps/*`.
 - Application projects should only compose bootstrap concerns such as app config, root routes, global metadata, assets, and environment wiring.
 - Put behavior in libraries with the correct Nx tags:
