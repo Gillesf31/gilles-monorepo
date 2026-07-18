@@ -10,7 +10,7 @@ import {
   ShoppingListService,
 } from '@gilles-monorepo/recipe-data-access';
 import { provideSupabaseClient } from '@gilles-monorepo/util-supabase';
-import { ThemeService } from '@gilles-monorepo/feature-theme';
+import { provideTheme } from '@gilles-monorepo/feature-theme';
 import { ShellComponent } from './shell.component';
 
 export function createShellRoutes(
@@ -24,7 +24,7 @@ export function createShellRoutes(
       providers: [
         provideAppVersionCheck(),
         provideSupabaseClient(supabaseUrl, supabaseAnonKey),
-        ThemeService,
+        provideTheme(),
         {
           provide: RecipeService,
           useClass: isDevMode() ? RecipeInMemoryService : RecipeApiService,

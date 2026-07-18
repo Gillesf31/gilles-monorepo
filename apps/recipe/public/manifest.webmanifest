@@ -3,8 +3,8 @@
   "short_name": "Recettes",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#d97706",
-  "theme_color": "#d97706",
+  "background_color": "#111827",
+  "theme_color": "#111827",
   "icons": [
     {
       "src": "icons/icon.svg",

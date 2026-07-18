@@ -7,9 +7,7 @@ import { ThemeService } from '@gilles-monorepo/feature-theme';
 import { ShellComponent } from './shell.component';
 
 describe(ShellComponent.name, () => {
-  it('initializes the theme service and renders shell outlets', () => {
-    const init = vi.fn();
-
+  it('renders shell outlets and the shared theme toggle', () => {
     const fixture = TestBed.configureTestingModule({
       imports: [ShellComponent],
       providers: [
@@ -18,7 +16,6 @@ describe(ShellComponent.name, () => {
         {
           provide: ThemeService,
           useValue: {
-            init,
             toggle: vi.fn(),
             isDark: signal(false),
           },
@@ -36,7 +33,9 @@ describe(ShellComponent.name, () => {
 
     fixture.detectChanges();
 
-    expect(init).toHaveBeenCalledOnce();
     expect(fixture.nativeElement.querySelector('router-outlet')).not.toBeNull();
+    expect(
+      fixture.nativeElement.querySelector('gilles-monorepo-theme-toggle'),
+    ).not.toBeNull();
   });
 });

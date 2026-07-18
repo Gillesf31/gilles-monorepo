@@ -1,13 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AppVersionNotificationComponent } from '@gilles-monorepo/feature-app-version';
 import {
-  ThemeService,
   ThemeToggleComponent,
 } from '@gilles-monorepo/feature-theme';
 
@@ -25,10 +19,4 @@ import {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShellComponent implements OnInit {
-  private readonly themeService = inject(ThemeService);
-
-  ngOnInit(): void {
-    this.themeService.init();
-  }
-}
+export class ShellComponent {}
