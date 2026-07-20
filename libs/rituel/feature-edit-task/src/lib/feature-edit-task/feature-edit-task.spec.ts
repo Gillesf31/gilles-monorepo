@@ -130,11 +130,11 @@ describe('EditRoutineComponent', () => {
   it('requires confirmation before deleting the routine', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
-    clickButton(fixture, 'Delete routine');
+    clickButton(fixture, 'Supprimer la routine');
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain(
-      'Delete this routine permanently?',
+      'Supprimer définitivement cette routine ?',
     );
 
     await component.deleteRoutine();

@@ -1,17 +1,17 @@
 <section class="dashboard" aria-labelledby="dashboard-title">
   <div class="intro">
     <div>
-      <p class="eyebrow">Your household rhythm</p>
-      <h1 id="dashboard-title">Give the small things their moment.</h1>
+      <p class="eyebrow">Le rythme de votre foyer</p>
+      <h1 id="dashboard-title">Accordez du temps aux petites choses.</h1>
       <p class="lede">
-        Rituel keeps the work that quietly cares for home from slipping into the
-        background.
+        Rituel évite que les tâches qui prennent soin de votre maison passent
+        inaperçues.
       </p>
-      <a class="create-routine-link" routerLink="/tasks/new">Add a routine</a>
+      <a class="create-routine-link" routerLink="/tasks/new">Ajouter une routine</a>
     </div>
 
     <div class="cadence" aria-labelledby="weekly-schedule-title">
-      <p id="weekly-schedule-title">This week</p>
+      <p id="weekly-schedule-title">Cette semaine</p>
       <div class="cadence-line" role="list">
         @for (day of week(); track day.date) {
         <div
@@ -36,22 +36,22 @@
     aria-labelledby="notification-title"
   >
     <div>
-      <p class="eyebrow">Closed-app reminders</p>
+      <p class="eyebrow">Rappels lorsque l’application est fermée</p>
       <h2 id="notification-title" class="mb-2 mt-2">
-        A gentle nudge at the right time.
+        Un rappel discret au bon moment.
       </h2>
       @switch (reminderService.state()) { @case ('unsupported') {
       <p>
-        Install and open the production app in a browser that supports Web Push
-        to receive reminders.
+        Installez et ouvrez l’application de production dans un navigateur qui
+        prend en charge les notifications Web Push pour recevoir des rappels.
       </p>
       } @case ('denied') {
-      <p>Notifications are blocked. You can allow them in browser settings.</p>
+      <p>Les notifications sont bloquées. Vous pouvez les autoriser dans les réglages du navigateur.</p>
       } @case ('error') {
-      <p>Rituel could not prepare reminders in this browser.</p>
+      <p>Rituel n’a pas pu préparer les rappels dans ce navigateur.</p>
       } @default {
       <p>
-        Enable notifications to receive reminders even when Rituel is closed.
+        Activez les notifications pour recevoir des rappels même lorsque Rituel est fermé.
       </p>
       } }
     </div>
@@ -63,7 +63,7 @@
         class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
         (click)="enableNotifications()"
       >
-        Enable reminders
+        Activer les rappels
       </button>
       } @case ('enabling') {
       <button
@@ -71,7 +71,7 @@
         class="min-h-11 cursor-wait rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] opacity-65"
         disabled
       >
-        Enabling…
+        Activation…
       </button>
       } @case ('enabled') {
       <button
@@ -79,7 +79,7 @@
         class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
         (click)="sendTestNotification()"
       >
-        Send a test notification
+        Envoyer une notification de test
       </button>
       } @case ('error') {
       <button
@@ -87,7 +87,7 @@
         class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
         (click)="enableNotifications()"
       >
-        Try again
+        Réessayer
       </button>
       } }
       <p class="min-h-5 text-[0.82rem]" aria-live="polite">
@@ -99,8 +99,8 @@
 
   <section class="overdue" aria-labelledby="overdue-title">
     <div class="section-heading">
-      <p class="eyebrow">Needs attention</p>
-      <h2 id="overdue-title">A little overdue.</h2>
+      <p class="eyebrow">À traiter</p>
+      <h2 id="overdue-title">Un peu en retard.</h2>
     </div>
 
     @if (overdue().length) {
@@ -112,7 +112,7 @@
             <p class="routine-cadence">
               {{ frequencyLabel(routine.frequency) }}
             </p>
-            <p class="routine-next">Due {{ routine.nextDueDate }}</p>
+            <p class="routine-next">Prévue le {{ routine.nextDueDate }}</p>
           </div>
           <h3>{{ routine.name }}</h3>
           @if (routine.note) {
@@ -124,19 +124,19 @@
               class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
               (click)="completeRoutine(routine.id)"
             >
-              Complete
+              Terminer
             </button>
             <button
               type="button"
               class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-ink-strong)] no-underline hover:bg-[var(--rituel-cadence-surface)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
               (click)="deferRoutineUntilTomorrow(routine.id)"
             >
-              Tomorrow
+              Demain
             </button>
             <a
               [routerLink]="['/tasks', routine.id, 'edit']"
               class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
-              >Edit</a
+              >Modifier</a
             >
           </div>
         </div>
@@ -144,14 +144,14 @@
       }
     </div>
     } @else {
-    <p class="empty-state">Nothing is overdue. Your home is in good hands.</p>
+    <p class="empty-state">Aucune routine en retard. Votre maison est entre de bonnes mains.</p>
     }
   </section>
 
   <section class="today" aria-labelledby="today-title">
     <div class="section-heading">
-      <p class="eyebrow">Due now</p>
-      <h2 id="today-title">One thing, well timed.</h2>
+      <p class="eyebrow">À faire aujourd’hui</p>
+      <h2 id="today-title">Une chose, au bon moment.</h2>
     </div>
 
     @if (dueToday().length) { @for (routine of dueToday(); track routine.id) {
@@ -160,7 +160,7 @@
       <div class="routine-content">
         <div class="routine-topline">
           <p class="routine-cadence">{{ frequencyLabel(routine.frequency) }}</p>
-          <p class="routine-next">Today</p>
+          <p class="routine-next">Aujourd’hui</p>
         </div>
         <h3>{{ routine.name }}</h3>
         @if (routine.note) {
@@ -172,32 +172,32 @@
             class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
             (click)="completeRoutine(routine.id)"
           >
-            Complete
+            Terminer
           </button>
           <button
             type="button"
             class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-ink-strong)] no-underline hover:bg-[var(--rituel-cadence-surface)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
             (click)="deferRoutineUntilTomorrow(routine.id)"
           >
-            Tomorrow
+            Demain
           </button>
           <a
             [routerLink]="['/tasks', routine.id, 'edit']"
             class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
-            >Edit</a
+            >Modifier</a
           >
         </div>
       </div>
     </article>
     } } @else {
-    <p class="empty-state">Nothing needs attention today.</p>
+    <p class="empty-state">Aucune routine ne demande votre attention aujourd’hui.</p>
     }
   </section>
 
   <section class="upcoming" aria-labelledby="upcoming-title">
     <div class="section-heading">
-      <p class="eyebrow">Coming up</p>
-      <h2 id="upcoming-title">Keep the rhythm visible.</h2>
+      <p class="eyebrow">À venir</p>
+      <h2 id="upcoming-title">Gardez le rythme en vue.</h2>
     </div>
 
     @if (upcoming().length) {
@@ -209,7 +209,7 @@
             <p class="routine-cadence">
               {{ frequencyLabel(routine.frequency) }}
             </p>
-            <p class="routine-next">Due {{ routine.nextDueDate }}</p>
+            <p class="routine-next">Prévue le {{ routine.nextDueDate }}</p>
           </div>
           <h3>{{ routine.name }}</h3>
           @if (routine.note) {
@@ -219,7 +219,7 @@
             <a
               [routerLink]="['/tasks', routine.id, 'edit']"
               class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
-              >Edit</a
+              >Modifier</a
             >
           </div>
         </div>
@@ -227,7 +227,7 @@
       }
     </div>
     } @else {
-    <p class="empty-state">No routines are coming up yet.</p>
+    <p class="empty-state">Aucune routine à venir pour le moment.</p>
     }
   </section>
 </section>

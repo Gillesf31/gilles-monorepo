@@ -1,18 +1,18 @@
 <section class="create-routine" aria-labelledby="create-routine-title">
-  <a class="back-link" routerLink="/">Back to routines</a>
+  <a class="back-link" routerLink="/">Retour aux routines</a>
 
   <div class="intro">
-    <p class="eyebrow">New routine</p>
-    <h1 id="create-routine-title">Give it a place in the rhythm.</h1>
+    <p class="eyebrow">Nouvelle routine</p>
+    <h1 id="create-routine-title">Donnez-lui une place dans votre rythme.</h1>
     <p>
-      Start with the first date. Rituel will use this cadence for every next
-      reminder.
+      Commencez avec la première date. Rituel utilisera cette fréquence pour
+      chaque rappel suivant.
     </p>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <div class="field">
-      <label for="routine-name">What needs doing?</label>
+      <label for="routine-name">Que faut-il faire ?</label>
       <input
         id="routine-name"
         type="text"
@@ -23,18 +23,18 @@
       @if (form.controls.name.invalid && (form.controls.name.touched ||
       submitted())) {
       <p id="routine-name-error" class="field-error">
-        Give this routine a name.
+        Donnez un nom à cette routine.
       </p>
       }
     </div>
 
     <div class="field">
-      <label for="routine-note">A note <span>(optional)</span></label>
+      <label for="routine-note">Une note <span>(facultatif)</span></label>
       <textarea id="routine-note" formControlName="note" rows="3"></textarea>
     </div>
 
     <div class="field">
-      <label for="routine-first-due-date">First due date</label>
+      <label for="routine-first-due-date">Première date prévue</label>
       <input
         id="routine-first-due-date"
         type="date"
@@ -44,19 +44,19 @@
       @if (form.controls.firstDueDate.invalid &&
       (form.controls.firstDueDate.touched || submitted())) {
       <p id="routine-first-due-date-error" class="field-error">
-        Choose the first due date.
+        Choisissez la première date prévue.
       </p>
       }
     </div>
 
     <div class="field">
-      <label for="routine-frequency">How often?</label>
+      <label for="routine-frequency">À quelle fréquence ?</label>
       <select
         id="routine-frequency"
         formControlName="frequency"
         aria-describedby="routine-frequency-error"
       >
-        <option [ngValue]="null">Choose a rhythm</option>
+        <option [ngValue]="null">Choisissez un rythme</option>
         @for (frequency of frequencyOptions; track frequency.value) {
         <option [value]="frequency.value">{{ frequency.label }}</option>
         }
@@ -64,7 +64,7 @@
       @if (form.controls.frequency.invalid && (form.controls.frequency.touched
       || submitted())) {
       <p id="routine-frequency-error" class="field-error">
-        Choose how often this routine repeats.
+        Choisissez la fréquence de répétition de cette routine.
       </p>
       }
     </div>
@@ -74,9 +74,9 @@
     }
 
     <div class="actions">
-      <a class="button button--secondary" routerLink="/">Cancel</a>
+      <a class="button button--secondary" routerLink="/">Annuler</a>
       <button type="submit" [disabled]="isSaving()">
-        {{ isSaving() ? 'Saving…' : 'Save routine' }}
+        {{ isSaving() ? 'Enregistrement…' : 'Enregistrer la routine' }}
       </button>
     </div>
   </form>

@@ -128,12 +128,12 @@ describe('RituelDashboardComponent', () => {
   it('shows empty states when the repository has no routines', () => {
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Nothing is overdue');
+    expect(fixture.nativeElement.textContent).toContain('Aucune routine en retard');
     expect(fixture.nativeElement.textContent).toContain(
-      'Nothing needs attention today',
+      'Aucune routine ne demande votre attention aujourd’hui',
     );
     expect(fixture.nativeElement.textContent).toContain(
-      'No routines are coming up yet',
+      'Aucune routine à venir pour le moment',
     );
   });
 
@@ -176,7 +176,7 @@ describe('RituelDashboardComponent', () => {
     repository.setRoutines([routine('today', today)]);
 
     fixture.detectChanges();
-    clickButton(fixture, 'Complete');
+    clickButton(fixture, 'Terminer');
     await fixture.whenStable();
     fixture.detectChanges();
 
@@ -184,7 +184,7 @@ describe('RituelDashboardComponent', () => {
       calculateNextDueDate(today, routineFrequencies.weekly),
     );
     expect(fixture.nativeElement.textContent).toContain(
-      'Nothing needs attention today',
+      'Aucune routine ne demande votre attention aujourd’hui',
     );
   });
 
@@ -195,23 +195,23 @@ describe('RituelDashboardComponent', () => {
     ]);
 
     fixture.detectChanges();
-    clickButton(fixture, 'Tomorrow');
+    clickButton(fixture, 'Demain');
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect((await repository.list())[0].nextDueDate).toBe(
       addDaysToRoutineDate(today, 1),
     );
-    expect(fixture.nativeElement.textContent).toContain('Nothing is overdue');
+    expect(fixture.nativeElement.textContent).toContain('Aucune routine en retard');
   });
 
   it('asks for notification permission only after a routine exists and the user opts in', async () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain('Enable reminders');
+    expect(fixture.nativeElement.textContent).not.toContain('Activer les rappels');
 
     repository.setRoutines([routine('today', getCurrentLocalDate())]);
     fixture.detectChanges();
-    clickButton(fixture, 'Enable reminders');
+    clickButton(fixture, 'Activer les rappels');
     await fixture.whenStable();
 
     expect(notifications.enableCalls).toBe(1);
@@ -222,7 +222,7 @@ describe('RituelDashboardComponent', () => {
     notifications.fail();
     fixture.detectChanges();
 
-    clickButton(fixture, 'Try again');
+    clickButton(fixture, 'Réessayer');
     await fixture.whenStable();
 
     expect(notifications.enableCalls).toBe(1);
@@ -240,11 +240,11 @@ class TestPushNotificationService extends PushNotificationService {
   async enableAndSendTest(): Promise<void> {
     this.enableCalls += 1;
     this.stateValue.set('enabled');
-    this.messageValue.set('Test notification sent.');
+    this.messageValue.set('Notification de test envoyée.');
   }
 
   async sendTest(): Promise<void> {
-    this.messageValue.set('Test notification sent.');
+    this.messageValue.set('Notification de test envoyée.');
   }
 
   fail(): void {

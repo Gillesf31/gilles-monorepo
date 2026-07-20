@@ -44,10 +44,10 @@ describe('CreateRoutineComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain(
-      'Give this routine a name',
+      'Donnez un nom à cette routine',
     );
     expect(fixture.nativeElement.textContent).toContain(
-      'Choose how often this routine repeats',
+      'Choisissez la fréquence de répétition de cette routine',
     );
     expect(await repository.list()).toHaveLength(4);
   });
@@ -88,7 +88,7 @@ describe('CreateRoutineComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain(
-      'Unable to save this routine: Your session is no longer valid',
+      'Impossible d’enregistrer cette routine : Your session is no longer valid',
     );
   });
 });

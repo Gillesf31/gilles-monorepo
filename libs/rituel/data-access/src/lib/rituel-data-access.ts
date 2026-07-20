@@ -138,21 +138,21 @@ export class BrowserPushNotificationService extends PushNotificationService {
       this.stateValue.set(denied ? 'denied' : 'error');
       this.messageValue.set(
         denied
-          ? 'Notifications are blocked in this browser.'
-          : 'Rituel could not enable reminders. Please try again.',
+          ? 'Les notifications sont bloquées dans ce navigateur.'
+          : 'Rituel n’a pas pu activer les rappels. Veuillez réessayer.',
       );
     }
   }
 
   async sendTest(): Promise<void> {
-    this.messageValue.set('Sending a test notification…');
+    this.messageValue.set('Envoi d’une notification de test…');
 
     try {
       await this.gateway.sendTest();
-      this.messageValue.set('Test notification sent.');
+      this.messageValue.set('Notification de test envoyée.');
     } catch {
       this.messageValue.set(
-        'Reminders are enabled, but the test notification could not be sent.',
+        'Les rappels sont activés, mais la notification de test n’a pas pu être envoyée.',
       );
     }
   }
@@ -172,7 +172,7 @@ export class BrowserPushNotificationService extends PushNotificationService {
       }
     } catch {
       this.stateValue.set('error');
-      this.messageValue.set('Rituel could not check notification support.');
+      this.messageValue.set('Rituel n’a pas pu vérifier la prise en charge des notifications.');
     }
   }
 }
@@ -250,7 +250,7 @@ export class InMemoryRoutineRepository extends RoutineRepository {
     const routine = this.routineState().find((item) => item.id === id);
 
     if (!routine) {
-      throw new Error(`Routine not found: ${id}`);
+      throw new Error(`Routine introuvable : ${id}`);
     }
 
     return routine;
@@ -380,7 +380,7 @@ export class ServerRoutineRepository extends RoutineRepository {
     const routine = await this.get(id);
 
     if (!routine) {
-      throw new Error(`Routine not found: ${id}`);
+      throw new Error(`Routine introuvable : ${id}`);
     }
 
     return routine;
@@ -499,7 +499,7 @@ export class SupabaseRoutineGateway implements RoutineServerGateway {
 
     const { data, error } = await this.client.auth.signInAnonymously();
     if (error || !data.user) {
-      throw error ?? new Error('Unable to create an anonymous Rituel session');
+      throw error ?? new Error('Impossible de créer une session Rituel anonyme');
     }
   }
 }
@@ -564,7 +564,7 @@ function toHouseholdId(data: HouseholdRow[] | HouseholdRow | null): string {
   const row = Array.isArray(data) ? data[0] : data;
 
   if (!row?.id) {
-    throw new Error('Rituel could not determine this household');
+    throw new Error('Rituel n’a pas pu déterminer ce foyer');
   }
 
   return row.id;
@@ -609,7 +609,7 @@ function serializePushSubscription(
   const auth = serialized.keys?.['auth'];
 
   if (!endpoint || !p256dh || !auth) {
-    throw new Error('The browser returned an incomplete Push subscription');
+    throw new Error('Le navigateur a renvoyé une inscription Push incomplète');
   }
 
   return { endpoint, keys: { p256dh, auth } };

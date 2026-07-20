@@ -161,7 +161,7 @@ describe('BrowserPushNotificationService', () => {
     ]);
     expect(gateway.testCalls).toBe(1);
     expect(service.state()).toBe('enabled');
-    expect(service.message()).toBe('Test notification sent.');
+    expect(service.message()).toBe('Notification de test envoyée.');
   });
 
   it('reports unsupported browsers without requesting permission', async () => {

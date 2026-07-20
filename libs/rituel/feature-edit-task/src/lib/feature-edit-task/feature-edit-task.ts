@@ -24,11 +24,11 @@ const frequencyOptions: ReadonlyArray<{
   value: RoutineFrequency;
   label: string;
 }> = [
-  { value: routineFrequencies.daily, label: 'Every day' },
-  { value: routineFrequencies.weekly, label: 'Every week' },
-  { value: routineFrequencies.everyTwoWeeks, label: 'Every 2 weeks' },
-  { value: routineFrequencies.monthly, label: 'Every month' },
-  { value: routineFrequencies.everyThreeMonths, label: 'Every 3 months' },
+  { value: routineFrequencies.daily, label: 'Chaque jour' },
+  { value: routineFrequencies.weekly, label: 'Chaque semaine' },
+  { value: routineFrequencies.everyTwoWeeks, label: 'Toutes les 2 semaines' },
+  { value: routineFrequencies.monthly, label: 'Chaque mois' },
+  { value: routineFrequencies.everyThreeMonths, label: 'Tous les 3 mois' },
 ];
 
 @Component({
@@ -114,7 +114,7 @@ export class EditRoutineComponent implements OnInit {
       });
       await this.router.navigateByUrl('/');
     } catch {
-      this.saveError.set('Unable to save this routine. Please try again.');
+      this.saveError.set('Impossible d’enregistrer cette routine. Veuillez réessayer.');
     } finally {
       this.isSaving.set(false);
     }
@@ -140,7 +140,7 @@ export class EditRoutineComponent implements OnInit {
       await this.repository.delete(this.routine.id);
       await this.router.navigateByUrl('/');
     } catch {
-      this.saveError.set('Unable to delete this routine. Please try again.');
+      this.saveError.set('Impossible de supprimer cette routine. Veuillez réessayer.');
     } finally {
       this.isSaving.set(false);
     }

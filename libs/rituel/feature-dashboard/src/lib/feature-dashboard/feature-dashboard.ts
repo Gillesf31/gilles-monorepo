@@ -18,11 +18,11 @@ import {
 } from '@gilles-monorepo/rituel-data-access';
 
 const frequencyLabels: Record<RoutineFrequency, string> = {
-  daily: 'Every day',
-  weekly: 'Every week',
-  'every-two-weeks': 'Every 2 weeks',
-  monthly: 'Every month',
-  'every-three-months': 'Every 3 months',
+  daily: 'Chaque jour',
+  weekly: 'Chaque semaine',
+  'every-two-weeks': 'Toutes les 2 semaines',
+  monthly: 'Chaque mois',
+  'every-three-months': 'Tous les 3 mois',
 };
 
 type RoutineWeekDay = {
@@ -86,8 +86,8 @@ export class RituelDashboardComponent {
   protected weekDayLabel(day: RoutineWeekDay): string {
     const routineNames = day.routines.map((routine) => routine.name);
     const schedule = routineNames.length
-      ? `${routineNames.length} routine${routineNames.length === 1 ? '' : 's'}: ${routineNames.join(', ')}`
-      : 'No routines scheduled';
+      ? `${routineNames.length} routine${routineNames.length === 1 ? '' : 's'} : ${routineNames.join(', ')}`
+      : 'Aucune routine prévue';
 
     return `${day.weekday} ${day.date}. ${schedule}.`;
   }
@@ -128,7 +128,7 @@ export class RituelDashboardComponent {
 
     return {
       date,
-      weekday: calendarDate.toLocaleDateString(undefined, {
+      weekday: calendarDate.toLocaleDateString('fr-CA', {
         weekday: 'long',
         timeZone: 'UTC',
       }),

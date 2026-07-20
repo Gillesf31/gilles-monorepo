@@ -23,11 +23,11 @@ const frequencyOptions: ReadonlyArray<{
   value: RoutineFrequency;
   label: string;
 }> = [
-  { value: routineFrequencies.daily, label: 'Every day' },
-  { value: routineFrequencies.weekly, label: 'Every week' },
-  { value: routineFrequencies.everyTwoWeeks, label: 'Every 2 weeks' },
-  { value: routineFrequencies.monthly, label: 'Every month' },
-  { value: routineFrequencies.everyThreeMonths, label: 'Every 3 months' },
+  { value: routineFrequencies.daily, label: 'Chaque jour' },
+  { value: routineFrequencies.weekly, label: 'Chaque semaine' },
+  { value: routineFrequencies.everyTwoWeeks, label: 'Toutes les 2 semaines' },
+  { value: routineFrequencies.monthly, label: 'Chaque mois' },
+  { value: routineFrequencies.everyThreeMonths, label: 'Tous les 3 mois' },
 ];
 
 @Component({
@@ -95,8 +95,8 @@ export class CreateRoutineComponent {
       console.error('Rituel routine save failed', error);
       this.saveError.set(
         error instanceof Error && error.message
-          ? `Unable to save this routine: ${error.message}`
-          : 'Unable to save this routine. Please try again.',
+          ? `Impossible d’enregistrer cette routine : ${error.message}`
+          : 'Impossible d’enregistrer cette routine. Veuillez réessayer.',
       );
     } finally {
       this.isSaving.set(false);

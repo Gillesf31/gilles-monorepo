@@ -1,7 +1,7 @@
 {
   "name": "Rituel",
   "short_name": "Rituel",
-  "description": "A calm home-maintenance rhythm for recurring tasks.",
+  "description": "Un rythme paisible pour les tâches récurrentes de la maison.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#101815",
