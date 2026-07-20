@@ -10,6 +10,7 @@ import {
   RoutineDueState,
   RoutineFrequency,
   classifyRoutineDueState,
+  getRoutineWeekDates,
 } from '@gilles-monorepo/rituel-model';
 import {
   PushNotificationService,
@@ -22,6 +23,14 @@ const frequencyLabels: Record<RoutineFrequency, string> = {
   'every-two-weeks': 'Every 2 weeks',
   monthly: 'Every month',
   'every-three-months': 'Every 3 months',
+};
+
+type RoutineWeekDay = {
+  readonly date: string;
+  readonly weekday: string;
+  readonly dayOfMonth: string;
+  readonly isToday: boolean;
+  readonly routines: readonly Routine[];
 };
 
 @Component({
@@ -42,15 +51,19 @@ export class RituelDashboardComponent {
     () => this.repository.routines().length > 0,
   );
 
-  protected readonly week = [
-    { label: 'M', active: false },
-    { label: 'T', active: false },
-    { label: 'W', active: true },
-    { label: 'T', active: false },
-    { label: 'F', active: true },
-    { label: 'S', active: false },
-    { label: 'S', active: false },
-  ];
+  protected readonly week = computed(() => {
+    const routinesByDate = new Map<string, Routine[]>();
+
+    for (const routine of this.repository.routines()) {
+      const routines = routinesByDate.get(routine.nextDueDate) ?? [];
+      routines.push(routine);
+      routinesByDate.set(routine.nextDueDate, routines);
+    }
+
+    return getRoutineWeekDates(this.today).map((date) =>
+      this.toWeekDay(date, routinesByDate.get(date) ?? []),
+    );
+  });
 
   protected readonly overdue = computed(() =>
     this.routinesWithDueState('overdue'),
@@ -68,6 +81,15 @@ export class RituelDashboardComponent {
 
   protected frequencyLabel(frequency: RoutineFrequency): string {
     return frequencyLabels[frequency];
+  }
+
+  protected weekDayLabel(day: RoutineWeekDay): string {
+    const routineNames = day.routines.map((routine) => routine.name);
+    const schedule = routineNames.length
+      ? `${routineNames.length} routine${routineNames.length === 1 ? '' : 's'}: ${routineNames.join(', ')}`
+      : 'No routines scheduled';
+
+    return `${day.weekday} ${day.date}. ${schedule}.`;
   }
 
   protected async completeRoutine(id: string): Promise<void> {
@@ -96,6 +118,24 @@ export class RituelDashboardComponent {
       .filter(
         (routine) => classifyRoutineDueState(routine, this.today) === state,
       );
+  }
+
+  private toWeekDay(
+    date: string,
+    routines: readonly Routine[],
+  ): RoutineWeekDay {
+    const calendarDate = new Date(`${date}T00:00:00Z`);
+
+    return {
+      date,
+      weekday: calendarDate.toLocaleDateString(undefined, {
+        weekday: 'long',
+        timeZone: 'UTC',
+      }),
+      dayOfMonth: String(calendarDate.getUTCDate()),
+      isToday: date === this.today,
+      routines,
+    };
   }
 }
 

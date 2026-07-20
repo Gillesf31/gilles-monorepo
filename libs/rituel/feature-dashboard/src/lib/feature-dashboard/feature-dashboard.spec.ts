@@ -137,6 +137,40 @@ describe('RituelDashboardComponent', () => {
     );
   });
 
+  it('maps this week to routines scheduled on their actual due dates', () => {
+    const today = getCurrentLocalDate();
+    const monday = startOfWeek(today);
+    const wednesday = addDaysToRoutineDate(monday, 2);
+    repository.setRoutines([
+      routine('Monday routine', monday),
+      routine('Wednesday routine', wednesday),
+      routine('Next week routine', addDaysToRoutineDate(monday, 7)),
+    ]);
+
+    fixture.detectChanges();
+
+    const days = Array.from(
+      fixture.nativeElement.querySelectorAll('.cadence-day'),
+    ) as HTMLElement[];
+    const mondayElement = days.find((day) =>
+      day.getAttribute('aria-label')?.includes(monday),
+    );
+    const wednesdayElement = days.find((day) =>
+      day.getAttribute('aria-label')?.includes(wednesday),
+    );
+
+    expect(days).toHaveLength(7);
+    expect(mondayElement?.classList.contains('is-active')).toBe(true);
+    expect(mondayElement?.getAttribute('aria-label')).toContain('Monday routine');
+    expect(wednesdayElement?.classList.contains('is-active')).toBe(true);
+    expect(wednesdayElement?.getAttribute('aria-label')).toContain(
+      'Wednesday routine',
+    );
+    expect(days.map((day) => day.getAttribute('aria-label')).join(' ')).not.toContain(
+      'Next week routine',
+    );
+  });
+
   it('completes a due routine from the dashboard', async () => {
     const today = getCurrentLocalDate();
     repository.setRoutines([routine('today', today)]);
@@ -250,4 +284,11 @@ function getCurrentLocalDate(): RoutineDate {
   const day = String(now.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
+}
+
+function startOfWeek(date: RoutineDate): RoutineDate {
+  const calendarDate = new Date(`${date}T00:00:00Z`);
+  const daysSinceMonday = (calendarDate.getUTCDay() + 6) % 7;
+
+  return addDaysToRoutineDate(date, -daysSinceMonday);
 }

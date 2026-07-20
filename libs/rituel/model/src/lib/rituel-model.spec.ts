@@ -1,6 +1,8 @@
 import {
+  addDaysToRoutineDate,
   calculateNextDueDate,
   classifyRoutineDueState,
+  getRoutineWeekDates,
   routineFrequencies,
 } from './rituel-model';
 
@@ -42,5 +44,22 @@ describe('calculateNextDueDate', () => {
     expect(
       calculateNextDueDate('2024-11-30', routineFrequencies.everyThreeMonths),
     ).toBe('2025-02-28');
+  });
+});
+
+describe('getRoutineWeekDates', () => {
+  it.each([
+    ['2026-07-19', '2026-07-13'],
+    ['2026-07-20', '2026-07-20'],
+  ])('starts the week on Monday for %s', (referenceDate, monday) => {
+    expect(getRoutineWeekDates(referenceDate)).toEqual([
+      monday,
+      addDaysToRoutineDate(monday, 1),
+      addDaysToRoutineDate(monday, 2),
+      addDaysToRoutineDate(monday, 3),
+      addDaysToRoutineDate(monday, 4),
+      addDaysToRoutineDate(monday, 5),
+      addDaysToRoutineDate(monday, 6),
+    ]);
   });
 });

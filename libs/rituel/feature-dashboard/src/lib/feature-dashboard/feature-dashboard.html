@@ -10,14 +10,21 @@
       <a class="create-routine-link" routerLink="/tasks/new">Add a routine</a>
     </div>
 
-    <div class="cadence" aria-label="This week's routine cadence">
-      <p>This week</p>
-      <div class="cadence-line">
-        @for (day of week; track $index) {
-        <span [class.is-active]="day.active">
-          <i></i>
-          {{ day.label }}
-        </span>
+    <div class="cadence" aria-labelledby="weekly-schedule-title">
+      <p id="weekly-schedule-title">This week</p>
+      <div class="cadence-line" role="list">
+        @for (day of week(); track day.date) {
+        <div
+          class="cadence-day"
+          role="listitem"
+          [class.is-active]="day.routines.length"
+          [class.is-today]="day.isToday"
+          [attr.aria-label]="weekDayLabel(day)"
+        >
+          <i aria-hidden="true">{{ day.routines.length || '' }}</i>
+          <span aria-hidden="true">{{ day.weekday.slice(0, 1) }}</span>
+          <small aria-hidden="true">{{ day.dayOfMonth }}</small>
+        </div>
         }
       </div>
     </div>

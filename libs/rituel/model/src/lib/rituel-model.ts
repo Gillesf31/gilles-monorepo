@@ -72,6 +72,19 @@ export function addDaysToRoutineDate(
   return formatUtcDate(addDays(toUtcDate(date), days));
 }
 
+/** Returns the Monday-through-Sunday calendar dates containing `referenceDate`. */
+export function getRoutineWeekDates(
+  referenceDate: RoutineDate,
+): readonly RoutineDate[] {
+  const reference = toUtcDate(referenceDate);
+  const daysSinceMonday = (reference.getUTCDay() + 6) % 7;
+  const monday = addDays(reference, -daysSinceMonday);
+
+  return Array.from({ length: 7 }, (_, index) =>
+    formatUtcDate(addDays(monday, index)),
+  );
+}
+
 function toUtcDate(value: RoutineDate): Date {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 
