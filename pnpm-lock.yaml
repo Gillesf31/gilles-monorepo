@@ -13,7 +13,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 21.2.5
-        version: 21.2.5(4eff7eafc3da894d7b86048b84cbde6c)
+        version: 21.2.5(5e20a7814230272681e88900e7ed0b83)
       '@angular/cdk':
         specifier: 21.2.5
         version: 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(@angular/platform-browser@21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)))(rxjs@7.8.2)
@@ -38,6 +38,9 @@ importers:
       '@angular/router':
         specifier: 21.2.5
         version: 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(@angular/platform-browser@21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)))(rxjs@7.8.2)
+      '@angular/service-worker':
+        specifier: 21.2.5
+        version: 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)
       '@angular/ssr':
         specifier: 21.2.5
         version: 21.2.5(04760f28a7277a8d7009a1b3e35c4191)
@@ -56,10 +59,10 @@ importers:
     devDependencies:
       '@analogjs/vite-plugin-angular':
         specifier: 2.2.0
-        version: 2.2.0(@angular-devkit/build-angular@21.2.5(4eff7eafc3da894d7b86048b84cbde6c))(@angular/build@21.2.5(8c1aa773c165c7115f9c24193865b8af))
+        version: 2.2.0(@angular-devkit/build-angular@21.2.5(5e20a7814230272681e88900e7ed0b83))(@angular/build@21.2.5(f26c6e50f369f66f25e56b1776ff6e89))
       '@analogjs/vitest-angular':
         specifier: 2.2.0
-        version: 2.2.0(@analogjs/vite-plugin-angular@2.2.0(@angular-devkit/build-angular@21.2.5(4eff7eafc3da894d7b86048b84cbde6c))(@angular/build@21.2.5(8c1aa773c165c7115f9c24193865b8af)))(@angular-devkit/architect@0.2102.7(chokidar@5.0.0))(vitest@4.0.9)
+        version: 2.2.0(@analogjs/vite-plugin-angular@2.2.0(@angular-devkit/build-angular@21.2.5(5e20a7814230272681e88900e7ed0b83))(@angular/build@21.2.5(f26c6e50f369f66f25e56b1776ff6e89)))(@angular-devkit/architect@0.2102.7(chokidar@5.0.0))(vitest@4.0.9)
       '@angular-devkit/architect':
         specifier: ^0.2102.7
         version: 0.2102.7(chokidar@5.0.0)
@@ -71,7 +74,7 @@ importers:
         version: 21.2.5(chokidar@5.0.0)
       '@angular/build':
         specifier: 21.2.5
-        version: 21.2.5(8c1aa773c165c7115f9c24193865b8af)
+        version: 21.2.5(f26c6e50f369f66f25e56b1776ff6e89)
       '@angular/cli':
         specifier: 21.2.5
         version: 21.2.5(@types/node@20.19.9)(chokidar@5.0.0)
@@ -86,7 +89,7 @@ importers:
         version: 9.39.4
       '@nx/angular':
         specifier: 22.6.2
-        version: 22.6.2(7bddb1886d833607cc2c195de8c12b99)
+        version: 22.6.2(f794d77296261d9e4c6e8b6410fb6118)
       '@nx/devkit':
         specifier: 22.6.2
         version: 22.6.2(nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.18)))
@@ -137,7 +140,7 @@ importers:
         version: 21.2.5(chokidar@5.0.0)
       '@storybook/angular':
         specifier: 10.3.5
-        version: 10.3.5(8e1e44c9b8123ca9d14bcd85a07c0fe0)
+        version: 10.3.5(c3bfece7c1256918c52676892c169d27)
       '@swc-node/register':
         specifier: 1.11.1
         version: 1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.18))(@swc/types@0.1.26)(typescript@5.9.3)
@@ -565,6 +568,7 @@ packages:
   '@angular/platform-browser-dynamic@21.2.8':
     resolution: {integrity: sha512-9XeplSHsKnLDm14dvwXG00Ox6WbDrhf7ub7MxxcJ6gCgRm/yqJ3Vrz4a+NBpYnelapqiCCGEdHeyx2xt8vG1qA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    deprecated: '@angular/platform-browser-dynamic is deprecated. Use `@angular/platform-browser` instead.'
     peerDependencies:
       '@angular/common': 21.2.8
       '@angular/compiler': 21.2.8
@@ -599,6 +603,14 @@ packages:
       '@angular/common': 21.2.5
       '@angular/core': 21.2.5
       '@angular/platform-browser': 21.2.5
+      rxjs: ^6.5.3 || ^7.4.0
+
+  '@angular/service-worker@21.2.5':
+    resolution: {integrity: sha512-PbkbDuVmpN135bu/XtskkQ1gPVsiGBI+CX9rVUykqomT3y/okW/qaqsYnmzFZedBpZTGKDOaeFGN5GhJj2O22g==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    hasBin: true
+    peerDependencies:
+      '@angular/core': 21.2.5
       rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/ssr@21.2.5':
@@ -8605,16 +8617,16 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@analogjs/vite-plugin-angular@2.2.0(@angular-devkit/build-angular@21.2.5(4eff7eafc3da894d7b86048b84cbde6c))(@angular/build@21.2.5(8c1aa773c165c7115f9c24193865b8af))':
+  '@analogjs/vite-plugin-angular@2.2.0(@angular-devkit/build-angular@21.2.5(5e20a7814230272681e88900e7ed0b83))(@angular/build@21.2.5(f26c6e50f369f66f25e56b1776ff6e89))':
     dependencies:
       ts-morph: 21.0.1
     optionalDependencies:
-      '@angular-devkit/build-angular': 21.2.5(4eff7eafc3da894d7b86048b84cbde6c)
-      '@angular/build': 21.2.5(8c1aa773c165c7115f9c24193865b8af)
+      '@angular-devkit/build-angular': 21.2.5(5e20a7814230272681e88900e7ed0b83)
+      '@angular/build': 21.2.5(f26c6e50f369f66f25e56b1776ff6e89)
 
-  '@analogjs/vitest-angular@2.2.0(@analogjs/vite-plugin-angular@2.2.0(@angular-devkit/build-angular@21.2.5(4eff7eafc3da894d7b86048b84cbde6c))(@angular/build@21.2.5(8c1aa773c165c7115f9c24193865b8af)))(@angular-devkit/architect@0.2102.7(chokidar@5.0.0))(vitest@4.0.9)':
+  '@analogjs/vitest-angular@2.2.0(@analogjs/vite-plugin-angular@2.2.0(@angular-devkit/build-angular@21.2.5(5e20a7814230272681e88900e7ed0b83))(@angular/build@21.2.5(f26c6e50f369f66f25e56b1776ff6e89)))(@angular-devkit/architect@0.2102.7(chokidar@5.0.0))(vitest@4.0.9)':
     dependencies:
-      '@analogjs/vite-plugin-angular': 2.2.0(@angular-devkit/build-angular@21.2.5(4eff7eafc3da894d7b86048b84cbde6c))(@angular/build@21.2.5(8c1aa773c165c7115f9c24193865b8af))
+      '@analogjs/vite-plugin-angular': 2.2.0(@angular-devkit/build-angular@21.2.5(5e20a7814230272681e88900e7ed0b83))(@angular/build@21.2.5(f26c6e50f369f66f25e56b1776ff6e89))
       '@angular-devkit/architect': 0.2102.7(chokidar@5.0.0)
       vitest: 4.0.9(@types/node@20.19.9)(@vitest/ui@4.0.9)(jiti@2.4.2)(jsdom@22.1.0)(less@4.4.2)(sass-embedded@1.98.0)(sass@1.97.3)(terser@5.46.0)(yaml@2.8.3)
 
@@ -8632,13 +8644,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@21.2.5(4eff7eafc3da894d7b86048b84cbde6c)':
+  '@angular-devkit/build-angular@21.2.5(5e20a7814230272681e88900e7ed0b83)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.5(chokidar@5.0.0)
       '@angular-devkit/build-webpack': 0.2102.5(chokidar@5.0.0)(webpack-dev-server@5.2.3(tslib@2.8.1)(webpack@5.105.2(@swc/core@1.15.8(@swc/helpers@0.5.18))(esbuild@0.27.3)))(webpack@5.105.2(@swc/core@1.15.8(@swc/helpers@0.5.18))(esbuild@0.27.3))
       '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
-      '@angular/build': 21.2.5(8c1aa773c165c7115f9c24193865b8af)
+      '@angular/build': 21.2.5(f26c6e50f369f66f25e56b1776ff6e89)
       '@angular/compiler-cli': 21.2.5(@angular/compiler@21.2.5)(typescript@5.9.3)
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -8694,6 +8706,7 @@ snapshots:
       '@angular/core': 21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)
       '@angular/platform-browser': 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))
       '@angular/platform-server': 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/compiler@21.2.5)(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(@angular/platform-browser@21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)))(rxjs@7.8.2)
+      '@angular/service-worker': 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)
       '@angular/ssr': 21.2.5(04760f28a7277a8d7009a1b3e35c4191)
       esbuild: 0.27.3
       ng-packagr: 21.2.2(@angular/compiler-cli@21.2.5(@angular/compiler@21.2.5)(typescript@5.9.3))(tailwindcss@3.4.19(yaml@2.8.3))(tslib@2.8.1)(typescript@5.9.3)
@@ -8827,7 +8840,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.4.2)
       typescript: 5.9.3
 
-  '@angular/build@21.2.5(8c1aa773c165c7115f9c24193865b8af)':
+  '@angular/build@21.2.5(f26c6e50f369f66f25e56b1776ff6e89)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.5(chokidar@5.0.0)
@@ -8864,6 +8877,7 @@ snapshots:
       '@angular/core': 21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)
       '@angular/platform-browser': 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))
       '@angular/platform-server': 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/compiler@21.2.5)(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(@angular/platform-browser@21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)))(rxjs@7.8.2)
+      '@angular/service-worker': 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)
       '@angular/ssr': 21.2.5(04760f28a7277a8d7009a1b3e35c4191)
       less: 4.4.2
       lmdb: 3.5.1
@@ -8993,6 +9007,12 @@ snapshots:
       '@angular/common': 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)
       '@angular/core': 21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)
       '@angular/platform-browser': 21.2.5(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))
+      rxjs: 7.8.2
+      tslib: 2.8.1
+
+  '@angular/service-worker@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)':
+    dependencies:
+      '@angular/core': 21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0)
       rxjs: 7.8.2
       tslib: 2.8.1
 
@@ -10975,7 +10995,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nx/angular@22.6.2(7bddb1886d833607cc2c195de8c12b99)':
+  '@nx/angular@22.6.2(f794d77296261d9e4c6e8b6410fb6118)':
     dependencies:
       '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.2.5(chokidar@5.0.0)
@@ -10999,8 +11019,8 @@ snapshots:
       tslib: 2.8.1
       webpack-merge: 5.10.0
     optionalDependencies:
-      '@angular-devkit/build-angular': 21.2.5(4eff7eafc3da894d7b86048b84cbde6c)
-      '@angular/build': 21.2.5(8c1aa773c165c7115f9c24193865b8af)
+      '@angular-devkit/build-angular': 21.2.5(5e20a7814230272681e88900e7ed0b83)
+      '@angular/build': 21.2.5(f26c6e50f369f66f25e56b1776ff6e89)
       ng-packagr: 21.2.2(@angular/compiler-cli@21.2.5(@angular/compiler@21.2.5)(typescript@5.9.3))(tailwindcss@3.4.19(yaml@2.8.3))(tslib@2.8.1)(typescript@5.9.3)
     transitivePeerDependencies:
       - '@babel/traverse'
@@ -12212,10 +12232,10 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@storybook/angular@10.3.5(8e1e44c9b8123ca9d14bcd85a07c0fe0)':
+  '@storybook/angular@10.3.5(c3bfece7c1256918c52676892c169d27)':
     dependencies:
       '@angular-devkit/architect': 0.2102.7(chokidar@5.0.0)
-      '@angular-devkit/build-angular': 21.2.5(4eff7eafc3da894d7b86048b84cbde6c)
+      '@angular-devkit/build-angular': 21.2.5(5e20a7814230272681e88900e7ed0b83)
       '@angular-devkit/core': 21.2.5(chokidar@5.0.0)
       '@angular/common': 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.16.0))(rxjs@7.8.2)
       '@angular/compiler': 21.2.5

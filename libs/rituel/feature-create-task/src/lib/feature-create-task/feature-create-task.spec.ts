@@ -49,7 +49,7 @@ describe('CreateRoutineComponent', () => {
     expect(fixture.nativeElement.textContent).toContain(
       'Choose how often this routine repeats',
     );
-    expect(repository.list()).toHaveLength(4);
+    expect(await repository.list()).toHaveLength(4);
   });
 
   it('trims and saves a valid routine before returning to the dashboard', async () => {
@@ -62,7 +62,7 @@ describe('CreateRoutineComponent', () => {
 
     await component.submit();
 
-    expect(repository.list().at(-1)).toEqual({
+    expect((await repository.list()).at(-1)).toEqual({
       id: 'routine-new',
       name: 'Water the plants',
       note: 'Use the rain barrel.',
@@ -71,6 +71,25 @@ describe('CreateRoutineComponent', () => {
       frequency: routineFrequencies.weekly,
     });
     expect(navigateByUrl).toHaveBeenCalledWith('/');
+  });
+
+  it('shows the server error when saving fails', async () => {
+    vi.spyOn(repository, 'create').mockRejectedValue(
+      new Error('Your session is no longer valid'),
+    );
+    component.form.setValue({
+      name: 'Clean the dryer',
+      note: '',
+      firstDueDate: '2026-07-20',
+      frequency: routineFrequencies.monthly,
+    });
+
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'Unable to save this routine: Your session is no longer valid',
+    );
   });
 });
 

@@ -56,6 +56,9 @@
       ],
       "@gilles-monorepo/feature-create-task": [
         "libs/rituel/feature-create-task/src/index.ts"
+      ],
+      "@gilles-monorepo/feature-edit-task": [
+        "libs/rituel/feature-edit-task/src/index.ts"
       ]
     }
   },

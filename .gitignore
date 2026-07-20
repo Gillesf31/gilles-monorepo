@@ -59,3 +59,6 @@ storybook-static
 # Environment files with credentials
 apps/recipe/src/environments/environment*.ts
 !apps/recipe/src/environments/environment*.template.ts
+
+# Local Supabase CLI link state
+/supabase/.temp/

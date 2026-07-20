@@ -1,0 +1,13 @@
+{
+  "name": "feature-edit-task",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/rituel/feature-edit-task/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": ["scope:rituel", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

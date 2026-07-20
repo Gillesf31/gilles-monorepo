@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -11,10 +12,10 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RoutineRepository } from '@gilles-monorepo/rituel-data-access';
 import {
-  RoutineDate,
+  Routine,
   RoutineFrequency,
   routineFrequencies,
 } from '@gilles-monorepo/rituel-model';
@@ -31,19 +32,22 @@ const frequencyOptions: ReadonlyArray<{
 ];
 
 @Component({
-  selector: 'lib-feature-create-task',
+  selector: 'lib-feature-edit-task',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './feature-create-task.html',
-  styleUrl: './feature-create-task.css',
+  templateUrl: './feature-edit-task.html',
+  styleUrl: './feature-edit-task.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreateRoutineComponent {
+export class EditRoutineComponent implements OnInit {
   private readonly repository = inject(RoutineRepository);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private routine: Routine | undefined;
 
   protected readonly frequencyOptions = frequencyOptions;
   protected readonly submitted = signal(false);
   protected readonly isSaving = signal(false);
+  protected readonly isDeleteConfirmationVisible = signal(false);
   protected readonly saveError = signal<string | null>(null);
 
   readonly form = new FormGroup({
@@ -52,7 +56,7 @@ export class CreateRoutineComponent {
       validators: [requiredTrimmed],
     }),
     note: new FormControl('', { nonNullable: true }),
-    firstDueDate: new FormControl(getCurrentLocalDate(), {
+    nextDueDate: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
     }),
@@ -61,8 +65,26 @@ export class CreateRoutineComponent {
     }),
   });
 
+  async ngOnInit(): Promise<void> {
+    this.routine = await this.repository.get(
+      this.route.snapshot.paramMap.get('id') ?? '',
+    );
+
+    if (!this.routine) {
+      void this.router.navigateByUrl('/');
+      return;
+    }
+
+    this.form.setValue({
+      name: this.routine.name,
+      note: this.routine.note ?? '',
+      nextDueDate: this.routine.nextDueDate,
+      frequency: this.routine.frequency,
+    });
+  }
+
   async submit(): Promise<void> {
-    if (this.isSaving()) {
+    if (this.isSaving() || !this.routine) {
       return;
     }
 
@@ -74,7 +96,7 @@ export class CreateRoutineComponent {
       return;
     }
 
-    const { name, note, firstDueDate, frequency } = this.form.getRawValue();
+    const { name, note, nextDueDate, frequency } = this.form.getRawValue();
 
     if (!frequency) {
       return;
@@ -83,21 +105,42 @@ export class CreateRoutineComponent {
     this.isSaving.set(true);
 
     try {
-      await this.repository.create({
+      await this.repository.update(this.routine.id, {
+        ...this.routine,
         name: name.trim(),
         note: note.trim() || undefined,
-        firstDueDate,
-        nextDueDate: firstDueDate,
+        nextDueDate,
         frequency,
       });
       await this.router.navigateByUrl('/');
-    } catch (error) {
-      console.error('Rituel routine save failed', error);
-      this.saveError.set(
-        error instanceof Error && error.message
-          ? `Unable to save this routine: ${error.message}`
-          : 'Unable to save this routine. Please try again.',
-      );
+    } catch {
+      this.saveError.set('Unable to save this routine. Please try again.');
+    } finally {
+      this.isSaving.set(false);
+    }
+  }
+
+  protected showDeleteConfirmation(): void {
+    this.isDeleteConfirmationVisible.set(true);
+  }
+
+  protected cancelDelete(): void {
+    this.isDeleteConfirmationVisible.set(false);
+  }
+
+  async deleteRoutine(): Promise<void> {
+    if (!this.routine || this.isSaving()) {
+      return;
+    }
+
+    this.isSaving.set(true);
+    this.saveError.set(null);
+
+    try {
+      await this.repository.delete(this.routine.id);
+      await this.router.navigateByUrl('/');
+    } catch {
+      this.saveError.set('Unable to delete this routine. Please try again.');
     } finally {
       this.isSaving.set(false);
     }
@@ -106,12 +149,3 @@ export class CreateRoutineComponent {
 
 const requiredTrimmed: ValidatorFn = (control) =>
   String(control.value).trim() ? null : { required: true };
-
-function getCurrentLocalDate(): RoutineDate {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-}

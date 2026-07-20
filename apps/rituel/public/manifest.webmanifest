@@ -1,0 +1,17 @@
+{
+  "name": "Rituel",
+  "short_name": "Rituel",
+  "description": "A calm home-maintenance rhythm for recurring tasks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101815",
+  "theme_color": "#101815",
+  "icons": [
+    {
+      "src": "icons/rituel-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

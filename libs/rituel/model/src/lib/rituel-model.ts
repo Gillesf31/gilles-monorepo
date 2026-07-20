@@ -2,6 +2,7 @@
 export type RoutineDate = string;
 
 export const routineFrequencies = {
+  daily: 'daily',
   weekly: 'weekly',
   everyTwoWeeks: 'every-two-weeks',
   monthly: 'monthly',
@@ -21,6 +22,8 @@ export type Routine = {
 };
 
 export type CreateRoutineInput = Omit<Routine, 'id'>;
+
+export type UpdateRoutineInput = Omit<Routine, 'id'>;
 
 export type RoutineDueState = 'overdue' | 'due-today' | 'upcoming';
 
@@ -49,6 +52,8 @@ export function calculateNextDueDate(
   const completedOn = toUtcDate(completionDate);
 
   switch (frequency) {
+    case routineFrequencies.daily:
+      return formatUtcDate(addDays(completedOn, 1));
     case routineFrequencies.weekly:
       return formatUtcDate(addDays(completedOn, 7));
     case routineFrequencies.everyTwoWeeks:

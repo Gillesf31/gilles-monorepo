@@ -1,13 +1,18 @@
 import { Route } from '@angular/router';
 import { RituelShellComponent } from './rituel-shell';
-import { provideRituelShell } from './rituel-shell.providers';
+import {
+  provideRituelShell,
+  RituelServerConfiguration,
+} from './rituel-shell.providers';
 
-export function createRituelShellRoutes(): Route[] {
+export function createRituelShellRoutes(
+  serverConfiguration?: RituelServerConfiguration,
+): Route[] {
   return [
     {
       path: '',
       component: RituelShellComponent,
-      providers: [provideRituelShell()],
+      providers: [provideRituelShell(serverConfiguration)],
       children: [
         {
           path: '',
@@ -22,6 +27,13 @@ export function createRituelShellRoutes(): Route[] {
           loadComponent: () =>
             import('@gilles-monorepo/feature-create-task').then(
               (m) => m.CreateRoutineComponent,
+            ),
+        },
+        {
+          path: 'tasks/:id/edit',
+          loadComponent: () =>
+            import('@gilles-monorepo/feature-edit-task').then(
+              (m) => m.EditRoutineComponent,
             ),
         },
       ],

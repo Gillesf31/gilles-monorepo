@@ -1,0 +1,205 @@
+.edit-routine {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 0 4rem;
+}
+
+.back-link {
+  color: var(--rituel-action-hover);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.intro {
+  max-width: 35rem;
+  margin: 3rem 0;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--rituel-muted-label);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  color: var(--rituel-ink-strong);
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.055em;
+}
+
+h1 {
+  margin: 0.65rem 0 1rem;
+  font-size: clamp(2.9rem, 8vw, 5rem);
+  line-height: 0.9;
+}
+
+.intro > p:not(.eyebrow),
+.danger-zone > p {
+  margin: 0;
+  color: var(--rituel-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+form,
+.danger-zone {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  border: 1px solid var(--rituel-border);
+  border-radius: 1rem;
+  background: var(--rituel-surface);
+}
+
+.field {
+  display: grid;
+  gap: 0.55rem;
+}
+
+label {
+  color: var(--rituel-ink-strong);
+  font-weight: 750;
+}
+
+label span {
+  color: var(--rituel-subtle);
+  font-weight: 500;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--rituel-input-border);
+  border-radius: 0.65rem;
+  background: var(--rituel-surface);
+  color: var(--rituel-ink-strong);
+  font: inherit;
+  line-height: 1.4;
+}
+
+input,
+select {
+  min-height: 2.8rem;
+  padding: 0.55rem 0.75rem;
+}
+
+textarea {
+  padding: 0.7rem 0.75rem;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 3px solid var(--rituel-focus-soft);
+  outline-offset: 2px;
+}
+
+.field-error,
+.save-error {
+  margin: 0;
+  color: var(--rituel-error);
+  font-size: 0.9rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.button,
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 0.65rem;
+  background: var(--rituel-action-bg);
+  color: var(--rituel-action-text);
+  font: inherit;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.button--secondary {
+  border: 1px solid var(--rituel-input-border);
+  background: transparent;
+  color: var(--rituel-ink-strong);
+}
+
+.button--danger {
+  background: var(--rituel-error);
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.danger-zone {
+  margin-top: 1.5rem;
+  border-color: var(--rituel-overdue-border);
+}
+
+.danger-zone h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.danger-zone > button {
+  justify-self: start;
+}
+
+.delete-confirmation {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rituel-overdue-border);
+}
+
+.delete-confirmation p {
+  margin: 0;
+  color: var(--rituel-ink-strong);
+  font-weight: 750;
+}
+
+@media (max-width: 40rem) {
+  .edit-routine {
+    padding-top: 1rem;
+  }
+
+  .intro {
+    margin: 2.5rem 0;
+  }
+
+  form,
+  .danger-zone {
+    padding: 1.25rem;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
+
+  .actions > * {
+    flex: 1 1 auto;
+  }
+}

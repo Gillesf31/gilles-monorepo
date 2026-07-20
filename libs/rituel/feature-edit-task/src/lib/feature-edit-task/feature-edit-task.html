@@ -1,0 +1,71 @@
+<section class="edit-routine" aria-labelledby="edit-routine-title">
+  <a class="back-link" routerLink="/">Back to routines</a>
+
+  <div class="intro">
+    <p class="eyebrow">Routine settings</p>
+    <h1 id="edit-routine-title">Keep the rhythm in tune.</h1>
+    <p>Adjust the reminder, its cadence, or remove a routine you no longer need.</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label for="routine-name">What needs doing?</label>
+      <input id="routine-name" type="text" formControlName="name" autocomplete="off" aria-describedby="routine-name-error" />
+      @if (form.controls.name.invalid && (form.controls.name.touched || submitted())) {
+      <p id="routine-name-error" class="field-error">Give this routine a name.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="routine-note">A note <span>(optional)</span></label>
+      <textarea id="routine-note" formControlName="note" rows="3"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="routine-next-due-date">Next due date</label>
+      <input id="routine-next-due-date" type="date" formControlName="nextDueDate" aria-describedby="routine-next-due-date-error" />
+      @if (form.controls.nextDueDate.invalid && (form.controls.nextDueDate.touched || submitted())) {
+      <p id="routine-next-due-date-error" class="field-error">Choose the next due date.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="routine-frequency">How often?</label>
+      <select id="routine-frequency" formControlName="frequency" aria-describedby="routine-frequency-error">
+        <option [ngValue]="null">Choose a rhythm</option>
+        @for (frequency of frequencyOptions; track frequency.value) {
+        <option [value]="frequency.value">{{ frequency.label }}</option>
+        }
+      </select>
+      @if (form.controls.frequency.invalid && (form.controls.frequency.touched || submitted())) {
+      <p id="routine-frequency-error" class="field-error">Choose how often this routine repeats.</p>
+      }
+    </div>
+
+    @if (saveError()) {
+    <p class="save-error" role="alert">{{ saveError() }}</p>
+    }
+
+    <div class="actions">
+      <a class="button button--secondary" routerLink="/">Cancel</a>
+      <button type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Saving…' : 'Save changes' }}</button>
+    </div>
+  </form>
+
+  <section class="danger-zone" aria-labelledby="danger-zone-title">
+    <h2 id="danger-zone-title">Remove this routine</h2>
+    <p>This can’t be undone.</p>
+
+    @if (isDeleteConfirmationVisible()) {
+    <div class="delete-confirmation" role="alert">
+      <p>Delete this routine permanently?</p>
+      <div class="actions">
+        <button type="button" class="button--secondary" (click)="cancelDelete()">Keep routine</button>
+        <button type="button" class="button--danger" (click)="deleteRoutine()" [disabled]="isSaving()">Delete</button>
+      </div>
+    </div>
+    } @else {
+    <button type="button" class="button--danger" (click)="showDeleteConfirmation()">Delete routine</button>
+    }
+  </section>
+</section>

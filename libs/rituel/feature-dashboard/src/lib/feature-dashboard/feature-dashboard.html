@@ -23,6 +23,73 @@
     </div>
   </div>
 
+  @if (notifications; as reminderService) { @if (hasRoutines()) {
+  <aside
+    class="mb-10 grid items-center gap-8 rounded-2xl border border-[var(--rituel-cadence-border)] bg-[var(--rituel-cadence-surface)] p-6 md:grid-cols-[minmax(0,1fr)_15rem]"
+    aria-labelledby="notification-title"
+  >
+    <div>
+      <p class="eyebrow">Closed-app reminders</p>
+      <h2 id="notification-title" class="mb-2 mt-2">
+        A gentle nudge at the right time.
+      </h2>
+      @switch (reminderService.state()) { @case ('unsupported') {
+      <p>
+        Install and open the production app in a browser that supports Web Push
+        to receive reminders.
+      </p>
+      } @case ('denied') {
+      <p>Notifications are blocked. You can allow them in browser settings.</p>
+      } @case ('error') {
+      <p>Rituel could not prepare reminders in this browser.</p>
+      } @default {
+      <p>
+        Enable notifications to receive reminders even when Rituel is closed.
+      </p>
+      } }
+    </div>
+
+    <div class="grid gap-2.5">
+      @switch (reminderService.state()) { @case ('ready') {
+      <button
+        type="button"
+        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+        (click)="enableNotifications()"
+      >
+        Enable reminders
+      </button>
+      } @case ('enabling') {
+      <button
+        type="button"
+        class="min-h-11 cursor-wait rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] opacity-65"
+        disabled
+      >
+        Enabling…
+      </button>
+      } @case ('enabled') {
+      <button
+        type="button"
+        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+        (click)="sendTestNotification()"
+      >
+        Send a test notification
+      </button>
+      } @case ('error') {
+      <button
+        type="button"
+        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+        (click)="enableNotifications()"
+      >
+        Try again
+      </button>
+      } }
+      <p class="min-h-5 text-[0.82rem]" aria-live="polite">
+        {{ reminderService.message() }}
+      </p>
+    </div>
+  </aside>
+  } }
+
   <section class="overdue" aria-labelledby="overdue-title">
     <div class="section-heading">
       <p class="eyebrow">Needs attention</p>
@@ -44,6 +111,27 @@
           @if (routine.note) {
           <p>{{ routine.note }}</p>
           }
+          <div class="mt-5 flex flex-wrap gap-2.5">
+            <button
+              type="button"
+              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              (click)="completeRoutine(routine.id)"
+            >
+              Complete
+            </button>
+            <button
+              type="button"
+              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-ink-strong)] no-underline hover:bg-[var(--rituel-cadence-surface)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              (click)="deferRoutineUntilTomorrow(routine.id)"
+            >
+              Tomorrow
+            </button>
+            <a
+              [routerLink]="['/tasks', routine.id, 'edit']"
+              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              >Edit</a
+            >
+          </div>
         </div>
       </article>
       }
@@ -71,6 +159,27 @@
         @if (routine.note) {
         <p>{{ routine.note }}</p>
         }
+        <div class="mt-5 flex flex-wrap gap-2.5">
+          <button
+            type="button"
+            class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+            (click)="completeRoutine(routine.id)"
+          >
+            Complete
+          </button>
+          <button
+            type="button"
+            class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-ink-strong)] no-underline hover:bg-[var(--rituel-cadence-surface)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+            (click)="deferRoutineUntilTomorrow(routine.id)"
+          >
+            Tomorrow
+          </button>
+          <a
+            [routerLink]="['/tasks', routine.id, 'edit']"
+            class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+            >Edit</a
+          >
+        </div>
       </div>
     </article>
     } } @else {
@@ -99,6 +208,13 @@
           @if (routine.note) {
           <p>{{ routine.note }}</p>
           }
+          <div class="mt-5 flex flex-wrap gap-2.5">
+            <a
+              [routerLink]="['/tasks', routine.id, 'edit']"
+              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              >Edit</a
+            >
+          </div>
         </div>
       </article>
       }

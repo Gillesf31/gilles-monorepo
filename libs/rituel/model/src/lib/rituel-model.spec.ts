@@ -20,6 +20,7 @@ describe('classifyRoutineDueState', () => {
 
 describe('calculateNextDueDate', () => {
   it.each([
+    [routineFrequencies.daily, '2026-07-19'],
     [routineFrequencies.weekly, '2026-07-25'],
     [routineFrequencies.everyTwoWeeks, '2026-08-01'],
     [routineFrequencies.monthly, '2026-08-18'],

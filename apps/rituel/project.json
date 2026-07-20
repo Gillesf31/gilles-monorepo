@@ -23,6 +23,7 @@
       },
       "configurations": {
         "production": {
+          "serviceWorker": "apps/rituel/ngsw-config.json",
           "budgets": [
             {
               "type": "initial",
@@ -63,6 +64,17 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "pnpm nx build rituel --configuration=production",
+          "node tools/write-build-version.mjs dist/apps/rituel/browser/version.json",
+          "rsync -av --delete dist/apps/rituel/browser/ gilles@192.168.2.249:/var/www/rituel/"
+        ]
+      }
     },
     "serve-static": {
       "continuous": true,

@@ -107,6 +107,8 @@ Rituel libraries:
 
 - `rituel-shell` - route-level composition for Rituel
 - `feature-dashboard` - dashboard for routines due now and coming up
+- `feature-create-task` - create a recurring home-maintenance routine
+- `feature-edit-task` - edit or remove an existing routine
 
 Shared libraries:
 
