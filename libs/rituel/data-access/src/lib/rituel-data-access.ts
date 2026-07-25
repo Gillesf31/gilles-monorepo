@@ -184,6 +184,7 @@ export class InMemoryRoutineRepository extends RoutineRepository {
   constructor(
     currentDate: () => RoutineDate = getCurrentLocalDate,
     private readonly createId: () => string = () => crypto.randomUUID(),
+    private readonly delayMs = 0,
   ) {
     super();
     this.routineState = signal(createSeedRoutines(currentDate()));
@@ -191,20 +192,24 @@ export class InMemoryRoutineRepository extends RoutineRepository {
   }
 
   async list(): Promise<readonly Routine[]> {
+    await waitForNetwork(this.delayMs);
     return this.routineState();
   }
 
   async get(id: string): Promise<Routine | undefined> {
+    await waitForNetwork(this.delayMs);
     return this.routineState().find((routine) => routine.id === id);
   }
 
   async create(input: CreateRoutineInput): Promise<Routine> {
+    await waitForNetwork(this.delayMs);
     const routine: Routine = { id: this.createId(), ...input };
     this.routineState.update((routines) => [...routines, routine]);
     return routine;
   }
 
   async update(id: string, input: UpdateRoutineInput): Promise<Routine> {
+    await waitForNetwork(this.delayMs);
     this.findById(id);
     const routine: Routine = { id, ...input };
     this.replace(routine);
@@ -212,6 +217,7 @@ export class InMemoryRoutineRepository extends RoutineRepository {
   }
 
   async delete(id: string): Promise<void> {
+    await waitForNetwork(this.delayMs);
     this.findById(id);
     this.routineState.update((routines) =>
       routines.filter((routine) => routine.id !== id),
@@ -222,6 +228,7 @@ export class InMemoryRoutineRepository extends RoutineRepository {
     id: string,
     completionDate: RoutineDate,
   ): Promise<Routine> {
+    await waitForNetwork(this.delayMs);
     const routine = this.findById(id);
     const completedRoutine: Routine = {
       ...routine,
@@ -236,6 +243,7 @@ export class InMemoryRoutineRepository extends RoutineRepository {
     id: string,
     referenceDate: RoutineDate,
   ): Promise<Routine> {
+    await waitForNetwork(this.delayMs);
     const routine = this.findById(id);
     const deferredRoutine: Routine = {
       ...routine,
@@ -623,6 +631,14 @@ function isPermissionDenied(error: unknown): boolean {
   );
 }
 
+function waitForNetwork(delayMs: number): Promise<void> {
+  if (delayMs <= 0) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
 function createSeedRoutines(today: RoutineDate): Routine[] {
   return [
     {
@@ -634,12 +650,28 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       frequency: routineFrequencies.everyTwoWeeks,
     },
     {
+      id: 'routine-overdue-bathroom',
+      name: 'Replace the bathroom towels',
+      note: 'Refresh the towels before the next guests arrive.',
+      firstDueDate: addDaysToRoutineDate(today, -11),
+      nextDueDate: addDaysToRoutineDate(today, -1),
+      frequency: routineFrequencies.weekly,
+    },
+    {
       id: 'routine-due-today',
       name: 'Change the laundry',
       note: 'A small reset for the week ahead.',
       firstDueDate: addDaysToRoutineDate(today, -14),
       nextDueDate: today,
       frequency: routineFrequencies.everyTwoWeeks,
+    },
+    {
+      id: 'routine-due-today-bathroom',
+      name: 'Clean the bathroom mirrors',
+      note: 'A quick polish keeps the morning routine bright.',
+      firstDueDate: addDaysToRoutineDate(today, -7),
+      nextDueDate: today,
+      frequency: routineFrequencies.weekly,
     },
     {
       id: 'routine-upcoming-coffee-machine',

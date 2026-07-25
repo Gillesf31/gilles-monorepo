@@ -15,8 +15,9 @@ import {
 } from '@gilles-monorepo/rituel-data-access';
 import { RituelDashboardComponent } from './feature-dashboard';
 
-class TestRoutineRepository extends RoutineRepository {
+class TestRoutineFacade {
   private readonly routineState = signal<readonly Routine[]>([]);
+  private mutationGate: Promise<void> | undefined;
   readonly routines = this.routineState.asReadonly();
 
   async list(): Promise<readonly Routine[]> {
@@ -39,10 +40,8 @@ class TestRoutineRepository extends RoutineRepository {
     throw new Error('Not needed by this test');
   }
 
-  async complete(
-    id: string,
-    completionDate: RoutineDate,
-  ): Promise<Routine> {
+  async complete(id: string, completionDate: RoutineDate): Promise<Routine> {
+    await this.mutationGate;
     const routine = this.findById(id);
     const completed = {
       ...routine,
@@ -57,6 +56,7 @@ class TestRoutineRepository extends RoutineRepository {
     id: string,
     referenceDate: RoutineDate,
   ): Promise<Routine> {
+    await this.mutationGate;
     const deferred = {
       ...this.findById(id),
       nextDueDate: addDaysToRoutineDate(referenceDate, 1),
@@ -68,6 +68,18 @@ class TestRoutineRepository extends RoutineRepository {
 
   setRoutines(routines: readonly Routine[]): void {
     this.routineState.set(routines);
+  }
+
+  holdNextMutation(): () => void {
+    let release!: () => void;
+    this.mutationGate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+
+    return () => {
+      this.mutationGate = undefined;
+      release();
+    };
   }
 
   private findById(id: string): Routine {
@@ -91,12 +103,12 @@ class TestRoutineRepository extends RoutineRepository {
 
 describe('RituelDashboardComponent', () => {
   let fixture: ComponentFixture<RituelDashboardComponent>;
-  let repository: TestRoutineRepository;
-  let notifications: TestPushNotificationService;
+  let repository: TestRoutineFacade;
+  let notifications: TestPushNotificationFacade;
 
   beforeEach(async () => {
-    repository = new TestRoutineRepository();
-    notifications = new TestPushNotificationService();
+    repository = new TestRoutineFacade();
+    notifications = new TestPushNotificationFacade();
 
     await TestBed.configureTestingModule({
       imports: [RituelDashboardComponent],
@@ -128,7 +140,9 @@ describe('RituelDashboardComponent', () => {
   it('shows empty states when the repository has no routines', () => {
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Aucune routine en retard');
+    expect(fixture.nativeElement.textContent).toContain(
+      'Aucune routine en retard',
+    );
     expect(fixture.nativeElement.textContent).toContain(
       'Aucune routine ne demande votre attention aujourd’hui',
     );
@@ -150,7 +164,7 @@ describe('RituelDashboardComponent', () => {
     fixture.detectChanges();
 
     const days = Array.from(
-      fixture.nativeElement.querySelectorAll('.cadence-day'),
+      fixture.nativeElement.querySelectorAll('[role="listitem"]'),
     ) as HTMLElement[];
     const mondayElement = days.find((day) =>
       day.getAttribute('aria-label')?.includes(monday),
@@ -160,15 +174,17 @@ describe('RituelDashboardComponent', () => {
     );
 
     expect(days).toHaveLength(7);
-    expect(mondayElement?.classList.contains('is-active')).toBe(true);
-    expect(mondayElement?.getAttribute('aria-label')).toContain('Monday routine');
-    expect(wednesdayElement?.classList.contains('is-active')).toBe(true);
+    expect(mondayElement?.dataset.active).toBe('true');
+    expect(mondayElement?.getAttribute('aria-label')).toContain(
+      'Monday routine',
+    );
+    expect(wednesdayElement?.dataset.active).toBe('true');
     expect(wednesdayElement?.getAttribute('aria-label')).toContain(
       'Wednesday routine',
     );
-    expect(days.map((day) => day.getAttribute('aria-label')).join(' ')).not.toContain(
-      'Next week routine',
-    );
+    expect(
+      days.map((day) => day.getAttribute('aria-label')).join(' '),
+    ).not.toContain('Next week routine');
   });
 
   it('completes a due routine from the dashboard', async () => {
@@ -202,12 +218,52 @@ describe('RituelDashboardComponent', () => {
     expect((await repository.list())[0].nextDueDate).toBe(
       addDaysToRoutineDate(today, 1),
     );
-    expect(fixture.nativeElement.textContent).toContain('Aucune routine en retard');
+    expect(fixture.nativeElement.textContent).toContain(
+      'Aucune routine en retard',
+    );
+  });
+
+  it('shows a loader and disables both actions while completing a routine', async () => {
+    const release = repository.holdNextMutation();
+    repository.setRoutines([routine('today', getCurrentLocalDate())]);
+    fixture.detectChanges();
+
+    clickButton(fixture, 'Terminer');
+    fixture.detectChanges();
+
+    const completingButton = findButton(fixture, 'Terminer…');
+    expect(completingButton.disabled).toBe(true);
+    expect(completingButton.getAttribute('aria-busy')).toBe('true');
+    expect(findButton(fixture, 'Demain').disabled).toBe(true);
+
+    release();
+    await fixture.whenStable();
+  });
+
+  it('shows a loader and disables both actions while deferring a routine', async () => {
+    const release = repository.holdNextMutation();
+    repository.setRoutines([
+      routine('overdue', addDaysToRoutineDate(getCurrentLocalDate(), -1)),
+    ]);
+    fixture.detectChanges();
+
+    clickButton(fixture, 'Demain');
+    fixture.detectChanges();
+
+    const deferringButton = findButton(fixture, 'Demain…');
+    expect(deferringButton.disabled).toBe(true);
+    expect(deferringButton.getAttribute('aria-busy')).toBe('true');
+    expect(findButton(fixture, 'Terminer').disabled).toBe(true);
+
+    release();
+    await fixture.whenStable();
   });
 
   it('asks for notification permission only after a routine exists and the user opts in', async () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain('Activer les rappels');
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Activer les rappels',
+    );
 
     repository.setRoutines([routine('today', getCurrentLocalDate())]);
     fixture.detectChanges();
@@ -229,7 +285,7 @@ describe('RituelDashboardComponent', () => {
   });
 });
 
-class TestPushNotificationService extends PushNotificationService {
+class TestPushNotificationFacade {
   private readonly stateValue = signal<PushNotificationState>('ready');
   private readonly messageValue = signal('');
 
@@ -256,15 +312,19 @@ function clickButton(
   fixture: ComponentFixture<RituelDashboardComponent>,
   label: string,
 ): void {
+  findButton(fixture, label).click();
+}
+
+function findButton(
+  fixture: ComponentFixture<RituelDashboardComponent>,
+  label: string,
+): HTMLButtonElement {
   const button = Array.from(
     fixture.nativeElement.querySelectorAll('button'),
   ).find((element: HTMLButtonElement) => element.textContent?.trim() === label);
 
-  if (!button) {
-    throw new Error(`Expected a ${label} button`);
-  }
-
-  button.click();
+  if (!button) throw new Error(`Expected a ${label} button`);
+  return button as HTMLButtonElement;
 }
 
 function routine(id: string, nextDueDate: RoutineDate): Routine {

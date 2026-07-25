@@ -49,6 +49,7 @@ export class EditRoutineComponent implements OnInit {
   protected readonly isSaving = signal(false);
   protected readonly isDeleteConfirmationVisible = signal(false);
   protected readonly saveError = signal<string | null>(null);
+  protected readonly minimumDueDate = getCurrentLocalDate();
 
   readonly form = new FormGroup({
     name: new FormControl('', {
@@ -114,7 +115,9 @@ export class EditRoutineComponent implements OnInit {
       });
       await this.router.navigateByUrl('/');
     } catch {
-      this.saveError.set('Impossible d’enregistrer cette routine. Veuillez réessayer.');
+      this.saveError.set(
+        'Impossible d’enregistrer cette routine. Veuillez réessayer.',
+      );
     } finally {
       this.isSaving.set(false);
     }
@@ -140,7 +143,9 @@ export class EditRoutineComponent implements OnInit {
       await this.repository.delete(this.routine.id);
       await this.router.navigateByUrl('/');
     } catch {
-      this.saveError.set('Impossible de supprimer cette routine. Veuillez réessayer.');
+      this.saveError.set(
+        'Impossible de supprimer cette routine. Veuillez réessayer.',
+      );
     } finally {
       this.isSaving.set(false);
     }
@@ -149,3 +154,12 @@ export class EditRoutineComponent implements OnInit {
 
 const requiredTrimmed: ValidatorFn = (control) =>
   String(control.value).trim() ? null : { required: true };
+
+function getCurrentLocalDate(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}

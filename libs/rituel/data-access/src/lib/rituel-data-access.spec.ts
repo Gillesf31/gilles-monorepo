@@ -24,16 +24,23 @@ describe('InMemoryRoutineRepository', () => {
     );
   }
 
-  it('exposes stable seed ids for one overdue, one due, and two upcoming routines', async () => {
+  it('exposes stable seed ids for two overdue, two due, and two upcoming routines', async () => {
     const repository = createRepository();
 
     expect((await repository.list()).map((routine) => routine.id)).toEqual([
       'routine-overdue',
+      'routine-overdue-bathroom',
       'routine-due-today',
+      'routine-due-today-bathroom',
       'routine-upcoming-coffee-machine',
       'routine-upcoming-fridge',
     ]);
-    expect(repository.routines()[1].nextDueDate).toBe(today);
+    expect(
+      repository.routines().filter((routine) => routine.nextDueDate < today),
+    ).toHaveLength(2);
+    expect(
+      repository.routines().filter((routine) => routine.nextDueDate === today),
+    ).toHaveLength(2);
   });
 
   it('creates a routine, generates its id, and updates reactive state', async () => {

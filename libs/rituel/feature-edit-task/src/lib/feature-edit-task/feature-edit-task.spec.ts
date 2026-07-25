@@ -6,16 +6,12 @@ import {
   convertToParamMap,
   provideRouter,
 } from '@angular/router';
-import {
-  Routine,
-  UpdateRoutineInput,
-  routineFrequencies,
-} from '@gilles-monorepo/rituel-model';
+import { Routine, routineFrequencies } from '@gilles-monorepo/rituel-model';
 import { RoutineRepository } from '@gilles-monorepo/rituel-data-access';
 import { vi } from 'vitest';
 import { EditRoutineComponent } from './feature-edit-task';
 
-class TestRoutineRepository extends RoutineRepository {
+class TestRoutineFacade {
   private readonly routineState = signal<readonly Routine[]>([
     {
       id: 'routine-1',
@@ -40,8 +36,17 @@ class TestRoutineRepository extends RoutineRepository {
     throw new Error('Not needed by this test');
   }
 
-  async update(id: string, input: UpdateRoutineInput): Promise<Routine> {
-    const routine: Routine = { id, ...input };
+  async update(
+    id: string,
+    input: Pick<Routine, 'name' | 'note' | 'nextDueDate' | 'frequency'>,
+  ): Promise<Routine> {
+    const existing = await this.get(id);
+    if (!existing) throw new Error(`Routine not found: ${id}`);
+    const routine: Routine = {
+      id,
+      ...input,
+      firstDueDate: existing.firstDueDate,
+    };
     this.routineState.update((routines) =>
       routines.map((item) => (item.id === id ? routine : item)),
     );
@@ -66,11 +71,11 @@ class TestRoutineRepository extends RoutineRepository {
 describe('EditRoutineComponent', () => {
   let component: EditRoutineComponent;
   let fixture: ComponentFixture<EditRoutineComponent>;
-  let repository: TestRoutineRepository;
+  let repository: TestRoutineFacade;
   let router: Router;
 
   beforeEach(async () => {
-    repository = new TestRoutineRepository();
+    repository = new TestRoutineFacade();
 
     await TestBed.configureTestingModule({
       imports: [EditRoutineComponent],
@@ -102,6 +107,18 @@ describe('EditRoutineComponent', () => {
       nextDueDate: '2026-07-18',
       frequency: routineFrequencies.monthly,
     });
+  });
+
+  it('should make today the earliest selectable next due date when editing a routine', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const nextDueDateInput = fixture.nativeElement.querySelector(
+      '#routine-next-due-date',
+    ) as HTMLInputElement;
+
+    expect(nextDueDateInput.value).toBe('2026-07-18');
+    expect(nextDueDateInput.min).toBe(getCurrentLocalDate());
   });
 
   it('saves edited routine details and returns to the dashboard', async () => {
@@ -148,13 +165,23 @@ function clickButton(
   fixture: ComponentFixture<EditRoutineComponent>,
   label: string,
 ): void {
+  const rootElement = fixture.nativeElement as HTMLElement;
   const button = Array.from(
-    fixture.nativeElement.querySelectorAll('button'),
-  ).find((element: HTMLButtonElement) => element.textContent?.trim() === label);
+    rootElement.querySelectorAll<HTMLButtonElement>('button'),
+  ).find((element) => element.textContent?.trim() === label);
 
   if (!button) {
     throw new Error(`Expected a ${label} button`);
   }
 
   button.click();
+}
+
+function getCurrentLocalDate(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
 }

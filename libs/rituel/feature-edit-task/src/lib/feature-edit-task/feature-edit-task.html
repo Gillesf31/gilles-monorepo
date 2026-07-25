@@ -23,7 +23,7 @@
 
     <div class="field">
       <label for="routine-next-due-date">Prochaine date prévue</label>
-      <input id="routine-next-due-date" type="date" formControlName="nextDueDate" aria-describedby="routine-next-due-date-error" />
+      <input id="routine-next-due-date" type="date" formControlName="nextDueDate" [min]="minimumDueDate" aria-describedby="routine-next-due-date-error" />
       @if (form.controls.nextDueDate.invalid && (form.controls.nextDueDate.touched || submitted())) {
       <p id="routine-next-due-date-error" class="field-error">Choisissez la prochaine date prévue.</p>
       }

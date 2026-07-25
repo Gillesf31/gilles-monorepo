@@ -17,6 +17,8 @@ import {
   SUPABASE_CLIENT,
 } from '@gilles-monorepo/util-supabase';
 
+const inMemoryNetworkDelayMs = 1_200;
+
 export type RituelServerConfiguration = {
   supabaseUrl: string;
   supabaseAnonKey: string;
@@ -56,7 +58,12 @@ export function provideRituelShell(
     : [
         {
           provide: RoutineRepository,
-          useFactory: () => new InMemoryRoutineRepository(),
+          useFactory: () =>
+            new InMemoryRoutineRepository(
+              undefined,
+              undefined,
+              inMemoryNetworkDelayMs,
+            ),
         },
       ];
 

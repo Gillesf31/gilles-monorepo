@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -37,12 +38,12 @@ type RoutineWeekDay = {
   selector: 'lib-feature-dashboard',
   imports: [RouterLink],
   templateUrl: './feature-dashboard.html',
-  styleUrl: './feature-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RituelDashboardComponent {
   private readonly repository = inject(RoutineRepository);
   private readonly today = getCurrentLocalDate();
+  private readonly pendingRoutineAction = signal<RoutineAction | null>(null);
 
   protected readonly notifications = inject(PushNotificationService, {
     optional: true,
@@ -92,12 +93,49 @@ export class RituelDashboardComponent {
     return `${day.weekday} ${day.date}. ${schedule}.`;
   }
 
+  protected weekDayClasses(day: RoutineWeekDay): string {
+    const stateColor =
+      day.routines.length || day.isToday
+        ? 'text-[var(--rituel-ink-strong)]'
+        : 'text-[var(--rituel-subtle)]';
+
+    return `grid justify-items-center gap-[0.35rem] text-[0.72rem] font-bold ${stateColor}`;
+  }
+
+  protected weekDayBadgeClasses(day: RoutineWeekDay): string {
+    const stateClasses = day.routines.length
+      ? 'border-[var(--rituel-accent)] bg-[var(--rituel-accent)] text-[var(--rituel-action-text)] shadow-[0_0_0_4px_var(--rituel-accent-soft)]'
+      : day.isToday
+        ? 'border-[var(--rituel-accent)]'
+        : 'border-[var(--rituel-cadence-dot)]';
+
+    return `grid h-[1.2rem] w-[1.2rem] place-items-center rounded-full border-2 text-[0.62rem] not-italic ${stateClasses}`;
+  }
+
+  protected isCompleting(routineId: string): boolean {
+    return this.pendingRoutineAction()?.type === 'complete' &&
+      this.pendingRoutineAction()?.routineId === routineId;
+  }
+
+  protected isDeferring(routineId: string): boolean {
+    return this.pendingRoutineAction()?.type === 'defer' &&
+      this.pendingRoutineAction()?.routineId === routineId;
+  }
+
+  protected isRoutineActionPending(routineId: string): boolean {
+    return this.pendingRoutineAction()?.routineId === routineId;
+  }
+
   protected async completeRoutine(id: string): Promise<void> {
-    await this.repository.complete(id, this.today);
+    await this.runRoutineAction(id, 'complete', () =>
+      this.repository.complete(id, this.today),
+    );
   }
 
   protected async deferRoutineUntilTomorrow(id: string): Promise<void> {
-    await this.repository.deferUntilTomorrow(id, this.today);
+    await this.runRoutineAction(id, 'defer', () =>
+      this.repository.deferUntilTomorrow(id, this.today),
+    );
   }
 
   protected async enableNotifications(): Promise<void> {
@@ -110,6 +148,23 @@ export class RituelDashboardComponent {
 
   private async loadRoutines(): Promise<void> {
     await this.repository.list();
+  }
+
+  private async runRoutineAction(
+    routineId: string,
+    type: RoutineAction['type'],
+    action: () => Promise<unknown>,
+  ): Promise<void> {
+    if (this.pendingRoutineAction()) {
+      return;
+    }
+
+    this.pendingRoutineAction.set({ routineId, type });
+    try {
+      await action();
+    } finally {
+      this.pendingRoutineAction.set(null);
+    }
   }
 
   private routinesWithDueState(state: RoutineDueState): readonly Routine[] {
@@ -138,6 +193,11 @@ export class RituelDashboardComponent {
     };
   }
 }
+
+type RoutineAction = {
+  routineId: string;
+  type: 'complete' | 'defer';
+};
 
 function getCurrentLocalDate(): string {
   const now = new Date();

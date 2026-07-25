@@ -45,6 +45,7 @@ export class CreateRoutineComponent {
   protected readonly submitted = signal(false);
   protected readonly isSaving = signal(false);
   protected readonly saveError = signal<string | null>(null);
+  protected readonly minimumDueDate = getCurrentLocalDate();
 
   readonly form = new FormGroup({
     name: new FormControl('', {
@@ -52,7 +53,7 @@ export class CreateRoutineComponent {
       validators: [requiredTrimmed],
     }),
     note: new FormControl('', { nonNullable: true }),
-    firstDueDate: new FormControl(getCurrentLocalDate(), {
+    firstDueDate: new FormControl(this.minimumDueDate, {
       nonNullable: true,
       validators: [Validators.required],
     }),

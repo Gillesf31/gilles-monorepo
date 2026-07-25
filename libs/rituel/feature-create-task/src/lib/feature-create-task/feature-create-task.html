@@ -39,6 +39,7 @@
         id="routine-first-due-date"
         type="date"
         formControlName="firstDueDate"
+        [min]="minimumDueDate"
         aria-describedby="routine-first-due-date-error"
       />
       @if (form.controls.firstDueDate.invalid &&
