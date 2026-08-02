@@ -35,7 +35,6 @@ const frequencyOptions: ReadonlyArray<{
   selector: 'lib-feature-edit-task',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './feature-edit-task.html',
-  styleUrl: './feature-edit-task.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditRoutineComponent implements OnInit {

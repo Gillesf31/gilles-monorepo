@@ -34,7 +34,6 @@ const frequencyOptions: ReadonlyArray<{
   selector: 'lib-feature-create-task',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './feature-create-task.html',
-  styleUrl: './feature-create-task.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateRoutineComponent {

@@ -96,18 +96,18 @@ export class RituelDashboardComponent {
   protected weekDayClasses(day: RoutineWeekDay): string {
     const stateColor =
       day.routines.length || day.isToday
-        ? 'text-[var(--rituel-ink-strong)]'
-        : 'text-[var(--rituel-subtle)]';
+        ? 'text-rituel-ink-strong dark:text-rituel-dark-ink-strong'
+        : 'text-rituel-subtle dark:text-rituel-dark-subtle';
 
     return `grid justify-items-center gap-[0.35rem] text-[0.72rem] font-bold ${stateColor}`;
   }
 
   protected weekDayBadgeClasses(day: RoutineWeekDay): string {
     const stateClasses = day.routines.length
-      ? 'border-[var(--rituel-accent)] bg-[var(--rituel-accent)] text-[var(--rituel-action-text)] shadow-[0_0_0_4px_var(--rituel-accent-soft)]'
+      ? 'border-rituel-accent dark:border-rituel-dark-accent bg-rituel-accent dark:bg-rituel-dark-accent text-rituel-action-text dark:text-rituel-dark-action-text shadow-[0_0_0_4px_#f6c9b8] dark:shadow-[0_0_0_4px_#633b32]'
       : day.isToday
-        ? 'border-[var(--rituel-accent)]'
-        : 'border-[var(--rituel-cadence-dot)]';
+        ? 'border-rituel-accent dark:border-rituel-dark-accent'
+        : 'border-rituel-cadence-dot dark:border-rituel-dark-cadence-dot';
 
     return `grid h-[1.2rem] w-[1.2rem] place-items-center rounded-full border-2 text-[0.62rem] not-italic ${stateClasses}`;
   }

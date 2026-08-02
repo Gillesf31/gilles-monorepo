@@ -21,27 +21,6 @@ import {
   selector: 'gilles-monorepo-ingredient-list',
   imports: [CdkDropList, CdkDrag, CdkDragHandle],
   templateUrl: './ingredient-list.component.html',
-  styles: `
-    .cdk-drag-preview {
-      border-radius: 0.75rem;
-      box-shadow: 0 18px 35px rgb(15 23 42 / 0.18);
-      background: rgb(255 255 255);
-    }
-
-    :host-context(.dark) .cdk-drag-preview {
-      background: rgb(31 41 55);
-    }
-
-    .cdk-drag-placeholder {
-      opacity: 0.24;
-    }
-
-    .cdk-drag-animating,
-    .ingredient-drop-list.cdk-drop-list-dragging
-      .ingredient-row:not(.cdk-drag-placeholder) {
-      transition: transform 180ms cubic-bezier(0.2, 0, 0, 1);
-    }
-  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientListComponent {

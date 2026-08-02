@@ -1,17 +1,17 @@
 <section class="mx-auto max-w-6xl pb-16" aria-labelledby="dashboard-title">
   <div class="grid items-end gap-8 pb-10 md:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.6fr)] md:gap-12 md:pb-14">
     <div>
-      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">Le rythme de votre foyer</p>
+      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">Le rythme de votre foyer</p>
       <h1 id="dashboard-title" class="mb-4 mt-2.5 max-w-[9ch] [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(3.35rem,8vw,6.65rem)] font-bold leading-[0.88] tracking-[-0.055em] md:max-w-[11ch]">Accordez du temps aux petites choses.</h1>
-      <p class="m-0 max-w-[34rem] text-[1.05rem] leading-[1.6] text-[var(--rituel-muted)]">
+      <p class="m-0 max-w-[34rem] text-[1.05rem] leading-[1.6] text-rituel-muted dark:text-rituel-dark-muted">
         Rituel évite que les tâches qui prennent soin de votre maison passent
         inaperçues.
       </p>
-      <a class="mt-6 inline-flex rounded-[0.65rem] bg-[var(--rituel-action-bg)] px-4 py-[0.7rem] text-[0.9rem] font-[750] text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]" routerLink="/tasks/new">Ajouter une routine</a>
+      <a class="mt-6 inline-flex rounded-[0.65rem] bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-4 py-[0.7rem] text-[0.9rem] font-[750] text-rituel-action-text dark:text-rituel-dark-action-text no-underline hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus" routerLink="/tasks/new">Ajouter une routine</a>
     </div>
 
-    <div class="rounded-2xl border border-[var(--rituel-cadence-border)] bg-[var(--rituel-cadence-surface)] px-6 py-[1.35rem]" aria-labelledby="weekly-schedule-title">
-      <p id="weekly-schedule-title" class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">Cette semaine</p>
+    <div class="rounded-2xl border border-rituel-cadence-border dark:border-rituel-dark-cadence-border bg-rituel-cadence-surface dark:bg-rituel-dark-cadence-surface px-6 py-[1.35rem]" aria-labelledby="weekly-schedule-title">
+      <p id="weekly-schedule-title" class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">Cette semaine</p>
       <div class="mt-[1.35rem] flex justify-between" role="list">
         @for (day of week(); track day.date) {
         <div
@@ -22,7 +22,7 @@
         >
           <i [class]="weekDayBadgeClasses(day)" aria-hidden="true">{{ day.routines.length || '' }}</i>
           <span aria-hidden="true">{{ day.weekday.slice(0, 1) }}</span>
-          <small class="text-[0.65rem] font-semibold text-[var(--rituel-subtle)]" aria-hidden="true">{{ day.dayOfMonth }}</small>
+          <small class="text-[0.65rem] font-semibold text-rituel-subtle dark:text-rituel-dark-subtle" aria-hidden="true">{{ day.dayOfMonth }}</small>
         </div>
         }
       </div>
@@ -31,11 +31,11 @@
 
   @if (notifications; as reminderService) { @if (hasRoutines()) {
   <aside
-    class="mb-10 grid items-center gap-8 rounded-2xl border border-[var(--rituel-cadence-border)] bg-[var(--rituel-cadence-surface)] p-6 md:grid-cols-[minmax(0,1fr)_15rem]"
+    class="mb-10 grid items-center gap-8 rounded-2xl border border-rituel-cadence-border dark:border-rituel-dark-cadence-border bg-rituel-cadence-surface dark:bg-rituel-dark-cadence-surface p-6 md:grid-cols-[minmax(0,1fr)_15rem]"
     aria-labelledby="notification-title"
   >
     <div>
-      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">Rappels lorsque l’application est fermée</p>
+      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">Rappels lorsque l’application est fermée</p>
       <h2 id="notification-title" class="mb-2 mt-2 [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.6rem,4vw,2.3rem)] font-bold leading-none tracking-[-0.055em]">
         Un rappel discret au bon moment.
       </h2>
@@ -59,7 +59,7 @@
       @switch (reminderService.state()) { @case ('ready') {
       <button
         type="button"
-        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-4 py-3 font-bold text-rituel-action-text dark:text-rituel-dark-action-text hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
         (click)="enableNotifications()"
       >
         Activer les rappels
@@ -67,7 +67,7 @@
       } @case ('enabling') {
       <button
         type="button"
-        class="min-h-11 cursor-wait rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] opacity-65"
+        class="min-h-11 cursor-wait rounded-[0.65rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-4 py-3 font-bold text-rituel-action-text dark:text-rituel-dark-action-text opacity-65"
         disabled
       >
         Activation…
@@ -75,7 +75,7 @@
       } @case ('enabled') {
       <button
         type="button"
-        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-4 py-3 font-bold text-rituel-action-text dark:text-rituel-dark-action-text hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
         (click)="sendTestNotification()"
       >
         Envoyer une notification de test
@@ -83,7 +83,7 @@
       } @case ('error') {
       <button
         type="button"
-        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-4 py-3 font-bold text-[var(--rituel-action-text)] hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+        class="min-h-11 cursor-pointer rounded-[0.65rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-4 py-3 font-bold text-rituel-action-text dark:text-rituel-dark-action-text hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
         (click)="enableNotifications()"
       >
         Réessayer
@@ -96,55 +96,55 @@
   </aside>
   } }
 
-  <section class="border-t border-[var(--rituel-separator)] pb-10 pt-6" aria-labelledby="overdue-title">
+  <section class="border-t border-rituel-separator dark:border-rituel-dark-separator pb-10 pt-6" aria-labelledby="overdue-title">
     <div class="mb-4 flex flex-col items-start gap-4 sm:flex-row sm:items-baseline sm:justify-between">
-      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">À traiter</p>
+      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">À traiter</p>
       <h2 id="overdue-title" class="m-0 [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.6rem,4vw,2.3rem)] font-bold leading-none tracking-[-0.055em]">Un peu en retard.</h2>
     </div>
 
     @if (overdue().length) {
     <div class="grid gap-4 md:grid-cols-2">
       @for (routine of overdue(); track routine.id) {
-      <article class="flex gap-5 rounded-2xl border border-[var(--rituel-overdue-border)] bg-[var(--rituel-overdue-bg)] p-5 sm:p-6">
+      <article class="flex gap-5 rounded-2xl border border-rituel-overdue-border dark:border-rituel-dark-overdue-border bg-rituel-overdue-bg dark:bg-rituel-dark-overdue-bg p-5 sm:p-6">
         <div class="w-full">
           <div class="flex justify-between gap-4">
-            <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">
+            <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">
               {{ frequencyLabel(routine.frequency) }}
             </p>
-            <p class="m-0 text-[0.82rem] font-[750] text-[var(--rituel-error)]">Prévue le {{ routine.nextDueDate }}</p>
+            <p class="m-0 text-[0.82rem] font-[750] text-rituel-error dark:text-rituel-dark-error">Prévue le {{ routine.nextDueDate }}</p>
           </div>
           <h3 class="mb-[0.35rem] mt-[0.8rem] [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.65rem,3vw,2.25rem)] font-bold leading-none tracking-[-0.055em]">{{ routine.name }}</h3>
           @if (routine.note) {
-          <p class="mb-0 mt-0 leading-6 text-[var(--rituel-muted)]">{{ routine.note }}</p>
+          <p class="mb-0 mt-0 leading-6 text-rituel-muted dark:text-rituel-dark-muted">{{ routine.note }}</p>
           }
           <div class="mt-5 flex flex-wrap gap-2.5">
             <button
               type="button"
-              class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-3.5 py-2 text-[0.85rem] font-bold text-rituel-action-text dark:text-rituel-dark-action-text no-underline hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
               (click)="completeRoutine(routine.id)"
               [disabled]="isRoutineActionPending(routine.id)"
               [attr.aria-busy]="isCompleting(routine.id) ? 'true' : null"
             >
               @if (isCompleting(routine.id)) {
-              <span class="size-3 animate-spin rounded-full border-2 border-[var(--rituel-action-text)] border-t-transparent" aria-hidden="true"></span>
+              <span class="size-3 animate-spin rounded-full border-2 border-rituel-action-text dark:border-rituel-dark-action-text border-t-transparent" aria-hidden="true"></span>
               Terminer…
               } @else { Terminer }
             </button>
             <button
               type="button"
-              class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-ink-strong)] no-underline hover:bg-[var(--rituel-cadence-surface)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-rituel-ink-strong dark:text-rituel-dark-ink-strong no-underline hover:bg-rituel-cadence-surface dark:bg-rituel-dark-cadence-surface disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
               (click)="deferRoutineUntilTomorrow(routine.id)"
               [disabled]="isRoutineActionPending(routine.id)"
               [attr.aria-busy]="isDeferring(routine.id) ? 'true' : null"
             >
               @if (isDeferring(routine.id)) {
-              <span class="size-3 animate-spin rounded-full border-2 border-[var(--rituel-ink-strong)] border-t-transparent" aria-hidden="true"></span>
+              <span class="size-3 animate-spin rounded-full border-2 border-rituel-ink-strong dark:border-rituel-dark-ink-strong border-t-transparent" aria-hidden="true"></span>
               Demain…
               } @else { Demain }
             </button>
             <a
               [routerLink]="['/tasks', routine.id, 'edit']"
-              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-3.5 py-2 text-[0.85rem] font-bold text-rituel-action-text dark:text-rituel-dark-action-text no-underline hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
               >Modifier</a
             >
           </div>
@@ -153,58 +153,58 @@
       }
     </div>
     } @else {
-    <p class="mb-0 mt-0 leading-6 text-[var(--rituel-muted)]">Aucune routine en retard. Votre maison est entre de bonnes mains.</p>
+    <p class="mb-0 mt-0 leading-6 text-rituel-muted dark:text-rituel-dark-muted">Aucune routine en retard. Votre maison est entre de bonnes mains.</p>
     }
   </section>
 
-  <section class="border-t border-[var(--rituel-separator)] pt-6" aria-labelledby="today-title">
+  <section class="border-t border-rituel-separator dark:border-rituel-dark-separator pt-6" aria-labelledby="today-title">
     <div class="mb-4 flex flex-col items-start gap-4 sm:flex-row sm:items-baseline sm:justify-between">
-      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">À faire aujourd’hui</p>
+      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">À faire aujourd’hui</p>
       <h2 id="today-title" class="m-0 [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.6rem,4vw,2.3rem)] font-bold leading-none tracking-[-0.055em]">Une chose, au bon moment.</h2>
     </div>
 
     @if (dueToday().length) {
     <div class="grid grid-cols-1 gap-4">
       @for (routine of dueToday(); track routine.id) {
-      <article class="flex gap-5 rounded-2xl border border-[var(--rituel-today-bg)] bg-[var(--rituel-today-bg)] p-5 text-[var(--rituel-today-text)] sm:p-6">
-      <div class="mt-[0.35rem] h-[0.8rem] w-[0.8rem] shrink-0 rounded-full bg-[var(--rituel-warning)] shadow-[0_0_0_5px_var(--rituel-warning-glow)]" aria-hidden="true"></div>
+      <article class="flex gap-5 rounded-2xl border border-rituel-today-bg dark:border-rituel-dark-today-bg bg-rituel-today-bg dark:bg-rituel-dark-today-bg p-5 text-rituel-today-text dark:text-rituel-dark-today-text sm:p-6">
+      <div class="mt-[0.35rem] h-[0.8rem] w-[0.8rem] shrink-0 rounded-full bg-rituel-warning dark:bg-rituel-dark-warning shadow-[0_0_0_5px_rgb(243_195_92_/_20%)] dark:shadow-[0_0_0_5px_rgb(247_205_114_/_25%)]" aria-hidden="true"></div>
       <div class="w-full">
         <div class="flex justify-between gap-4">
-          <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-today-muted)]">{{ frequencyLabel(routine.frequency) }}</p>
-          <p class="m-0 text-[0.82rem] font-[750] text-[var(--rituel-warning)]">Aujourd’hui</p>
+          <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-today-muted dark:text-rituel-dark-today-muted">{{ frequencyLabel(routine.frequency) }}</p>
+          <p class="m-0 text-[0.82rem] font-[750] text-rituel-warning dark:text-rituel-dark-warning">Aujourd’hui</p>
         </div>
         <h3 class="mb-[0.35rem] mt-[0.8rem] [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.65rem,3vw,2.25rem)] font-bold leading-none tracking-[-0.055em]">{{ routine.name }}</h3>
         @if (routine.note) {
-        <p class="mb-0 mt-0 leading-6 text-[var(--rituel-today-secondary)]">{{ routine.note }}</p>
+        <p class="mb-0 mt-0 leading-6 text-rituel-today-secondary dark:text-rituel-dark-today-secondary">{{ routine.note }}</p>
         }
         <div class="mt-5 flex flex-wrap gap-2.5">
           <button
             type="button"
-            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-3.5 py-2 text-[0.85rem] font-bold text-rituel-action-text dark:text-rituel-dark-action-text no-underline hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
             (click)="completeRoutine(routine.id)"
             [disabled]="isRoutineActionPending(routine.id)"
             [attr.aria-busy]="isCompleting(routine.id) ? 'true' : null"
           >
             @if (isCompleting(routine.id)) {
-            <span class="size-3 animate-spin rounded-full border-2 border-[var(--rituel-action-text)] border-t-transparent" aria-hidden="true"></span>
+            <span class="size-3 animate-spin rounded-full border-2 border-rituel-action-text dark:border-rituel-dark-action-text border-t-transparent" aria-hidden="true"></span>
             Terminer…
             } @else { Terminer }
           </button>
           <button
             type="button"
-            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-ink-strong)] no-underline hover:bg-[var(--rituel-cadence-surface)] disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-transparent px-3.5 py-2 text-[0.85rem] font-bold text-rituel-ink-strong dark:text-rituel-dark-ink-strong no-underline hover:bg-rituel-cadence-surface dark:bg-rituel-dark-cadence-surface disabled:cursor-wait disabled:opacity-70 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
             (click)="deferRoutineUntilTomorrow(routine.id)"
             [disabled]="isRoutineActionPending(routine.id)"
             [attr.aria-busy]="isDeferring(routine.id) ? 'true' : null"
           >
             @if (isDeferring(routine.id)) {
-            <span class="size-3 animate-spin rounded-full border-2 border-[var(--rituel-ink-strong)] border-t-transparent" aria-hidden="true"></span>
+            <span class="size-3 animate-spin rounded-full border-2 border-rituel-ink-strong dark:border-rituel-dark-ink-strong border-t-transparent" aria-hidden="true"></span>
             Demain…
             } @else { Demain }
           </button>
           <a
             [routerLink]="['/tasks', routine.id, 'edit']"
-            class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+            class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-3.5 py-2 text-[0.85rem] font-bold text-rituel-action-text dark:text-rituel-dark-action-text no-underline hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
             >Modifier</a
           >
         </div>
@@ -213,35 +213,35 @@
       }
     </div>
     } @else {
-    <p class="mb-0 mt-0 leading-6 text-[var(--rituel-muted)]">Aucune routine ne demande votre attention aujourd’hui.</p>
+    <p class="mb-0 mt-0 leading-6 text-rituel-muted dark:text-rituel-dark-muted">Aucune routine ne demande votre attention aujourd’hui.</p>
     }
   </section>
 
-  <section class="mt-10 border-t border-[var(--rituel-separator)] pt-6" aria-labelledby="upcoming-title">
+  <section class="mt-10 border-t border-rituel-separator dark:border-rituel-dark-separator pt-6" aria-labelledby="upcoming-title">
     <div class="mb-4 flex flex-col items-start gap-4 sm:flex-row sm:items-baseline sm:justify-between">
-      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">À venir</p>
+      <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">À venir</p>
       <h2 id="upcoming-title" class="m-0 [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.6rem,4vw,2.3rem)] font-bold leading-none tracking-[-0.055em]">Gardez le rythme en vue.</h2>
     </div>
 
     @if (upcoming().length) {
     <div class="grid gap-4 md:grid-cols-2">
       @for (routine of upcoming(); track routine.id) {
-      <article class="flex min-h-[12.5rem] gap-5 rounded-2xl border border-[var(--rituel-border)] bg-[var(--rituel-surface)] p-5 sm:p-6">
+      <article class="flex min-h-[12.5rem] gap-5 rounded-2xl border border-rituel-border dark:border-rituel-dark-border bg-rituel-surface dark:bg-rituel-dark-surface p-5 sm:p-6">
         <div class="w-full">
           <div class="flex justify-between gap-4">
-            <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-[var(--rituel-muted-label)]">
+            <p class="m-0 text-[0.7rem] font-[750] uppercase tracking-[0.11em] text-rituel-muted-label dark:text-rituel-dark-muted-label">
               {{ frequencyLabel(routine.frequency) }}
             </p>
-            <p class="m-0 text-[0.82rem] font-[750] text-[var(--rituel-action-hover)]">Prévue le {{ routine.nextDueDate }}</p>
+            <p class="m-0 text-[0.82rem] font-[750] text-rituel-action-hover dark:text-rituel-dark-action-hover">Prévue le {{ routine.nextDueDate }}</p>
           </div>
           <h3 class="mb-[0.35rem] mt-[0.8rem] [font-family:Georgia,'Times_New_Roman',serif] text-[clamp(1.65rem,3vw,2.25rem)] font-bold leading-none tracking-[-0.055em]">{{ routine.name }}</h3>
           @if (routine.note) {
-          <p class="mb-0 mt-0 leading-6 text-[var(--rituel-muted)]">{{ routine.note }}</p>
+          <p class="mb-0 mt-0 leading-6 text-rituel-muted dark:text-rituel-dark-muted">{{ routine.note }}</p>
           }
           <div class="mt-5 flex flex-wrap gap-2.5">
             <a
               [routerLink]="['/tasks', routine.id, 'edit']"
-              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-[var(--rituel-action-bg)] bg-[var(--rituel-action-bg)] px-3.5 py-2 text-[0.85rem] font-bold text-[var(--rituel-action-text)] no-underline hover:bg-[var(--rituel-action-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-[var(--rituel-focus)]"
+              class="inline-flex min-h-10 items-center justify-center rounded-[0.6rem] border border-rituel-action-bg dark:border-rituel-dark-action-bg bg-rituel-action-bg dark:bg-rituel-dark-action-bg px-3.5 py-2 text-[0.85rem] font-bold text-rituel-action-text dark:text-rituel-dark-action-text no-underline hover:bg-rituel-action-hover dark:bg-rituel-dark-action-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-3 focus-visible:outline-rituel-focus dark:outline-rituel-dark-focus"
               >Modifier</a
             >
           </div>
@@ -250,7 +250,7 @@
       }
     </div>
     } @else {
-    <p class="mb-0 mt-0 leading-6 text-[var(--rituel-muted)]">Aucune routine à venir pour le moment.</p>
+    <p class="mb-0 mt-0 leading-6 text-rituel-muted dark:text-rituel-dark-muted">Aucune routine à venir pour le moment.</p>
     }
   </section>
 </section>

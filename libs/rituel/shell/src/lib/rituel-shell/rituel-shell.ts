@@ -6,6 +6,5 @@ import { ThemeToggleComponent } from '@gilles-monorepo/feature-theme';
   selector: 'lib-rituel-shell',
   imports: [RouterOutlet, ThemeToggleComponent],
   templateUrl: './rituel-shell.html',
-  styleUrl: './rituel-shell.css',
 })
 export class RituelShellComponent {}
