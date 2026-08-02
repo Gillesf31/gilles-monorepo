@@ -59,6 +59,9 @@
       ],
       "@gilles-monorepo/feature-edit-task": [
         "libs/rituel/feature-edit-task/src/index.ts"
+      ],
+      "@gilles-monorepo/rituel-feature-app-version": [
+        "libs/rituel/feature-app-version/src/index.ts"
       ]
     }
   },

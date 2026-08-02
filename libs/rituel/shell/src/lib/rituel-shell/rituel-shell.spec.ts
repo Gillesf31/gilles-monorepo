@@ -1,5 +1,7 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { AppVersionService } from '@gilles-monorepo/rituel-feature-app-version';
 import {
   InMemoryRoutineRepository,
   RoutineRepository,
@@ -14,7 +16,17 @@ describe('RituelShellComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RituelShellComponent],
-      providers: [provideRouter([]), provideRituelShell()],
+      providers: [
+        provideRouter([]),
+        provideRituelShell(),
+        {
+          provide: AppVersionService,
+          useValue: {
+            updateAvailable: signal(false),
+            start: () => undefined,
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RituelShellComponent);

@@ -11,6 +11,7 @@ import {
   SupabasePushSubscriptionGateway,
   SupabaseRoutineGateway,
 } from '@gilles-monorepo/rituel-data-access';
+import { provideAppVersionCheck } from '@gilles-monorepo/rituel-feature-app-version';
 import { provideTheme } from '@gilles-monorepo/feature-theme';
 import {
   provideSupabaseClient,
@@ -68,6 +69,7 @@ export function provideRituelShell(
       ];
 
   return makeEnvironmentProviders([
+    provideAppVersionCheck(!!serverConfiguration),
     provideTheme(),
     ...routineRepositoryProvider,
   ]);

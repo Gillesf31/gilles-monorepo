@@ -1,0 +1,13 @@
+{
+  "name": "rituel-feature-app-version",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/rituel/feature-app-version/src",
+  "prefix": "gilles-monorepo",
+  "projectType": "library",
+  "tags": ["scope:rituel", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
