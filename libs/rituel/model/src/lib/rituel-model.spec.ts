@@ -25,6 +25,7 @@ describe('calculateNextDueDate', () => {
     [routineFrequencies.daily, '2026-07-19'],
     [routineFrequencies.weekly, '2026-07-25'],
     [routineFrequencies.everyTwoWeeks, '2026-08-01'],
+    [routineFrequencies.everyThreeWeeks, '2026-08-08'],
     [routineFrequencies.monthly, '2026-08-18'],
     [routineFrequencies.everyThreeMonths, '2026-10-18'],
   ] as const)(

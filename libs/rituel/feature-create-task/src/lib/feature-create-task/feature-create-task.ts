@@ -26,6 +26,7 @@ const frequencyOptions: ReadonlyArray<{
   { value: routineFrequencies.daily, label: 'Chaque jour' },
   { value: routineFrequencies.weekly, label: 'Chaque semaine' },
   { value: routineFrequencies.everyTwoWeeks, label: 'Toutes les 2 semaines' },
+  { value: routineFrequencies.everyThreeWeeks, label: 'Toutes les 3 semaines' },
   { value: routineFrequencies.monthly, label: 'Chaque mois' },
   { value: routineFrequencies.everyThreeMonths, label: 'Tous les 3 mois' },
 ];

@@ -48,6 +48,21 @@ describe('CreateRoutineComponent', () => {
     expect(firstDueDateInput.min).toBe(today);
   });
 
+  it('offers every three weeks as a frequency', () => {
+    fixture.detectChanges();
+
+    const frequencyOptions = Array.from(
+      fixture.nativeElement.querySelectorAll('#routine-frequency option'),
+    ) as HTMLOptionElement[];
+
+    expect(frequencyOptions).toContainEqual(
+      expect.objectContaining({
+        value: routineFrequencies.everyThreeWeeks,
+        textContent: 'Toutes les 3 semaines',
+      }),
+    );
+  });
+
   it('shows validation errors and does not save an incomplete routine', async () => {
     await component.submit();
     fixture.detectChanges();
@@ -66,7 +81,7 @@ describe('CreateRoutineComponent', () => {
       name: '  Water the plants  ',
       note: '  Use the rain barrel.  ',
       firstDueDate: '2026-07-20',
-      frequency: routineFrequencies.weekly,
+      frequency: routineFrequencies.everyThreeWeeks,
     });
 
     await component.submit();
@@ -77,7 +92,7 @@ describe('CreateRoutineComponent', () => {
       note: 'Use the rain barrel.',
       firstDueDate: '2026-07-20',
       nextDueDate: '2026-07-20',
-      frequency: routineFrequencies.weekly,
+      frequency: routineFrequencies.everyThreeWeeks,
     });
     expect(navigateByUrl).toHaveBeenCalledWith('/');
   });

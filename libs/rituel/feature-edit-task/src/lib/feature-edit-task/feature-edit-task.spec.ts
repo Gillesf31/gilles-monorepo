@@ -121,6 +121,22 @@ describe('EditRoutineComponent', () => {
     expect(nextDueDateInput.min).toBe(getCurrentLocalDate());
   });
 
+  it('offers every three weeks as a frequency', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const frequencyOptions = Array.from(
+      fixture.nativeElement.querySelectorAll('#routine-frequency option'),
+    ) as HTMLOptionElement[];
+
+    expect(frequencyOptions).toContainEqual(
+      expect.objectContaining({
+        value: routineFrequencies.everyThreeWeeks,
+        textContent: 'Toutes les 3 semaines',
+      }),
+    );
+  });
+
   it('saves edited routine details and returns to the dashboard', async () => {
     fixture.detectChanges();
     await fixture.whenStable();
@@ -128,7 +144,7 @@ describe('EditRoutineComponent', () => {
       name: 'Clean the dryer',
       note: 'Empty the lint trap first.',
       nextDueDate: '2026-07-22',
-      frequency: routineFrequencies.everyTwoWeeks,
+      frequency: routineFrequencies.everyThreeWeeks,
     });
 
     await component.submit();
@@ -139,7 +155,7 @@ describe('EditRoutineComponent', () => {
       note: 'Empty the lint trap first.',
       firstDueDate: '2026-07-01',
       nextDueDate: '2026-07-22',
-      frequency: routineFrequencies.everyTwoWeeks,
+      frequency: routineFrequencies.everyThreeWeeks,
     });
     expect(router.navigateByUrl).toHaveBeenCalledWith('/');
   });

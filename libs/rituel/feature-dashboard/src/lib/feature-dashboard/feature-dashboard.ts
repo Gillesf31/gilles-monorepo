@@ -22,6 +22,7 @@ const frequencyLabels: Record<RoutineFrequency, string> = {
   daily: 'Chaque jour',
   weekly: 'Chaque semaine',
   'every-two-weeks': 'Toutes les 2 semaines',
+  'every-three-weeks': 'Toutes les 3 semaines',
   monthly: 'Chaque mois',
   'every-three-months': 'Tous les 3 mois',
 };

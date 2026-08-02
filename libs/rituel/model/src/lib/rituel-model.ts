@@ -5,6 +5,7 @@ export const routineFrequencies = {
   daily: 'daily',
   weekly: 'weekly',
   everyTwoWeeks: 'every-two-weeks',
+  everyThreeWeeks: 'every-three-weeks',
   monthly: 'monthly',
   everyThreeMonths: 'every-three-months',
 } as const;
@@ -58,6 +59,8 @@ export function calculateNextDueDate(
       return formatUtcDate(addDays(completedOn, 7));
     case routineFrequencies.everyTwoWeeks:
       return formatUtcDate(addDays(completedOn, 14));
+    case routineFrequencies.everyThreeWeeks:
+      return formatUtcDate(addDays(completedOn, 21));
     case routineFrequencies.monthly:
       return formatUtcDate(addMonths(completedOn, 1));
     case routineFrequencies.everyThreeMonths:

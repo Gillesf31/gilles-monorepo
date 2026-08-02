@@ -187,6 +187,22 @@ describe('RituelDashboardComponent', () => {
     ).not.toContain('Next week routine');
   });
 
+  it('labels an every-three-weeks routine on the dashboard', () => {
+    repository.setRoutines([
+      routine(
+        'Three-week routine',
+        getCurrentLocalDate(),
+        routineFrequencies.everyThreeWeeks,
+      ),
+    ]);
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'Toutes les 3 semaines',
+    );
+  });
+
   it('completes a due routine from the dashboard', async () => {
     const today = getCurrentLocalDate();
     repository.setRoutines([routine('today', today)]);
@@ -327,13 +343,17 @@ function findButton(
   return button as HTMLButtonElement;
 }
 
-function routine(id: string, nextDueDate: RoutineDate): Routine {
+function routine(
+  id: string,
+  nextDueDate: RoutineDate,
+  frequency = routineFrequencies.weekly,
+): Routine {
   return {
     id,
     name: id,
     firstDueDate: nextDueDate,
     nextDueDate,
-    frequency: routineFrequencies.weekly,
+    frequency,
   };
 }
 

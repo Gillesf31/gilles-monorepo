@@ -14,7 +14,7 @@ create table if not exists public.routines (
   first_due_date date not null,
   next_due_date date not null,
   frequency text not null check (
-    frequency in ('daily', 'weekly', 'every-two-weeks', 'monthly', 'every-three-months')
+    frequency in ('daily', 'weekly', 'every-two-weeks', 'every-three-weeks', 'monthly', 'every-three-months')
   ),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
