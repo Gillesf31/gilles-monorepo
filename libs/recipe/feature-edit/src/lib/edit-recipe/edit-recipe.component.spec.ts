@@ -14,6 +14,64 @@ import {
 import { EditRecipeComponent } from './edit-recipe.component';
 
 describe(EditRecipeComponent.name, () => {
+  it('removes the clicked instruction instead of the last one', async () => {
+    const recipe = new Recipe(
+      'recipe-1',
+      'Soupe',
+      normalizeRecipeIngredients(['Tomates']),
+      ['Préparer les légumes.', 'Faire revenir.', 'Servir chaud.'],
+    );
+    const fixture = TestBed.configureTestingModule({
+      imports: [EditRecipeComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: { paramMap: of(convertToParamMap({ id: recipe.id })) },
+        },
+        {
+          provide: RecipeService,
+          useValue: {
+            getRecipe: () => of(recipe),
+            updateRecipe: vi.fn(),
+          },
+        },
+      ],
+    }).createComponent(EditRecipeComponent);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const textareas = fixture.nativeElement.querySelectorAll<HTMLTextAreaElement>(
+      'textarea',
+    );
+    for (const [index, value] of [
+      'Préparer les légumes.',
+      'Faire revenir.',
+      'Servir chaud.',
+    ].entries()) {
+      textareas[index].value = value;
+      textareas[index].dispatchEvent(new Event('input'));
+    }
+
+    const removeButtons = fixture.nativeElement.querySelectorAll(
+      'button[aria-label="Supprimer l\'étape"]',
+    );
+    removeButtons[1].click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.form.controls.instructions.value).toEqual([
+      'Préparer les légumes.',
+      'Servir chaud.',
+    ]);
+    expect(
+      Array.from(
+        fixture.nativeElement.querySelectorAll<HTMLTextAreaElement>('textarea'),
+        (textarea) => textarea.value,
+      ),
+    ).toEqual(['Préparer les légumes.', 'Servir chaud.']);
+  });
+
   it('loads the selected recipe and saves trimmed changes', async () => {
     const recipe = new Recipe(
       'recipe-1',

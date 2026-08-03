@@ -6,6 +6,52 @@ import { Recipe } from '@gilles-monorepo/recipe-model';
 import { AddRecipeComponent } from './add-recipe.component';
 
 describe(AddRecipeComponent.name, () => {
+  it('removes the clicked instruction instead of the last one', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [AddRecipeComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: RecipeService,
+          useValue: { addRecipe: vi.fn() },
+        },
+      ],
+    }).createComponent(AddRecipeComponent);
+
+    fixture.componentInstance.addInstruction();
+    fixture.componentInstance.addInstruction();
+    fixture.detectChanges();
+
+    const textareas = fixture.nativeElement.querySelectorAll<HTMLTextAreaElement>(
+      'textarea',
+    );
+    for (const [index, value] of [
+      'Préparer les légumes.',
+      'Faire revenir.',
+      'Servir chaud.',
+    ].entries()) {
+      textareas[index].value = value;
+      textareas[index].dispatchEvent(new Event('input'));
+    }
+
+    const removeButtons = fixture.nativeElement.querySelectorAll(
+      'button[aria-label="Supprimer l\'étape"]',
+    );
+    removeButtons[1].click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.form.controls.instructions.value).toEqual([
+      'Préparer les légumes.',
+      'Servir chaud.',
+    ]);
+    expect(
+      Array.from(
+        fixture.nativeElement.querySelectorAll<HTMLTextAreaElement>('textarea'),
+        (textarea) => textarea.value,
+      ),
+    ).toEqual(['Préparer les légumes.', 'Servir chaud.']);
+  });
+
   it('trims form values before creating a recipe', () => {
     const addRecipe = vi.fn((recipe: NewRecipe) =>
       of(
