@@ -62,3 +62,9 @@ apps/recipe/src/environments/environment*.ts
 
 # Local Supabase CLI link state
 /supabase/.temp/
+
+# Local workspace artifacts
+/workspace/
+
+# Local incremental adoption guide
+/docs/en-incremental-adoption.md
