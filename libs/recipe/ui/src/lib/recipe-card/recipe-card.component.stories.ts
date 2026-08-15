@@ -51,6 +51,19 @@ export const WorkInProgress: Story = {
   },
 };
 
+export const Pinned: Story = {
+  args: {
+    recipe: new Recipe(
+      'pinned',
+      'Soupe à l’oignon',
+      normalizeRecipeIngredients(['4 oignons', '1 l bouillon', 'Pain']),
+      ['Faire revenir les oignons.', 'Ajouter le bouillon et laisser mijoter.'],
+      false,
+      true,
+    ),
+  },
+};
+
 export const FewIngredients: Story = {
   args: {
     recipe: new Recipe(

@@ -75,6 +75,14 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-6 py-10">
+    @if (pinError()) {
+      <p
+        role="alert"
+        class="mb-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/70 dark:bg-rose-950/50 dark:text-rose-200"
+      >
+        {{ pinError() }}
+      </p>
+    }
     @if (isLoading()) {
       <gilles-monorepo-loader />
     } @else if (filteredRecipes().length > 0) {
@@ -82,7 +90,9 @@
         @for (recipe of filteredRecipes(); track recipe.id) {
           <gilles-monorepo-recipe-card
             [recipe]="recipe"
+            [pinning]="pinningRecipeIds().has(recipe.id)"
             (deleted)="openDeleteModal(recipe)"
+            (pinToggled)="togglePinned(recipe)"
             (selected)="navigateToDetail(recipe)"
           />
         }

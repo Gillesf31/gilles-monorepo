@@ -11,5 +11,6 @@ export abstract class RecipeService {
   abstract getRecipe(id: string): Observable<Recipe | undefined>;
   abstract addRecipe(recipe: NewRecipe): Observable<Recipe>;
   abstract updateRecipe(id: string, recipe: NewRecipe): Observable<Recipe>;
+  abstract setPinned(id: string, isPinned: boolean): Observable<Recipe>;
   abstract deleteRecipe(id: string): Observable<void>;
 }

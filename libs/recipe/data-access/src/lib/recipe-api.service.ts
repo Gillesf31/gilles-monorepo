@@ -14,6 +14,7 @@ interface RecipeRow {
   ingredients: RecipeIngredientValue[];
   instructions: string[];
   is_work_in_progress?: boolean;
+  is_pinned?: boolean;
 }
 
 function toRecipe(row: RecipeRow): Recipe {
@@ -23,6 +24,7 @@ function toRecipe(row: RecipeRow): Recipe {
     normalizeRecipeIngredients(row.ingredients),
     row.instructions,
     row.is_work_in_progress ?? false,
+    row.is_pinned ?? false,
   );
 }
 
@@ -70,6 +72,18 @@ export class RecipeApiService extends RecipeService {
     return from(
       this.supabase.from('recipes').delete().eq('id', id).throwOnError(),
     ).pipe(map(() => undefined));
+  }
+
+  setPinned(id: string, isPinned: boolean): Observable<Recipe> {
+    return from(
+      this.supabase
+        .from('recipes')
+        .update({ is_pinned: isPinned })
+        .eq('id', id)
+        .select()
+        .single()
+        .throwOnError(),
+    ).pipe(map(({ data }) => toRecipe(data as RecipeRow)));
   }
 
   updateRecipe(id: string, recipe: NewRecipe): Observable<Recipe> {

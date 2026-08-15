@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, map, of, throwError } from 'rxjs';
 import { Recipe } from '@gilles-monorepo/recipe-model';
 import { NewRecipe, RecipeService } from './recipe.service';
 
@@ -150,12 +150,14 @@ export class RecipeInMemoryService extends RecipeService {
   }
 
   updateRecipe(id: string, recipe: NewRecipe): Observable<Recipe> {
+    const existingRecipe = this.recipes$.value.find((r) => r.id === id);
     const updated = new Recipe(
       id,
       recipe.title,
       recipe.ingredients,
       recipe.instructions,
       recipe.isWorkInProgress,
+      existingRecipe?.isPinned ?? false,
     );
     this.recipes$.next(
       this.recipes$.value.map((r) => (r.id === id ? updated : r)),
@@ -173,6 +175,28 @@ export class RecipeInMemoryService extends RecipeService {
     );
     this.recipes$.next([...this.recipes$.value, newRecipe]);
     return of(newRecipe);
+  }
+
+  setPinned(id: string, isPinned: boolean): Observable<Recipe> {
+    const recipe = this.recipes$.value.find((candidate) => candidate.id === id);
+    if (!recipe) {
+      return throwError(() => new Error(`Recipe ${id} not found`));
+    }
+
+    const updated = new Recipe(
+      recipe.id,
+      recipe.title,
+      recipe.ingredients,
+      recipe.instructions,
+      recipe.isWorkInProgress,
+      isPinned,
+    );
+    this.recipes$.next(
+      this.recipes$.value.map((candidate) =>
+        candidate.id === id ? updated : candidate,
+      ),
+    );
+    return of(updated);
   }
 
   deleteRecipe(id: string): Observable<void> {

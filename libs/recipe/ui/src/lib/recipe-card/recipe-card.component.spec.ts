@@ -40,4 +40,49 @@ describe(RecipeCardComponent.name, () => {
 
     expect(fixture.nativeElement.textContent).toContain('À tester');
   });
+
+  it('exposes an accessible pin action and emits a toggle', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [RecipeCardComponent],
+    }).createComponent(RecipeCardComponent);
+    const pinToggled = vi.fn();
+    fixture.componentInstance.pinToggled.subscribe(pinToggled);
+    fixture.componentRef.setInput(
+      'recipe',
+      new Recipe('recipe-1', 'Soupe aux tomates', [], []),
+    );
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const button = element.querySelector<HTMLButtonElement>(
+      'button[aria-label="Épingler la recette"]',
+    );
+    button?.click();
+
+    expect(button?.getAttribute('aria-pressed')).toBe('false');
+    expect(pinToggled).toHaveBeenCalledOnce();
+  });
+
+  it('renders the active state and disables the action while pinning', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [RecipeCardComponent],
+    }).createComponent(RecipeCardComponent);
+    fixture.componentRef.setInput(
+      'recipe',
+      new Recipe('recipe-1', 'Soupe aux tomates', [], [], false, true),
+    );
+    fixture.componentRef.setInput('pinning', true);
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const button = element.querySelector<HTMLButtonElement>(
+      'button[aria-label="Désépingler la recette"]',
+    );
+
+    expect(button?.getAttribute('aria-pressed')).toBe('true');
+    expect(button?.disabled).toBe(true);
+    expect(button?.querySelector('svg')?.getAttribute('fill')).toBe(
+      'currentColor',
+    );
+  });
 });

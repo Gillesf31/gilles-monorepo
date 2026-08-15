@@ -21,18 +21,30 @@ describe(RecipeInMemoryService.name, () => {
     expect(await firstValueFrom(service.getRecipes())).toHaveLength(
       initialRecipes.length + 1,
     );
+    expect(created.isPinned).toBe(false);
+
+    const pinned = await firstValueFrom(service.setPinned(created.id, true));
+
+    expect(pinned.isPinned).toBe(true);
 
     const updated = await firstValueFrom(
       service.updateRecipe(created.id, {
-      title: 'Crêpes fines',
-      ingredients: created.ingredients,
-      instructions: created.instructions,
-      isWorkInProgress: false,
+        title: 'Crêpes fines',
+        ingredients: created.ingredients,
+        instructions: created.instructions,
+        isWorkInProgress: false,
       }),
     );
 
     expect(updated.title).toBe('Crêpes fines');
     expect(updated.isWorkInProgress).toBe(false);
+    expect(updated.isPinned).toBe(true);
+
+    const unpinned = await firstValueFrom(
+      service.setPinned(created.id, false),
+    );
+
+    expect(unpinned.isPinned).toBe(false);
 
     await firstValueFrom(service.deleteRecipe(created.id));
 

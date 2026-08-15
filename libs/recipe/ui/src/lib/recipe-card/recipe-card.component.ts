@@ -21,7 +21,9 @@ export class RecipeCardComponent {
   protected readonly maxVisibleIngredients = 4;
 
   readonly recipe = input.required<Recipe>();
+  readonly pinning = input(false);
   readonly deleted = output<void>();
+  readonly pinToggled = output<void>();
   readonly selected = output<void>();
 
   protected formatIngredient(ingredient: RecipeIngredient): string {
