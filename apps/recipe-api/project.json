@@ -1,0 +1,59 @@
+{
+  "name": "recipe-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/recipe-api/src",
+  "projectType": "application",
+  "tags": ["scope:recipe", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/recipe-api",
+        "format": ["cjs"],
+        "bundle": true,
+        "main": "apps/recipe-api/src/main.ts",
+        "tsConfig": "apps/recipe-api/tsconfig.app.json",
+        "assets": [],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        },
+        "skipTypeCheck": false
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "recipe-api:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "recipe-api:build:development"
+        },
+        "production": {
+          "buildTarget": "recipe-api:build:production"
+        }
+      }
+    }
+  }
+}

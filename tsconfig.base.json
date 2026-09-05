@@ -62,6 +62,12 @@
       ],
       "@gilles-monorepo/rituel-feature-app-version": [
         "libs/rituel/feature-app-version/src/index.ts"
+      ],
+      "@gilles-monorepo/recipe-api-shell": [
+        "libs/recipe/api-shell/src/index.ts"
+      ],
+      "@gilles-monorepo/recipe-feature-api-hello": [
+        "libs/recipe/feature-api-hello/src/index.ts"
       ]
     }
   },

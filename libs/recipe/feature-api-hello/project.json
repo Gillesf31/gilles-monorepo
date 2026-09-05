@@ -1,0 +1,9 @@
+{
+  "name": "recipe-feature-api-hello",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recipe/feature-api-hello/src",
+  "projectType": "library",
+  "tags": ["scope:recipe", "type:feature"],
+  "// targets": "to see all targets run: nx show project recipe-feature-api-hello --web",
+  "targets": {}
+}
