@@ -2,6 +2,7 @@ import { isDevMode } from '@angular/core';
 import { Route } from '@angular/router';
 import { provideAppVersionCheck } from '@gilles-monorepo/feature-app-version';
 import {
+  CachedRecipeService,
   RecipeApiService,
   RecipeInMemoryService,
   RecipeService,
@@ -25,9 +26,14 @@ export function createShellRoutes(
         provideAppVersionCheck(),
         provideSupabaseClient(supabaseUrl, supabaseAnonKey),
         provideTheme(),
+        RecipeApiService,
         {
           provide: RecipeService,
-          useClass: isDevMode() ? RecipeInMemoryService : RecipeApiService,
+          useFactory: (apiService: RecipeApiService) =>
+            isDevMode()
+              ? new RecipeInMemoryService()
+              : new CachedRecipeService(apiService),
+          deps: [RecipeApiService],
         },
         {
           provide: ShoppingListService,

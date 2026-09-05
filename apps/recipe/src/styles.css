@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * iOS 26 uses the document background for the standalone web app's safe areas.
+ * Feature components render their own backgrounds only after Angular has booted,
+ * so keep the document surface in sync with the active shared theme as well.
+ */
+html,
+body {
+  min-height: 100%;
+  background-color: #f9fafb;
+}
+
+html.dark,
+html.dark body {
+  background-color: #111827;
+  color-scheme: dark;
+}

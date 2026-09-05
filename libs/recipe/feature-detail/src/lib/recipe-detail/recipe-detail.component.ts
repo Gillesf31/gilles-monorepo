@@ -24,11 +24,20 @@ import {
   ConfirmModalComponent,
   LoaderComponent,
 } from '@gilles-monorepo/recipe-ui';
-import { map, startWith, switchMap } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  map,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+} from 'rxjs';
 
 interface RecipeState {
   isLoading: boolean;
   recipe: Recipe | undefined;
+  loadError: boolean;
 }
 
 @Component({
@@ -48,19 +57,38 @@ export class RecipeDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly recipeService = inject(RecipeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly reloadRecipe = new Subject<void>();
   private wakeLock: WakeLockSentinel | null = null;
   private wakeLockRequestInFlight = false;
   private isDestroyed = false;
 
   private readonly recipeState = toSignal(
-    this.route.paramMap.pipe(
-      switchMap((params) =>
+    combineLatest([
+      this.route.paramMap,
+      this.reloadRecipe.pipe(startWith(undefined)),
+    ]).pipe(
+      switchMap(([params]) =>
         this.recipeService.getRecipe(params.get('id') ?? '').pipe(
-          map((recipe) => ({ isLoading: false, recipe }) satisfies RecipeState),
+          map(
+            (recipe) =>
+              ({
+                isLoading: false,
+                recipe,
+                loadError: false,
+              }) satisfies RecipeState,
+          ),
           startWith({
             isLoading: true,
             recipe: undefined,
+            loadError: false,
           } satisfies RecipeState),
+          catchError(() =>
+            of({
+              isLoading: false,
+              recipe: undefined,
+              loadError: true,
+            } satisfies RecipeState),
+          ),
         ),
       ),
     ),
@@ -68,12 +96,23 @@ export class RecipeDetailComponent implements OnInit {
       initialValue: {
         isLoading: true,
         recipe: undefined,
+        loadError: false,
       } satisfies RecipeState,
     },
   );
 
   protected readonly isLoading = computed(() => this.recipeState().isLoading);
   protected readonly recipe = computed(() => this.recipeState().recipe);
+  protected readonly loadError = computed(() => this.recipeState().loadError);
+  protected readonly canMutate = computed(
+    () => this.recipeService.readStatus().mode === 'live',
+  );
+  protected readonly isUsingCachedRecipe = computed(
+    () => this.recipeService.readStatus().mode === 'cached',
+  );
+  protected readonly cachedAtLabel = computed(() =>
+    formatCachedAt(this.recipeService.readStatus().cachedAt),
+  );
   protected readonly isWakeLockActive = signal(false);
   protected readonly sessionIngredients = signal<RecipeIngredient[]>([]);
   protected readonly multiplier = signal(1);
@@ -138,6 +177,10 @@ export class RecipeDetailComponent implements OnInit {
 
   protected cancelDelete(): void {
     this.showDeleteModal.set(false);
+  }
+
+  protected retryLoading(): void {
+    this.reloadRecipe.next();
   }
 
   protected moveIngredient(event: {
@@ -243,4 +286,15 @@ export class RecipeDetailComponent implements OnInit {
   private normalizeMultiplier(multiplier: number): number {
     return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : 1;
   }
+}
+
+function formatCachedAt(cachedAt: string | null): string {
+  if (!cachedAt) {
+    return 'à une date inconnue';
+  }
+
+  return new Intl.DateTimeFormat('fr-CA', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(cachedAt));
 }

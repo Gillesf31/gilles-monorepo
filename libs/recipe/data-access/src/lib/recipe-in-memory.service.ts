@@ -1,6 +1,11 @@
+import { signal } from '@angular/core';
 import { BehaviorSubject, Observable, map, of, throwError } from 'rxjs';
 import { Recipe } from '@gilles-monorepo/recipe-model';
-import { NewRecipe, RecipeService } from './recipe.service';
+import {
+  NewRecipe,
+  RecipeReadStatus,
+  RecipeService,
+} from './recipe.service';
 
 // ─── Dev scenario ────────────────────────────────────────────────────────────
 // Change this line to switch between local test scenarios.
@@ -135,6 +140,11 @@ const SCENARIOS = {
 } satisfies Record<string, Recipe[]>;
 
 export class RecipeInMemoryService extends RecipeService {
+  readonly readStatus = signal<RecipeReadStatus>({
+    mode: 'live',
+    cachedAt: null,
+  }).asReadonly();
+
   private readonly recipes$ = new BehaviorSubject<Recipe[]>(
     SCENARIOS[ACTIVE_SCENARIO],
   );

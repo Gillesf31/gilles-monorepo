@@ -40,7 +40,19 @@ export class RecipeListComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly recipes = signal<Recipe[] | undefined>(undefined);
-  protected readonly isLoading = computed(() => this.recipes() === undefined);
+  protected readonly loadError = signal(false);
+  protected readonly isLoading = computed(
+    () => this.recipes() === undefined && !this.loadError(),
+  );
+  protected readonly canMutate = computed(
+    () => this.recipeService.readStatus().mode === 'live',
+  );
+  protected readonly isUsingCachedRecipes = computed(
+    () => this.recipeService.readStatus().mode === 'cached',
+  );
+  protected readonly cachedAtLabel = computed(() =>
+    formatCachedAt(this.recipeService.readStatus().cachedAt),
+  );
   protected readonly searchQuery = signal('');
   protected readonly recipeToDelete = signal<Recipe | null>(null);
   protected readonly pinningRecipeIds = signal<ReadonlySet<string>>(new Set());
@@ -71,10 +83,23 @@ export class RecipeListComponent {
   });
 
   constructor() {
+    this.loadRecipes();
+  }
+
+  protected retryLoading(): void {
+    this.loadRecipes();
+  }
+
+  private loadRecipes(): void {
+    this.recipes.set(undefined);
+    this.loadError.set(false);
     this.recipeService
       .getRecipes()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((recipes) => this.recipes.set(recipes));
+      .subscribe({
+        next: (recipes) => this.recipes.set(recipes),
+        error: () => this.loadError.set(true),
+      });
   }
 
   protected togglePinned(recipe: Recipe): void {
@@ -132,4 +157,15 @@ export class RecipeListComponent {
       return updatedIds;
     });
   }
+}
+
+function formatCachedAt(cachedAt: string | null): string {
+  if (!cachedAt) {
+    return 'à une date inconnue';
+  }
+
+  return new Intl.DateTimeFormat('fr-CA', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(cachedAt));
 }

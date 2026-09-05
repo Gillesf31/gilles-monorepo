@@ -1,7 +1,11 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { RecipeService } from '@gilles-monorepo/recipe-data-access';
+import {
+  RecipeReadStatus,
+  RecipeService,
+} from '@gilles-monorepo/recipe-data-access';
 import {
   normalizeRecipeIngredients,
   Recipe,
@@ -42,6 +46,10 @@ function setup(
       );
     },
   ),
+  readStatus = signal<RecipeReadStatus>({
+    mode: 'live',
+    cachedAt: null,
+  }),
 ) {
   const fixture = TestBed.configureTestingModule({
     imports: [RecipeListComponent],
@@ -50,6 +58,7 @@ function setup(
       {
         provide: RecipeService,
         useValue: {
+          readStatus,
           getRecipes: () => of(recipes),
           setPinned,
           deleteRecipe: vi.fn(),
@@ -165,5 +174,66 @@ describe(RecipeListComponent.name, () => {
       'button[aria-label="Épingler la recette"]',
     );
     expect(enabledPinButton?.disabled).toBe(false);
+  });
+
+  it('shows cached recipes while hiding all server-backed controls', () => {
+    const { fixture } = setup(
+      [recipe('recipe-1', 'Soupe aux tomates')],
+      undefined,
+      signal<RecipeReadStatus>({
+        mode: 'cached',
+        cachedAt: '2026-08-15T14:30:00.000Z',
+      }),
+    );
+    const element: HTMLElement = fixture.nativeElement;
+
+    expect(element.querySelector('[role=status]')?.textContent).toContain(
+      'Mode hors ligne',
+    );
+    expect(element.textContent).toContain('Soupe aux tomates');
+    expect(element.querySelector('a[href="/add"]')).toBeNull();
+    expect(element.querySelector('a[href="/courses"]')).toBeNull();
+    expect(element.querySelector('button[aria-label="Épingler la recette"]')).toBeNull();
+    expect(element.querySelector('button[aria-label="Supprimer la recette"]')).toBeNull();
+    expect(element.textContent).toContain('Voir la recette');
+  });
+
+  it('shows an explicit error and retries when no cached catalogue exists', () => {
+    const recipes = [recipe('recipe-1', 'Soupe aux tomates')];
+    const getRecipes = vi
+      .fn()
+      .mockReturnValueOnce(throwError(() => new Error('Unavailable')))
+      .mockReturnValueOnce(of(recipes));
+    const readStatus = signal<RecipeReadStatus>({
+      mode: 'unavailable',
+      cachedAt: null,
+    });
+    const fixture = TestBed.configureTestingModule({
+      imports: [RecipeListComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: RecipeService,
+          useValue: {
+            readStatus,
+            getRecipes,
+            setPinned: vi.fn(),
+            deleteRecipe: vi.fn(),
+          },
+        },
+      ],
+    }).createComponent(RecipeListComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain(
+      'Aucune copie locale',
+    );
+
+    readStatus.set({ mode: 'live', cachedAt: null });
+    fixture.nativeElement.querySelector('button').click();
+    fixture.detectChanges();
+
+    expect(getRecipes).toHaveBeenCalledTimes(2);
+    expect(fixture.nativeElement.textContent).toContain('Soupe aux tomates');
   });
 });

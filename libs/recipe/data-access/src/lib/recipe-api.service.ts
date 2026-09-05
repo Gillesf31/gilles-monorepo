@@ -1,11 +1,15 @@
-import { inject } from '@angular/core';
+import { inject, signal } from '@angular/core';
 import { from, map, Observable } from 'rxjs';
 import {
   normalizeRecipeIngredients,
   Recipe,
   type RecipeIngredientValue,
 } from '@gilles-monorepo/recipe-model';
-import { NewRecipe, RecipeService } from './recipe.service';
+import {
+  NewRecipe,
+  RecipeReadStatus,
+  RecipeService,
+} from './recipe.service';
 import { SUPABASE_CLIENT } from '@gilles-monorepo/util-supabase';
 
 interface RecipeRow {
@@ -30,6 +34,10 @@ function toRecipe(row: RecipeRow): Recipe {
 
 export class RecipeApiService extends RecipeService {
   private readonly supabase = inject(SUPABASE_CLIENT);
+  readonly readStatus = signal<RecipeReadStatus>({
+    mode: 'live',
+    cachedAt: null,
+  }).asReadonly();
 
   getRecipes(): Observable<Recipe[]> {
     return from(

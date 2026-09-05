@@ -18,23 +18,24 @@
         >
           Mes recettes
         </h1>
-        @if (!isLoading()) {
+        @if (recipes(); as loadedRecipes) {
           <p
             class="mt-3 max-w-xl text-sm leading-6 text-zinc-600 dark:text-zinc-400"
           >
             {{
-              recipes()!.length === 0
+              loadedRecipes.length === 0
                 ? 'Aucune'
-                : recipes()!.length === 1
+                : loadedRecipes.length === 1
                   ? 'Une'
-                  : recipes()!.length
+                  : loadedRecipes.length
             }}
-            {{ recipes()!.length <= 1 ? 'recette' : 'recettes' }} dans votre
+            {{ loadedRecipes.length <= 1 ? 'recette' : 'recettes' }} dans votre
             collection
           </p>
         }
       </div>
-      <div class="flex flex-wrap gap-2 self-start sm:self-auto">
+      @if (canMutate()) {
+        <div class="flex flex-wrap gap-2 self-start sm:self-auto">
         <a
           routerLink="/courses"
           class="rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
@@ -45,7 +46,8 @@
           class="rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/10 transition-colors hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300"
           >Ajouter une recette</a
         >
-      </div>
+        </div>
+      }
     </div>
 
     <div class="max-w-6xl mx-auto mt-7">
@@ -75,6 +77,15 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-6 py-10">
+    @if (isUsingCachedRecipes()) {
+      <p
+        role="status"
+        class="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/70 dark:bg-amber-950/50 dark:text-amber-200"
+      >
+        Mode hors ligne — recettes affichées depuis la copie enregistrée le
+        {{ cachedAtLabel() }}.
+      </p>
+    }
     @if (pinError()) {
       <p
         role="alert"
@@ -83,7 +94,28 @@
         {{ pinError() }}
       </p>
     }
-    @if (isLoading()) {
+    @if (loadError()) {
+      <div
+        role="alert"
+        class="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-10 text-center dark:border-rose-900/70 dark:bg-rose-950/50"
+      >
+        <p class="text-lg font-semibold text-rose-800 dark:text-rose-200">
+          Aucune copie locale des recettes n’est disponible.
+        </p>
+        <p class="mt-2 text-sm text-rose-700 dark:text-rose-300">
+          Reconnectez-vous ou réactivez Supabase, puis réessayez.
+        </p>
+        <button
+          gillesMonorepoBtn
+          variant="ghost"
+          type="button"
+          class="mt-5"
+          (click)="retryLoading()"
+        >
+          Réessayer
+        </button>
+      </div>
+    } @else if (isLoading()) {
       <gilles-monorepo-loader />
     } @else if (filteredRecipes().length > 0) {
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -91,6 +123,7 @@
           <gilles-monorepo-recipe-card
             [recipe]="recipe"
             [pinning]="pinningRecipeIds().has(recipe.id)"
+            [readonlyMode]="!canMutate()"
             (deleted)="openDeleteModal(recipe)"
             (pinToggled)="togglePinned(recipe)"
             (selected)="navigateToDetail(recipe)"

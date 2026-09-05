@@ -85,4 +85,21 @@ describe(RecipeCardComponent.name, () => {
       'currentColor',
     );
   });
+
+  it('keeps recipe selection available while hiding mutation controls in readonly mode', () => {
+    const fixture = TestBed.configureTestingModule({
+      imports: [RecipeCardComponent],
+    }).createComponent(RecipeCardComponent);
+    fixture.componentRef.setInput(
+      'recipe',
+      new Recipe('recipe-1', 'Soupe aux tomates', [], []),
+    );
+    fixture.componentRef.setInput('readonlyMode', true);
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('button[aria-label="Épingler la recette"]')).toBeNull();
+    expect(element.querySelector('button[aria-label="Supprimer la recette"]')).toBeNull();
+    expect(element.textContent).toContain('Voir la recette');
+  });
 });

@@ -1,11 +1,15 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   ActivatedRoute,
   convertToParamMap,
   provideRouter,
 } from '@angular/router';
-import { of } from 'rxjs';
-import { RecipeService } from '@gilles-monorepo/recipe-data-access';
+import { Observable, of, throwError } from 'rxjs';
+import {
+  RecipeReadStatus,
+  RecipeService,
+} from '@gilles-monorepo/recipe-data-access';
 import {
   normalizeRecipeIngredients,
   Recipe,
@@ -51,6 +55,56 @@ describe(RecipeDetailComponent.name, () => {
 
     expect(fixture.nativeElement.textContent).toContain('Ratatouille');
     expect(fixture.nativeElement.textContent).toContain('Couper les légumes.');
+  });
+
+  it('renders a cached recipe while hiding edit and delete controls', async () => {
+    const fixture = createComponent(
+      signal<RecipeReadStatus>({
+        mode: 'cached',
+        cachedAt: '2026-08-15T14:30:00.000Z',
+      }),
+    );
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('[role=status]')?.textContent).toContain(
+      'Mode hors ligne',
+    );
+    expect(element.textContent).toContain('Ratatouille');
+    expect(element.textContent).not.toContain('Modifier');
+    expect(element.textContent).not.toContain('Supprimer');
+    expect(element.textContent).toContain('Multiplicateur');
+  });
+
+  it('shows an explicit error and retries without a cached recipe', async () => {
+    const readStatus = signal<RecipeReadStatus>({
+      mode: 'unavailable',
+      cachedAt: null,
+    });
+    const getRecipe = vi
+      .fn()
+      .mockReturnValueOnce(throwError(() => new Error('Unavailable')))
+      .mockReturnValueOnce(of(recipe));
+    const fixture = createComponent(readStatus, getRecipe);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain(
+      'Aucune copie locale',
+    );
+
+    readStatus.set({ mode: 'live', cachedAt: null });
+    fixture.nativeElement.querySelector('[role=alert] button').click();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(getRecipe).toHaveBeenCalledTimes(2);
+    expect(fixture.nativeElement.textContent).toContain('Ratatouille');
   });
 
   it('keeps the screen awake while displaying a recipe', async () => {
@@ -135,7 +189,13 @@ describe(RecipeDetailComponent.name, () => {
   });
 });
 
-function createComponent() {
+function createComponent(
+  readStatus = signal<RecipeReadStatus>({
+    mode: 'live',
+    cachedAt: null,
+  }),
+  getRecipe: () => Observable<Recipe | undefined> = () => of(recipe),
+) {
   return TestBed.configureTestingModule({
     imports: [RecipeDetailComponent],
     providers: [
@@ -147,7 +207,8 @@ function createComponent() {
       {
         provide: RecipeService,
         useValue: {
-          getRecipe: () => of(recipe),
+          readStatus,
+          getRecipe,
           deleteRecipe: vi.fn(),
         },
       },

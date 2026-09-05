@@ -22,6 +22,7 @@ export class RecipeCardComponent {
 
   readonly recipe = input.required<Recipe>();
   readonly pinning = input(false);
+  readonly readonlyMode = input(false);
   readonly deleted = output<void>();
   readonly pinToggled = output<void>();
   readonly selected = output<void>();
