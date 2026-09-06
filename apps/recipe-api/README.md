@@ -1,6 +1,13 @@
 # Recipe API
 
-A Node.js backend using stable Effect 3.
+The dedicated backend for the Recipe application, built with Node.js and stable
+Effect 3. Its long-term goal is to replace Supabase as the application's backend,
+moving recipe business rules and backend capabilities into this monorepo.
+
+The API will expose recipe operations through HTTP endpoints and follow Clean
+Architecture to keep domain rules and application use cases independent of
+infrastructure. Supabase remains in use until its responsibilities are migrated
+to this backend.
 
 The API provides `/hello` to validate the backend setup and `/recipes` to establish
 the recipe JSON response shape using a fixed sample. Persistence and frontend
@@ -14,6 +21,8 @@ direction. The API is not connected to this database yet.
 pnpm nx serve recipe-api
 curl -i http://localhost:3000/hello
 curl -i http://localhost:3000/recipes
+curl -i http://localhost:3000/recipes/1
+curl -i http://localhost:3000/recipes/unknown
 ```
 
 `GET /hello` returns status `200`, content type `text/plain; charset=utf-8`,
@@ -24,6 +33,10 @@ Ctrl+C. Effect manages the server lifetime and reports startup failures.
 containing one fixed sample recipe with `id`, `title`, `ingredients`,
 `instructions`, `isWorkInProgress`, and `isPinned`. It does not read from Supabase
 or persist data.
+
+`GET /recipes/:id` returns status `200` and the matching recipe object for the
+sample ID `1`. An unknown ID returns status `404` and
+`{ "message": "Recipe not found" }`. Both responses use `application/json`.
 
 ```sh
 pnpm nx build recipe-api --configuration=production
