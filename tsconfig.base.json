@@ -68,6 +68,9 @@
       ],
       "@gilles-monorepo/recipe-feature-api-hello": [
         "libs/recipe/feature-api-hello/src/index.ts"
+      ],
+      "@gilles-monorepo/recipe-feature-api-recipes": [
+        "libs/recipe/feature-api-recipes/src/index.ts"
       ]
     }
   },
