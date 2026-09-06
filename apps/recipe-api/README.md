@@ -6,6 +6,10 @@ The API provides `/hello` to validate the backend setup and `/recipes` to establ
 the recipe JSON response shape using a fixed sample. Persistence and frontend
 integration will follow.
 
+Local PostgreSQL is available through [Docker Compose](../../infra/recipe/README.md).
+See the [database decision](../../docs/adr/0001-recipe-postgresql.md) for the migration
+direction. The API is not connected to this database yet.
+
 ```sh
 pnpm nx serve recipe-api
 curl -i http://localhost:3000/hello
@@ -45,5 +49,5 @@ existing Nx type tags. The recipes feature uses the shared `recipe-model` type.
 
 These fixed responses need no repository, port, or use case. Introduce those
 boundaries when recipe behavior requires them. Persistence,
-authentication, frontend integration, CORS, Docker, and deployment are outside
+authentication, frontend integration, CORS, API containerization, and deployment are outside
 this milestone.
