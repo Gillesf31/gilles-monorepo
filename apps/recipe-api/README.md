@@ -2,7 +2,8 @@
 
 The Recipe backend uses Node.js and stable Effect 3. It will replace Supabase
 incrementally. Both `GET /recipes` and `GET /recipes/:id` read local PostgreSQL;
-`POST /recipes`, `PUT /recipes/:id`, and `DELETE /recipes/:id` create, edit, and delete recipes in the same database. The frontend still uses Supabase.
+`POST /recipes`, `PUT /recipes/:id`, and `DELETE /recipes/:id` create, edit, and delete recipes in the same database.
+`PATCH /recipes/:id/pin` sets pin status. The frontend still uses Supabase.
 
 ## Run locally
 
@@ -29,14 +30,15 @@ curl -i http://localhost:3000/recipes/00000000-0000-4000-8000-000000000001
 curl -i http://localhost:3000/recipes/unknown
 ```
 
-| Endpoint           | Behavior                                                                                               |
-| ------------------ | ------------------------------------------------------------------------------------------------------ |
-| `GET /hello`       | `200`, `text/plain; charset=utf-8`, `Hello World`                                                      |
-| `GET /recipes`     | `200`, persisted recipes ordered newest first; `[]` when empty                                         |
-| `POST /recipes`    | `201`, persisted recipe and `Location: /recipes/<id>`; invalid JSON or fields returns `400`            |
-| `GET /recipes/:id` | `200`, persisted recipe; missing or malformed UUID returns `404` with `{"message":"Recipe not found"}` |
-| `PUT /recipes/:id` | `200`, updated recipe; invalid body returns `400`; missing or malformed UUID returns `404` |
-| `DELETE /recipes/:id` | `204`, no body; missing or malformed UUID returns `404` |
+| Endpoint                 | Behavior                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `GET /hello`             | `200`, `text/plain; charset=utf-8`, `Hello World`                                                            |
+| `GET /recipes`           | `200`, persisted recipes ordered newest first; `[]` when empty                                               |
+| `POST /recipes`          | `201`, persisted recipe and `Location: /recipes/<id>`; invalid JSON or fields returns `400`                  |
+| `GET /recipes/:id`       | `200`, persisted recipe; missing or malformed UUID returns `404` with `{"message":"Recipe not found"}`       |
+| `PUT /recipes/:id`       | `200`, updated recipe; invalid body returns `400`; missing or malformed UUID returns `404`                   |
+| `PATCH /recipes/:id/pin` | `200`, recipe with requested pin status; invalid body returns `400`; missing or malformed UUID returns `404` |
+| `DELETE /recipes/:id`    | `204`, no body; missing or malformed UUID returns `404`                                                      |
 
 Recipe responses retain `id`, `title`, `ingredients`, `instructions`,
 `isWorkInProgress`, and `isPinned`. Database rows are validated before mapping;
@@ -49,7 +51,7 @@ There is no hardcoded collection fallback. Every listed recipe can be opened wit
 its returned UUID (unless it is deleted between requests). To add a local example,
 run the [optional development seed](../../infra/recipe/README.md#local-development-seed).
 The seed's UUID is `00000000-0000-4000-8000-000000000001`; `/recipes/1` remains an
-invalid UUID and returns `404`. Data import, pin/unpin, authentication, and
+invalid UUID and returns `404`. Data import, authentication, and
 frontend switching are subsequent slices.
 
 ## Create a recipe
@@ -97,11 +99,24 @@ Use the [Bruno collection](../../tools/bruno/recipe-api/README.md) to create a s
 edit it, verify persistence, and delete it. These local development endpoints
 have no authentication yet.
 
+## Pin or unpin a recipe
+
+Apply migration `0006_recipe_api_pin`, then send `PATCH /recipes/:id/pin` with
+`{"isPinned":true}` to pin or `{"isPinned":false}` to unpin. The boolean is required;
+missing values, strings, malformed JSON, and extra fields return `400` with
+`{"message":"Invalid pin status"}`. IDs follow the same `404` rules as PUT.
+
+A successful request returns `200` with the complete recipe. Repeating the same
+request keeps the requested state. Only pin status changes; content, ID, and
+creation timestamp are preserved. Response decoding shares the transaction, so
+invalid stored data returns the existing `500` response and rolls back the change.
+POST and PUT still reject `isPinned`; pinning uses this dedicated endpoint.
+
 ## Verify
 
 For interactive testing, open the [Bruno collection](../../tools/bruno/recipe-api/README.md)
 and select **Local**. It covers every current endpoint, creates recipes, carries
-their IDs through reads, updates, and deletes, and checks validation and not-found responses.
+their IDs through reads, updates, pin/unpin, and deletes, and checks validation and not-found responses.
 
 ```sh
 pnpm nx build recipe-api --configuration=production
@@ -115,7 +130,7 @@ suite uses the local Compose database, inserts a temporary recipe with a unique
 UUID through the bootstrap role, exercises HTTP responses using the real restricted
 PostgreSQL repository, creates a recipe through POST, follows it through both GET
 routes, updates and deletes it, checks preservation of IDs/timestamps/pins and
-denied protected-field updates and shopping-list reads, and cleans up its fixtures
+pin/unpin persistence and idempotency, denied ID/timestamp updates and shopping-list reads, and cleans up its fixtures
 afterward. Keep integration tests uncached because database state is
 external to Nx. An interrupted test may leave its uniquely identified fixture.
 

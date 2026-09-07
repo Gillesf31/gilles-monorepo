@@ -64,4 +64,15 @@ SELECT NOT EXISTS (
     \echo '0005_recipe_api_delete already applied'
 \endif
 
+SELECT NOT EXISTS (
+    SELECT 1 FROM public.schema_migrations WHERE version = '0006_recipe_api_pin'
+) AS apply_0006 \gset
+
+\if :apply_0006
+    \ir 0006_recipe_api_pin.sql
+    INSERT INTO public.schema_migrations (version) VALUES ('0006_recipe_api_pin');
+\else
+    \echo '0006_recipe_api_pin already applied'
+\endif
+
 COMMIT;

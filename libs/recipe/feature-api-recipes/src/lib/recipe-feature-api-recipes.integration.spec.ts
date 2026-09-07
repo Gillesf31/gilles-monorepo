@@ -162,6 +162,58 @@ describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
       expect(await response.json()).toEqual({ message: 'Recipe not found' });
     });
 
+    it('pins and unpins idempotently without changing content, timestamps or other recipes', async () => {
+      if (!createdId) throw new Error('Creation test must succeed first');
+      const unchangedFields = () =>
+        admin(
+          "SELECT id, title, ingredients, instructions, created_at, is_work_in_progress FROM public.recipes WHERE id = :'fixture_id';",
+          createdId,
+        ).toString();
+      const before = unchangedFields();
+      const detail = () =>
+        web.handler(new Request(`http://localhost/recipes/${createdId}`));
+      const original = await (await detail()).json();
+      const otherRecipe = admin(
+        "SELECT * FROM public.recipes WHERE id = :'fixture_id';",
+      ).toString();
+      const pin = (body: unknown, recipeId = createdId) =>
+        web.handler(
+          new Request(`http://localhost/recipes/${recipeId}/pin`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+          }),
+        );
+      for (const isPinned of [true, true, false, false]) {
+        const response = await pin({ isPinned });
+        expect(response.status).toBe(200);
+        const expected = { ...original, isPinned };
+        expect(await response.json()).toEqual(expected);
+        expect(await (await detail()).json()).toEqual(expected);
+        const list = await web.handler(new Request('http://localhost/recipes'));
+        expect(await list.json()).toContainEqual(expected);
+        expect(unchangedFields()).toBe(before);
+      }
+      expect((await pin({ isPinned: true, title: 'Overwrite' })).status).toBe(
+        400,
+      );
+      expect(await (await detail()).json()).toEqual(original);
+      expect(
+        admin(
+          "SELECT * FROM public.recipes WHERE id = :'fixture_id';",
+        ).toString(),
+      ).toBe(otherRecipe);
+      const missingId = randomUUID();
+      expect((await pin({ isPinned: true }, missingId)).status).toBe(404);
+      expect(
+        (
+          await web.handler(
+            new Request(`http://localhost/recipes/${missingId}`),
+          )
+        ).status,
+      ).toBe(404);
+    });
+
     it('updates, preserves protected fields, rejects invalid writes, and deletes only the requested recipe', async () => {
       if (!createdId) throw new Error('Creation test must succeed first');
       admin(
@@ -262,7 +314,7 @@ describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
       );
     });
 
-    it('rejects invalid stored JSON without exposing it in the response', async () => {
+    it('rejects invalid stored JSON and rolls back a pin change if response decoding fails', async () => {
       admin(
         "UPDATE public.recipes SET ingredients = '[42]' WHERE id = :'fixture_id';",
       );
@@ -273,6 +325,25 @@ describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
       expect(await response.json()).toEqual({
         message: 'Unable to load recipe',
       });
+      const pinBefore = admin(
+        "SELECT is_pinned FROM public.recipes WHERE id = :'fixture_id';",
+      ).toString();
+      const pinResponse = await web.handler(
+        new Request(`http://localhost/recipes/${id}/pin`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ isPinned: false }),
+        }),
+      );
+      expect(pinResponse.status).toBe(500);
+      expect(await pinResponse.json()).toEqual({
+        message: 'Unable to load recipe',
+      });
+      expect(
+        admin(
+          "SELECT is_pinned FROM public.recipes WHERE id = :'fixture_id';",
+        ).toString(),
+      ).toBe(pinBefore);
     });
 
     it('cannot update protected fields or read shopping lists with the API credentials', async () => {
@@ -280,9 +351,6 @@ describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
         Effect.gen(function* () {
           const sql = yield* PgClient.PgClient;
           return yield* Effect.all([
-            Effect.either(
-              sql`UPDATE public.recipes SET is_pinned = false WHERE id = ${id}::uuid`,
-            ),
             Effect.either(
               sql`UPDATE public.recipes SET id = ${randomUUID()}::uuid WHERE id = ${id}::uuid`,
             ),

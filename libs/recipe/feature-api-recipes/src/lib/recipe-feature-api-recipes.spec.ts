@@ -17,6 +17,7 @@ const id = '63d96021-6aad-401f-87f5-2d055ffdb512';
 const findById = vi.fn<RecipeRepository['findById']>();
 const findAll = vi.fn<RecipeRepository['findAll']>();
 const create = vi.fn<RecipeRepository['create']>();
+const setPinned = vi.fn<RecipeRepository['setPinned']>();
 const update = vi.fn<RecipeRepository['update']>();
 const deleteRecipe = vi.fn<RecipeRepository['delete']>();
 const handler = HttpApp.toWebHandler(
@@ -28,12 +29,14 @@ const handler = HttpApp.toWebHandler(
         findAll,
         create,
         update,
+        setPinned,
         delete: deleteRecipe,
       }),
     ),
   ),
 );
 beforeEach(() => {
+  setPinned.mockReset().mockReturnValue(Effect.succeed(sampleRecipe));
   update.mockReset().mockReturnValue(Effect.succeed(sampleRecipe));
   deleteRecipe.mockReset().mockReturnValue(Effect.succeed(true));
   create.mockReset().mockReturnValue(Effect.succeed(sampleRecipe));
@@ -279,4 +282,85 @@ it('sanitizes database failures for updates and deletes', async () => {
       message: 'Recipe storage unavailable',
     });
   }
+});
+
+const patchPin = (body: unknown, recipeId = id) =>
+  handler(
+    new Request(`http://localhost/recipes/${recipeId}/pin`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  );
+
+it.each([true, false])(
+  'sets pin status to %s and returns the complete recipe',
+  async (isPinned) => {
+    const recipe = { ...sampleRecipe, isPinned };
+    setPinned.mockReturnValue(Effect.succeed(recipe));
+    const response = await patchPin({ isPinned });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(recipe);
+    expect(setPinned).toHaveBeenCalledExactlyOnceWith(id, isPinned);
+    expect(update).not.toHaveBeenCalled();
+  },
+);
+
+it.each([
+  null,
+  {},
+  { isPinned: null },
+  { isPinned: 'true' },
+  { isPinned: 1 },
+  { isPinned: true, title: 'Overwrite' },
+  { isPinned: true, id },
+])('rejects invalid pin body without writing: %j', async (body) => {
+  const response = await patchPin(body);
+  expect(response.status).toBe(400);
+  expect(await response.json()).toEqual({ message: 'Invalid pin status' });
+  expect(setPinned).not.toHaveBeenCalled();
+});
+
+it('rejects malformed pin JSON without writing', async () => {
+  const response = await handler(
+    new Request(`http://localhost/recipes/${id}/pin`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: '{',
+    }),
+  );
+  expect(response.status).toBe(400);
+  expect(await response.json()).toEqual({ message: 'Invalid pin status' });
+  expect(setPinned).not.toHaveBeenCalled();
+});
+
+it('returns 404 for a missing recipe when pinning', async () => {
+  setPinned.mockReturnValue(Effect.succeed(undefined));
+  const response = await patchPin({ isPinned: true });
+  expect(response.status).toBe(404);
+  expect(await response.json()).toEqual({ message: 'Recipe not found' });
+});
+
+it.each(['1', "' OR true --"])(
+  'rejects malformed pin ID %s before querying storage',
+  async (recipeId) => {
+    const response = await patchPin(
+      { isPinned: true },
+      encodeURIComponent(recipeId),
+    );
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ message: 'Recipe not found' });
+    expect(setPinned).not.toHaveBeenCalled();
+  },
+);
+
+it('returns a sanitized 503 when setting pin status fails', async () => {
+  setPinned.mockReturnValue(
+    Effect.fail(new SqlError({ message: 'private database detail' })),
+  );
+  const response = await patchPin({ isPinned: true });
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({
+    message: 'Recipe storage unavailable',
+  });
 });

@@ -29,6 +29,7 @@ const isRecipeId = (id: string | undefined): id is string =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 const recipeNotFound = () =>
   HttpServerResponse.json({ message: 'Recipe not found' }, { status: 404 });
+const PinRecipeBody = Schema.Struct({ isPinned: Schema.Boolean });
 
 export const recipesRoutes = HttpRouter.empty.pipe(
   HttpRouter.post(
@@ -67,6 +68,25 @@ export const recipesRoutes = HttpRouter.empty.pipe(
       }
       const repository = yield* RecipeRepository;
       const recipe = yield* repository.update(id, body.right);
+      return yield* recipe ? HttpServerResponse.json(recipe) : recipeNotFound();
+    }),
+  ),
+  HttpRouter.patch(
+    '/recipes/:id/pin',
+    Effect.gen(function* () {
+      const { id } = yield* HttpRouter.params;
+      if (!isRecipeId(id)) return yield* recipeNotFound();
+      const body = yield* HttpServerRequest.schemaBodyJson(PinRecipeBody, {
+        onExcessProperty: 'error',
+      }).pipe(Effect.either);
+      if (body._tag === 'Left') {
+        return yield* HttpServerResponse.json(
+          { message: 'Invalid pin status' },
+          { status: 400 },
+        );
+      }
+      const repository = yield* RecipeRepository;
+      const recipe = yield* repository.setPinned(id, body.right.isPinned);
       return yield* recipe ? HttpServerResponse.json(recipe) : recipeNotFound();
     }),
   ),

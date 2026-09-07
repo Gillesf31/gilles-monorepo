@@ -78,6 +78,17 @@ export class RecipeRepository extends Effect.Service<RecipeRepository>()(
               Effect.map(([recipe]) => recipe),
             ),
           ),
+        setPinned: (id: string, isPinned: boolean) =>
+          sql.withTransaction(
+            sql`
+        UPDATE public.recipes SET is_pinned = ${isPinned}
+        WHERE id = ${id}::uuid
+        RETURNING id, title, ingredients, instructions, is_work_in_progress, is_pinned
+      `.pipe(
+              Effect.flatMap(decodeRecipes),
+              Effect.map(([recipe]) => recipe),
+            ),
+          ),
         delete: (id: string) =>
           sql`DELETE FROM public.recipes WHERE id = ${id}::uuid RETURNING id`.pipe(
             Effect.map((rows) => rows.length > 0),

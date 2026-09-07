@@ -86,6 +86,7 @@ BEGIN
        OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0003_recipe_api_create')
        OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0004_recipe_api_update')
        OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0005_recipe_api_delete')
+       OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0006_recipe_api_pin')
        OR EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'recipe_api'
            AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls))
        OR EXISTS (SELECT 1 FROM pg_auth_members WHERE member = 'recipe_api'::regrole)
@@ -105,7 +106,7 @@ BEGIN
        OR NOT has_column_privilege('recipe_api', 'public.recipes', 'is_work_in_progress', 'UPDATE')
        OR has_column_privilege('recipe_api', 'public.recipes', 'id', 'UPDATE')
        OR has_column_privilege('recipe_api', 'public.recipes', 'created_at', 'UPDATE')
-       OR has_column_privilege('recipe_api', 'public.recipes', 'is_pinned', 'UPDATE')
+       OR NOT has_column_privilege('recipe_api', 'public.recipes', 'is_pinned', 'UPDATE')
        OR has_table_privilege('recipe_api', 'public.shopping_lists', 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
        OR has_table_privilege('recipe_api', 'public.schema_migrations', 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') THEN
         RAISE EXCEPTION 'Expected a restricted API role with recipe reads/deletes and limited inserts/updates';
@@ -136,9 +137,17 @@ BEGIN
         AND ingredients = '[{"name":"eggs","quantity":"2","unit":""}]'::jsonb) THEN
         RAISE EXCEPTION 'API role cannot update recipe content through RLS';
     END IF;
+    UPDATE public.recipes SET is_pinned = true WHERE id = recipe_id;
+    IF NOT EXISTS (SELECT 1 FROM public.recipes WHERE id = recipe_id AND is_pinned) THEN
+        RAISE EXCEPTION 'API role cannot pin recipes through RLS';
+    END IF;
+    UPDATE public.recipes SET is_pinned = false WHERE id = recipe_id;
+    IF NOT EXISTS (SELECT 1 FROM public.recipes WHERE id = recipe_id AND NOT is_pinned) THEN
+        RAISE EXCEPTION 'API role cannot unpin recipes through RLS';
+    END IF;
     BEGIN
-        UPDATE public.recipes SET is_pinned = true WHERE id = recipe_id;
-        RAISE EXCEPTION 'API role unexpectedly updated pin status';
+        UPDATE public.recipes SET created_at = now() WHERE id = recipe_id;
+        RAISE EXCEPTION 'API role unexpectedly updated a creation timestamp';
     EXCEPTION WHEN insufficient_privilege THEN NULL;
     END;
     DELETE FROM public.recipes WHERE id = recipe_id;
