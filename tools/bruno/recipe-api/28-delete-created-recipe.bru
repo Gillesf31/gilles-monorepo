@@ -1,0 +1,22 @@
+meta {
+  name: Delete created recipe
+  type: http
+  seq: 28
+}
+
+delete {
+  url: {{baseUrl}}/recipes/{{recipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("createdRecipe") || bru.getVar("createdRecipe").id !== bru.getVar("recipeId")) throw new Error("Run the collection creation request before deleting its sample.");
+}
+
+tests {
+  test("Returns 204", () => {
+    expect(res.getStatus()).to.equal(204);
+    expect(res.getBody()).to.equal("");
+  });
+}

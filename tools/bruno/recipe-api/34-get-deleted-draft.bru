@@ -1,0 +1,22 @@
+meta {
+  name: Get deleted draft
+  type: http
+  seq: 34
+}
+
+get {
+  url: {{baseUrl}}/recipes/{{draftRecipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("draftRecipeId")) throw new Error("Run Create draft first.");
+}
+
+tests {
+  test("Returns 404", () => {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody()).to.deep.equal({ message: "Recipe not found" });
+  });
+}

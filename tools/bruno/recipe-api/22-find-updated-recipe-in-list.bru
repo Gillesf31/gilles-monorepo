@@ -1,0 +1,22 @@
+meta {
+  name: Find updated recipe in list
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{baseUrl}}/recipes
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first.");
+}
+
+tests {
+  test("List and updated detail match", () => {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().find((recipe) => recipe.id === bru.getVar("recipeId"))).to.deep.equal(bru.getVar("updatedRecipe"));
+  });
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Get updated recipe
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{baseUrl}}/recipes/{{recipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first.");
+}
+
+tests {
+  test("Reads the persisted update", () => {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody()).to.deep.equal(bru.getVar("updatedRecipe"));
+  });
+}

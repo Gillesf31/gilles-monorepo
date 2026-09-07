@@ -1,0 +1,30 @@
+meta {
+  name: Reject malformed update JSON
+  type: http
+  seq: 25
+}
+
+put {
+  url: {{baseUrl}}/recipes/{{recipeId}}
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  {"title":
+}
+
+script:pre-request {
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first.");
+}
+
+tests {
+  test("Returns 400", () => {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody()).to.deep.equal({ message: "Invalid recipe" });
+  });
+}

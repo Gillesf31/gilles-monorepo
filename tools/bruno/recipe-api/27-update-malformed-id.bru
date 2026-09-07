@@ -1,0 +1,39 @@
+meta {
+  name: Update malformed ID
+  type: http
+  seq: 27
+}
+
+put {
+  url: {{baseUrl}}/recipes/1
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "  Bruno cheese omelette  ",
+    "ingredients": [
+      {
+        "name": " cheese ",
+        "quantity": " 50 ",
+        "unit": " g "
+      }
+    ],
+    "instructions": [
+      " Fold gently. "
+    ],
+    "isWorkInProgress": true
+  }
+}
+
+tests {
+  test("Returns 404", () => {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody()).to.deep.equal({ message: "Recipe not found" });
+  });
+}

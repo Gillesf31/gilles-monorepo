@@ -1,0 +1,22 @@
+meta {
+  name: Delete created draft
+  type: http
+  seq: 33
+}
+
+delete {
+  url: {{baseUrl}}/recipes/{{draftRecipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("createdDraft") || bru.getVar("createdDraft").id !== bru.getVar("draftRecipeId")) throw new Error("Run the collection creation request before deleting its sample.");
+}
+
+tests {
+  test("Returns 204", () => {
+    expect(res.getStatus()).to.equal(204);
+    expect(res.getBody()).to.equal("");
+  });
+}

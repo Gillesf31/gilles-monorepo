@@ -1,0 +1,32 @@
+meta {
+  name: Reject partial update
+  type: http
+  seq: 23
+}
+
+put {
+  url: {{baseUrl}}/recipes/{{recipeId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Incomplete replacement"
+  }
+}
+
+script:pre-request {
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first.");
+}
+
+tests {
+  test("Returns 400", () => {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody()).to.deep.equal({ message: "Invalid recipe" });
+  });
+}
