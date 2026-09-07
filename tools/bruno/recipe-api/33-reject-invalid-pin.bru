@@ -1,0 +1,32 @@
+meta {
+  name: Reject invalid pin status
+  type: http
+  seq: 33
+}
+
+patch {
+  url: {{baseUrl}}/recipes/{{recipeId}}/pin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "isPinned": "true"
+  }
+}
+
+script:pre-request {
+  if (!bru.getVar("updatedRecipe") || bru.getVar("updatedRecipe").id !== bru.getVar("recipeId")) throw new Error("Run Create recipe and Update recipe first.");
+}
+
+tests {
+  test("Returns 400", () => {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody()).to.deep.equal({ message: "Invalid pin status" });
+  });
+}

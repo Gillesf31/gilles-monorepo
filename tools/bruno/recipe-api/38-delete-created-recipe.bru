@@ -1,7 +1,7 @@
 meta {
-  name: Delete recipe again
+  name: Delete created recipe
   type: http
-  seq: 30
+  seq: 38
 }
 
 delete {
@@ -15,8 +15,8 @@ script:pre-request {
 }
 
 tests {
-  test("Returns 404", () => {
-    expect(res.getStatus()).to.equal(404);
-    expect(res.getBody()).to.deep.equal({ message: "Recipe not found" });
+  test("Returns 204", () => {
+    expect(res.getStatus()).to.equal(204);
+    expect(res.getBody()).to.equal("");
   });
 }

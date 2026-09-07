@@ -1,11 +1,11 @@
 meta {
-  name: Delete malformed ID
+  name: Delete missing recipe
   type: http
-  seq: 32
+  seq: 41
 }
 
 delete {
-  url: {{baseUrl}}/recipes/1
+  url: {{baseUrl}}/recipes/{{missingRecipeId}}
   body: none
   auth: none
 }

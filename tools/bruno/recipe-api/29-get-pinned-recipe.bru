@@ -1,0 +1,22 @@
+meta {
+  name: Get pinned recipe
+  type: http
+  seq: 29
+}
+
+get {
+  url: {{baseUrl}}/recipes/{{recipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("updatedRecipe") || bru.getVar("updatedRecipe").id !== bru.getVar("recipeId")) throw new Error("Run Create recipe and Update recipe first.");
+}
+
+tests {
+  test("Sets the requested pin status and preserves recipe content", () => {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody()).to.deep.equal({ ...bru.getVar("updatedRecipe"), isPinned: true });
+  });
+}

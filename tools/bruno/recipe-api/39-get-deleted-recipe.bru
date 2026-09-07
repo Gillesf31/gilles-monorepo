@@ -1,17 +1,17 @@
 meta {
-  name: Get deleted draft
+  name: Get deleted recipe
   type: http
-  seq: 34
+  seq: 39
 }
 
 get {
-  url: {{baseUrl}}/recipes/{{draftRecipeId}}
+  url: {{baseUrl}}/recipes/{{recipeId}}
   body: none
   auth: none
 }
 
 script:pre-request {
-  if (!bru.getVar("draftRecipeId")) throw new Error("Run Create draft first.");
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first.");
 }
 
 tests {

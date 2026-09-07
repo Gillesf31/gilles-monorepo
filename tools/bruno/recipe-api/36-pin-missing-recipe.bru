@@ -1,17 +1,23 @@
 meta {
-  name: Get deleted recipe
+  name: Pin missing recipe
   type: http
-  seq: 29
+  seq: 36
 }
 
-get {
-  url: {{baseUrl}}/recipes/{{recipeId}}
-  body: none
+patch {
+  url: {{baseUrl}}/recipes/{{missingRecipeId}}/pin
+  body: json
   auth: none
 }
 
-script:pre-request {
-  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first.");
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "isPinned": true
+  }
 }
 
 tests {

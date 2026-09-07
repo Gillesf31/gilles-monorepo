@@ -13,13 +13,15 @@ collection. The requests and tests work in Bruno's default Safe Mode.
 
 ## Coverage
 
-The 35 requests cover all current endpoints:
+The 45 requests cover all current endpoints:
 
 - Hello and the recipe collection, including an empty collection.
 - Creation with trimmed text and default flags, then GET by ID and list/detail consistency.
 - Creation and retrieval of a work-in-progress recipe with no instructions.
 - Updates with trimmed content and consistent detail/list responses.
 - Rejected partial updates, pin changes, and malformed update JSON (`400`).
+- Pin and unpin with persisted status and unchanged recipe content.
+- Invalid pin bodies, extra fields, malformed JSON, and missing/malformed pin IDs.
 - Deletion, repeated deletion, missing detail after deletion, and list cleanup.
 - Missing and malformed recipe IDs for reads, updates, and deletes (`404`).
 - Missing/blank titles, empty/invalid ingredients, numeric quantities, invalid
@@ -38,10 +40,11 @@ may leave samples; finish their cleanup requests in the same runtime session.
 Use the runner's stop-on-error option and fix failures before continuing dependent
 requests. The collection does not delete samples left by earlier runs.
 
-Requests 20–35 extend the original creation/read checks into a complete
-create → fetch → update → verify → delete → verify-absence flow. PUT replaces
+Requests 20–45 extend the original creation/read checks into a complete
+create → fetch → update → verify → pin → fetch → unpin → fetch → delete → verify-absence flow. PUT replaces
 all editable fields; partial bodies are invalid. Deletion is permanent, returns
-an empty `204`, and returns `404` when repeated.
+an empty `204`, and returns `404` when repeated. Pin requests 28–37 run before
+cleanup; they require an explicit boolean and return the complete recipe.
 
 Storage outage (`503`), corrupt stored data (`500`), and database permission checks
 remain in the [API integration tests](../../../apps/recipe-api/README.md#verify).
