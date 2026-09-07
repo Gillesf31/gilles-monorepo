@@ -1,0 +1,30 @@
+meta {
+  name: Reject malformed JSON
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{baseUrl}}/recipes
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  {"title":
+}
+
+tests {
+  test("Rejects the request with a sanitized 400", () => {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody()).to.deep.equal({ message: "Invalid recipe" });
+  });
+}
+
+docs {
+  Intentionally sends invalid JSON as raw text with Content-Type application/json.
+}

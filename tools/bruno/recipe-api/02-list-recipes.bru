@@ -1,0 +1,19 @@
+meta {
+  name: List recipes
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/recipes
+  body: none
+  auth: none
+}
+
+tests {
+  test("Returns a JSON array, including when empty", () => {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getHeader("content-type")).to.include("application/json");
+    expect(res.getBody()).to.be.an("array");
+  });
+}

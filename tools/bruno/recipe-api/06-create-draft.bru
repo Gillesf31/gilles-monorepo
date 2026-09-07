@@ -1,0 +1,55 @@
+meta {
+  name: Create draft
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/recipes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Bruno draft",
+    "ingredients": [
+      {
+        "name": "eggs",
+        "quantity": "2",
+        "unit": ""
+      }
+    ],
+    "instructions": [],
+    "isWorkInProgress": true
+  }
+}
+
+script:pre-request {
+  bru.setVar("draftRecipeId", "");
+  bru.setVar("createdDraft", null);
+}
+
+tests {
+  test("Creates a work-in-progress recipe without instructions", () => {
+    expect(res.getStatus()).to.equal(201);
+    const recipe = res.getBody();
+    expect(recipe.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    expect(recipe.title).to.equal("Bruno draft");
+    expect(recipe.ingredients).to.deep.equal([{ name: "eggs", quantity: "2", unit: "" }]);
+    expect(recipe.instructions).to.deep.equal([]);
+    expect(recipe.isWorkInProgress).to.equal(true);
+    expect(recipe.isPinned).to.equal(false);
+    expect(res.getHeader("location")).to.equal(`/recipes/${recipe.id}`);
+    bru.setVar("draftRecipeId", recipe.id);
+    bru.setVar("createdDraft", recipe);
+  });
+}
+
+docs {
+  Creates a second persistent sample recipe and saves draftRecipeId.
+}

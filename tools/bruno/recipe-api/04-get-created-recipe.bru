@@ -1,0 +1,24 @@
+meta {
+  name: Get created recipe
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/recipes/{{recipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first, or set recipeId in Local.");
+}
+
+tests {
+  test("Fetches the created recipe by its generated UUID", () => {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().id).to.equal(bru.getVar("recipeId"));
+    const created = bru.getVar("createdRecipe");
+    if (created) expect(res.getBody()).to.deep.equal(created);
+  });
+}

@@ -1,0 +1,38 @@
+meta {
+  name: Reject missing title
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/recipes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "ingredients": [
+      {
+        "name": "eggs",
+        "quantity": "2",
+        "unit": ""
+      }
+    ],
+    "instructions": [
+      "Beat the eggs.",
+      "Cook gently."
+    ]
+  }
+}
+
+tests {
+  test("Rejects the request with a sanitized 400", () => {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody()).to.deep.equal({ message: "Invalid recipe" });
+  });
+}

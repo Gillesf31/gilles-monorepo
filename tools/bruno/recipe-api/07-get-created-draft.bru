@@ -1,0 +1,26 @@
+meta {
+  name: Get created draft
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/recipes/{{draftRecipeId}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("draftRecipeId")) throw new Error("Run Create draft first, or set draftRecipeId in Local.");
+}
+
+tests {
+  test("Persists the draft and its empty instructions", () => {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().id).to.equal(bru.getVar("draftRecipeId"));
+    expect(res.getBody().isWorkInProgress).to.equal(true);
+    expect(res.getBody().instructions).to.deep.equal([]);
+    const created = bru.getVar("createdDraft");
+    if (created) expect(res.getBody()).to.deep.equal(created);
+  });
+}

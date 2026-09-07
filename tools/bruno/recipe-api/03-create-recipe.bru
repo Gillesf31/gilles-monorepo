@@ -1,0 +1,58 @@
+meta {
+  name: Create recipe
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/recipes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "  Bruno omelette  ",
+    "ingredients": [
+      {
+        "name": " eggs ",
+        "quantity": " 2 ",
+        "unit": ""
+      }
+    ],
+    "instructions": [
+      "Beat the eggs.",
+      "Cook gently."
+    ]
+  }
+}
+
+script:pre-request {
+  bru.setVar("recipeId", "");
+  bru.setVar("createdRecipe", null);
+}
+
+tests {
+  test("Creates a normalized recipe with server defaults and a detail URL", () => {
+    expect(res.getStatus()).to.equal(201);
+    expect(res.getHeader("content-type")).to.include("application/json");
+    const recipe = res.getBody();
+    expect(recipe.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+    expect(recipe.title).to.equal("Bruno omelette");
+    expect(recipe.ingredients).to.deep.equal([{ name: "eggs", quantity: "2", unit: "" }]);
+    expect(recipe.instructions).to.deep.equal(["Beat the eggs.", "Cook gently."]);
+    expect(recipe.isWorkInProgress).to.equal(false);
+    expect(recipe.isPinned).to.equal(false);
+    expect(res.getHeader("location")).to.equal(`/recipes/${recipe.id}`);
+    bru.setVar("recipeId", recipe.id);
+    bru.setVar("createdRecipe", recipe);
+  });
+}
+
+docs {
+  Creates a persistent sample recipe. Saves recipeId for the following GET requests. Omitting isWorkInProgress tests its false default.
+}

@@ -1,0 +1,25 @@
+meta {
+  name: Find created recipe in list
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/recipes
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  if (!bru.getVar("recipeId")) throw new Error("Run Create recipe first, or set recipeId in Local.");
+}
+
+tests {
+  test("The collection contains the same recipe as the detail endpoint", () => {
+    expect(res.getStatus()).to.equal(200);
+    const recipe = res.getBody().find((item) => item.id === bru.getVar("recipeId"));
+    expect(recipe).to.be.an("object");
+    const created = bru.getVar("createdRecipe");
+    if (created) expect(recipe).to.deep.equal(created);
+  });
+}

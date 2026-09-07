@@ -1,0 +1,33 @@
+meta {
+  name: Reject empty ingredients
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/recipes
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "title": "Bruno omelette",
+    "ingredients": [],
+    "instructions": [
+      "Beat the eggs.",
+      "Cook gently."
+    ]
+  }
+}
+
+tests {
+  test("Rejects the request with a sanitized 400", () => {
+    expect(res.getStatus()).to.equal(400);
+    expect(res.getBody()).to.deep.equal({ message: "Invalid recipe" });
+  });
+}

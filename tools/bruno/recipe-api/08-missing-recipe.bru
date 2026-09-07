@@ -1,0 +1,22 @@
+meta {
+  name: Missing recipe
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/recipes/{{missingRecipeId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("Returns a sanitized 404", () => {
+    expect(res.getStatus()).to.equal(404);
+    expect(res.getBody()).to.deep.equal({ message: "Recipe not found" });
+  });
+}
+
+docs {
+  missingRecipeId must be a valid UUID absent from your local database.
+}

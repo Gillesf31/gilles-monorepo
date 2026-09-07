@@ -74,6 +74,10 @@ This local development endpoint has no authentication yet.
 
 ## Verify
 
+For interactive testing, open the [Bruno collection](../../tools/bruno/recipe-api/README.md)
+and select **Local**. It covers every current endpoint, creates recipes, carries
+their IDs into GET requests, and checks validation and not-found responses.
+
 ```sh
 pnpm nx build recipe-api --configuration=production
 CI=true pnpm nx run-many -t lint,typecheck,test -p recipe-api,recipe-api-shell,recipe-api-data-access,recipe-feature-api-hello,recipe-feature-api-recipes
