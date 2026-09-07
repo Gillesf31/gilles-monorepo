@@ -20,6 +20,8 @@
     "@angular/ssr": "21.2.5",
     "@effect/platform": "0.97.1",
     "@effect/platform-node": "0.108.1",
+    "@effect/sql": "0.52.1",
+    "@effect/sql-pg": "0.53.0",
     "@supabase/supabase-js": "^2.103.0",
     "effect": "3.22.1",
     "express": "^4.21.2",

@@ -1,66 +1,103 @@
 # Recipe API
 
-The dedicated backend for the Recipe application, built with Node.js and stable
-Effect 3. Its long-term goal is to replace Supabase as the application's backend,
-moving recipe business rules and backend capabilities into this monorepo.
+The Recipe backend uses Node.js and stable Effect 3. It will replace Supabase
+incrementally. Both `GET /recipes` and `GET /recipes/:id` read local PostgreSQL;
+`POST /recipes` creates recipes in the same database. The frontend still uses Supabase.
 
-The API will expose recipe operations through HTTP endpoints and follow Clean
-Architecture to keep domain rules and application use cases independent of
-infrastructure. Supabase remains in use until its responsibilities are migrated
-to this backend.
+## Run locally
 
-The API provides `/hello` to validate the backend setup and `/recipes` to establish
-the recipe JSON response shape using a fixed sample. Persistence and frontend
-integration will follow.
-
-Local PostgreSQL is available through [Docker Compose](../../infra/recipe/README.md).
-See the [database decision](../../docs/adr/0001-recipe-postgresql.md) for the migration
-direction. The API is not connected to this database yet.
+Start PostgreSQL, apply migrations, and provision the `recipe_api` password using
+[the database guide](../../infra/recipe/README.md#api-database-login). Then, from
+the repository root:
 
 ```sh
+cp -n apps/recipe-api/.env.example apps/recipe-api/.env
+# Edit apps/recipe-api/.env with the restricted role's URL-encoded password.
 pnpm nx serve recipe-api
+```
+
+Nx loads the ignored project `.env`. `DATABASE_URL` stays server-side and must use
+`recipe_api`, not the bootstrap superuser. Missing configuration or an initial
+connection failure prevents startup. Effect manages the pool and server lifetime;
+Ctrl+C shuts them down. The server listens on port `3000`.
+
+```sh
 curl -i http://localhost:3000/hello
 curl -i http://localhost:3000/recipes
-curl -i http://localhost:3000/recipes/1
+# Available after running the optional local development seed.
+curl -i http://localhost:3000/recipes/00000000-0000-4000-8000-000000000001
 curl -i http://localhost:3000/recipes/unknown
 ```
 
-`GET /hello` returns status `200`, content type `text/plain; charset=utf-8`,
-and the body `Hello World`. The server listens on port `3000`; stop it with
-Ctrl+C. Effect manages the server lifetime and reports startup failures.
+| Endpoint           | Behavior                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| `GET /hello`       | `200`, `text/plain; charset=utf-8`, `Hello World`                                                      |
+| `GET /recipes`     | `200`, persisted recipes ordered newest first; `[]` when empty                                         |
+| `POST /recipes`    | `201`, persisted recipe and `Location: /recipes/<id>`; invalid JSON or fields returns `400`            |
+| `GET /recipes/:id` | `200`, persisted recipe; missing or malformed UUID returns `404` with `{"message":"Recipe not found"}` |
 
-`GET /recipes` returns status `200`, content type `application/json`, and an array
-containing one fixed sample recipe with `id`, `title`, `ingredients`,
-`instructions`, `isWorkInProgress`, and `isPinned`. It does not read from Supabase
-or persist data.
+Recipe responses retain `id`, `title`, `ingredients`, `instructions`,
+`isWorkInProgress`, and `isPinned`. Database rows are validated before mapping;
+legacy ingredient strings are normalized using the shared model helper.
+A database query failure returns `503` with `{"message":"Recipe storage unavailable"}`;
+invalid stored data returns `500` with `{"message":"Unable to load recipe"}`.
+All recipe responses use `application/json` and omit database error details.
 
-`GET /recipes/:id` returns status `200` and the matching recipe object for the
-sample ID `1`. An unknown ID returns status `404` and
-`{ "message": "Recipe not found" }`. Both responses use `application/json`.
+There is no hardcoded collection fallback. Every listed recipe can be opened with
+its returned UUID (unless it is deleted between requests). To add a local example,
+run the [optional development seed](../../infra/recipe/README.md#local-development-seed).
+The seed's UUID is `00000000-0000-4000-8000-000000000001`; `/recipes/1` remains an
+invalid UUID and returns `404`. Data import, updates/deletes, authentication, and
+frontend switching are subsequent slices.
+
+## Create a recipe
+
+Apply migration `0003_recipe_api_create` before using the endpoint. From the
+repository root, with the API running:
+
+```sh
+curl -i http://localhost:3000/recipes \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Omelette","ingredients":[{"name":"eggs","quantity":"2","unit":""}],"instructions":["Beat the eggs.","Cook gently."],"isWorkInProgress":false}'
+```
+
+The body requires a nonblank `title`, at least one structured ingredient with a
+nonblank `name` and string `quantity`/`unit`, and an `instructions` array. Each
+instruction must be nonblank; an empty array is allowed, matching the current
+creation form. Text is trimmed. `isWorkInProgress` is optional and defaults to
+`false`. Unknown fields (including `id` and `isPinned`) are rejected. PostgreSQL
+generates the UUID and timestamp and defaults `isPinned` to `false`.
+Malformed JSON or invalid fields return `400` with `{"message":"Invalid recipe"}`
+before writing. Successful requests return the full recipe and its detail URL
+in the `Location` header. Repeating a POST creates another recipe.
+This local development endpoint has no authentication yet.
+
+## Verify
 
 ```sh
 pnpm nx build recipe-api --configuration=production
-pnpm nx run-many -t lint -p recipe-api,recipe-api-shell,recipe-feature-api-hello,recipe-feature-api-recipes
-pnpm nx run-many -t test -p recipe-feature-api-hello,recipe-feature-api-recipes
+CI=true pnpm nx run-many -t lint,typecheck,test -p recipe-api,recipe-api-shell,recipe-api-data-access,recipe-feature-api-hello,recipe-feature-api-recipes
+# Requires Docker, applied migrations, and apps/recipe-api/.env from the setup above.
+RECIPE_DB_INTEGRATION=1 CI=true pnpm nx run recipe-feature-api-recipes:test --skipNxCache
 ```
 
-## Clean Architecture
+Ordinary tests replace the repository with an Effect service. The opt-in integration
+suite uses the local Compose database, inserts a temporary recipe with a unique
+UUID through the bootstrap role, exercises HTTP responses using the real restricted
+PostgreSQL repository, creates a recipe through POST, follows it through both GET
+routes, checks denied updates/deletes and shopping-list reads, and deletes its
+fixtures afterward. Keep integration tests uncached because database state is
+external to Nx. An interrupted test may leave its uniquely identified fixture.
 
-Dependencies follow `recipe-api` → `recipe-api-shell` →
-`recipe-feature-api-hello` and `recipe-feature-api-recipes`, enforced by the
-existing Nx type tags. The recipes feature uses the shared `recipe-model` type.
+## Architecture
 
-- The app only bootstraps the Node runtime and supplies HTTP server configuration.
-- The shell is the composition root for routes, dependencies, and Effect layers.
-- The features contain the hello and recipes HTTP adapters.
-- Future domain rules and application use cases must remain independent of HTTP,
-  Node.js, databases, and infrastructure implementations. Effect may be used in
-  application logic; platform-specific packages stay at the outer boundary.
-- HTTP adapters call application use cases. Infrastructure implements ports
-  defined by the application when external capabilities are needed. Dependencies
-  point inward; the shell supplies concrete implementations.
+The app bootstraps Node and the HTTP server. The shell composes routes and provides
+`RecipeRepository` with a scoped `@effect/sql-pg` pool configured from `DATABASE_URL`.
+The recipes feature handles HTTP validation and status mapping. The backend
+`recipe-api-data-access` library owns SQL collection reads, parameterized ID lookup, transactional inserts, and shared row decoding;
+`recipe-model` supplies the existing Recipe type and ingredient normalization.
+The frontend `recipe-data-access` library remains separate from the Node adapter.
 
-These fixed responses need no repository, port, or use case. Introduce those
-boundaries when recipe behavior requires them. Persistence,
-authentication, frontend integration, CORS, API containerization, and deployment are outside
-this milestone.
+The shared model stays independent of HTTP and PostgreSQL. Introduce application
+use cases when domain behavior requires them. See the
+[database decision](../../docs/adr/0001-recipe-postgresql.md) for the migration direction.

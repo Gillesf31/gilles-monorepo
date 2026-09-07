@@ -1,0 +1,9 @@
+{
+  "name": "recipe-api-data-access",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/recipe/api-data-access/src",
+  "projectType": "library",
+  "tags": ["scope:recipe", "type:data-access"],
+  "// targets": "to see all targets run: nx show project recipe-api-data-access --web",
+  "targets": {}
+}

@@ -1,7 +1,8 @@
 # Local Recipe database
 
 PostgreSQL 18 runs in Docker Compose for Recipe backend development. Versioned SQL
-migrations recreate the Recipe schema; the Recipe API still returns fixed sample data.
+migrations recreate the Recipe schema. API collection and recipe-by-ID reads and recipe creation
+use this database.
 The [database decision](../../docs/adr/0001-recipe-postgresql.md) explains the scope.
 
 ## Start
@@ -41,8 +42,8 @@ runs. A failure rolls back the transaction and returns a nonzero exit code;
 rerunning skips recorded versions. Existing tables without a version record cause
 an error, rather than being silently accepted as the correct schema.
 
-`verify.sql` checks defaults, primary keys, required instructions, the seed, and
-the local RLS state. Its test writes are rolled back. Run verification as the
+`verify.sql` checks defaults, primary keys, required instructions, the seed,
+RLS, and the API role's allowed reads/inserts and denied updates/deletes. Its test writes are rolled back. Run verification as the
 bootstrap database owner, just like migrations.
 
 To inspect the version history:
@@ -51,8 +52,8 @@ To inspect the version history:
 docker compose exec -T postgres sh -c 'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "TABLE public.schema_migrations;"'
 ```
 
-For the next schema change, add `0002_<description>.sql` and its conditional
-include/version insert to `apply.sql`, after `0001`. Keep applied migration files
+For the next schema change, add `0004_<description>.sql` and its conditional
+include/version insert to `apply.sql`, after `0003`. Keep applied migration files
 immutable and correct mistakes with a new version; this small runner tracks
 versions, not file checksums. Migration files must be transactional SQL without
 their own `BEGIN`/`COMMIT`. There is no automatic down migration.
@@ -91,11 +92,13 @@ These adaptations are intentional:
 - Supabase owners, `anon`/`authenticated`/`service_role` grants, and default
   privileges are retained only in the reference dump. Local tables belong to the
   migration role. No Supabase roles or platform schemas are created locally.
-- Both tables retain RLS, but local access policies are deferred until the API
-  role and authorization are defined. The source has permissive public recipe
+- The initial migration retained RLS without copying access policies. Migration
+  `0002_recipe_api_reader` now grants `recipe_api` SELECT on recipes through an
+  explicit RLS policy. Migration `0003_recipe_api_create` grants INSERT only on
+  title, ingredients, instructions, and is_work_in_progress, with an INSERT policy. The source has permissive public recipe
   policies and three `anon` shopping-list policies limited to `id = 'default'`.
-  Locally, ordinary roles have no policies allowing access, even if later granted
-  table privileges. Owners and superusers bypass RLS; the API must not use the
+  Locally, only `recipe_api` has policies allowing recipe reads and creation; shopping lists
+  still have no access policy. Owners and superusers bypass RLS; the API must not use the
   bootstrap superuser.
 - `gen_random_uuid()` is built into PostgreSQL 18, so these tables do not require
   a Supabase extension. Platform extensions are not recreated.
@@ -104,7 +107,8 @@ These adaptations are intentional:
   initialization, not a copy of remote shopping-list contents. Recipes start empty.
 
 The reference dump is evidence, not a script to apply to this PostgreSQL instance.
-API database integration, data import, and production deployment follow later.
+Collection and recipe-by-ID reads now use the local database. Data import and production
+deployment follow later.
 
 Initial verification passed on PostgreSQL 18: fresh application, a repeated run
 with one version record, the rolled-back SQL checks, and failure rollback in a
@@ -113,6 +117,54 @@ comparison matched all 13 columns, defaults, nullability, primary keys, indexes,
 RLS flags, triggers, and custom public functions. PostgreSQL 18 additionally
 records `NOT NULL` in `pg_constraint`; that representation difference was excluded
 from constraint comparison while column nullability was checked separately.
+
+## Local development seed
+
+After applying migrations, run from `infra/recipe`:
+
+```sh
+docker compose exec -T postgres sh -c 'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1' < seed.sql
+```
+
+This explicitly adds a local Scrambled eggs recipe with UUID
+`00000000-0000-4000-8000-000000000001`. Rerunning skips an existing row with that ID,
+so it does not duplicate the recipe or overwrite edits. The seed is optional and
+separate from versioned schema migrations; it does not import Supabase data.
+Run it only against the local development Compose database.
+
+With the API running, open `/recipes`, then `/recipes/<id>` using an ID from that
+response. The seeded example is available at
+`/recipes/00000000-0000-4000-8000-000000000001`. Without seed or other data, the
+collection returns an empty array.
+
+## API database login
+
+After applying migrations, `recipe_api` has SELECT access to recipes and INSERT
+access to creation fields, with explicit RLS policies. It cannot supply IDs,
+timestamps, or pin values on insert, update/delete recipes, access shopping lists
+or the migration ledger, bypass RLS, or administer roles/databases. The role is cluster-wide; an
+existing role with elevated attributes or memberships causes migration `0002` to
+fail. It has a five-second statement timeout. No password is stored in SQL.
+
+From `infra/recipe`, open psql as the bootstrap role:
+
+```sh
+docker compose exec postgres sh -c 'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+```
+
+Run `\password recipe_api`, enter a local development password when prompted,
+then run `\q`. From the repository root:
+
+```sh
+cp -n apps/recipe-api/.env.example apps/recipe-api/.env
+chmod 600 apps/recipe-api/.env
+```
+
+Edit that ignored file with `DATABASE_URL` for `recipe_api`, using the configured
+local port and database name. URL-encode special characters in the password.
+Nx loads this file when running `pnpm nx serve recipe-api`. Password changes do
+not require a new migration; update the ignored file and restart the API.
+Do not put these credentials in frontend environment files.
 
 ## Verify and connect
 
@@ -130,8 +182,7 @@ For a database client on your machine, use host `127.0.0.1`, the configured port
 is bound to loopback. The image creates a bootstrap superuser; add a separate,
 restricted application role when connecting the API.
 
-The API currently does not read a `DATABASE_URL`. When persistence is implemented,
-its server-side connection string will use this format:
+The API reads a server-side `DATABASE_URL` with this format:
 
 ```text
 postgresql://<user>:<url-encoded-password>@127.0.0.1:<port>/recipe

@@ -71,6 +71,9 @@
       ],
       "@gilles-monorepo/recipe-feature-api-recipes": [
         "libs/recipe/feature-api-recipes/src/index.ts"
+      ],
+      "@gilles-monorepo/recipe-api-data-access": [
+        "libs/recipe/api-data-access/src/index.ts"
       ]
     }
   },
