@@ -17,14 +17,20 @@ BEGIN
         WHERE oid IN ('public.recipes'::regclass, 'public.shopping_lists'::regclass)
           AND relrowsecurity) <> 2
        OR (SELECT count(*) FROM pg_policies
-           WHERE schemaname = 'public' AND tablename IN ('recipes', 'shopping_lists')) <> 2
+           WHERE schemaname = 'public' AND tablename IN ('recipes', 'shopping_lists')) <> 4
        OR NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public'
            AND tablename = 'recipes' AND policyname = 'recipe_api_read'
            AND cmd = 'SELECT' AND roles = ARRAY['recipe_api']::name[] AND qual = 'true')
        OR NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public'
            AND tablename = 'recipes' AND policyname = 'recipe_api_create'
-           AND cmd = 'INSERT' AND roles = ARRAY['recipe_api']::name[] AND with_check = 'true') THEN
-        RAISE EXCEPTION 'Expected RLS enabled with only the API recipe read and create policies';
+           AND cmd = 'INSERT' AND roles = ARRAY['recipe_api']::name[] AND with_check = 'true')
+       OR NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public'
+           AND tablename = 'recipes' AND policyname = 'recipe_api_update'
+           AND cmd = 'UPDATE' AND roles = ARRAY['recipe_api']::name[] AND qual = 'true' AND with_check = 'true')
+       OR NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public'
+           AND tablename = 'recipes' AND policyname = 'recipe_api_delete'
+           AND cmd = 'DELETE' AND roles = ARRAY['recipe_api']::name[] AND qual = 'true') THEN
+        RAISE EXCEPTION 'Expected RLS enabled with only the four API recipe policies';
     END IF;
 
     INSERT INTO public.recipes (title, instructions)
@@ -78,11 +84,14 @@ DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0002_recipe_api_reader')
        OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0003_recipe_api_create')
+       OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0004_recipe_api_update')
+       OR NOT EXISTS (SELECT 1 FROM public.schema_migrations WHERE version = '0005_recipe_api_delete')
        OR EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'recipe_api'
            AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls))
        OR EXISTS (SELECT 1 FROM pg_auth_members WHERE member = 'recipe_api'::regrole)
        OR NOT has_table_privilege('recipe_api', 'public.recipes', 'SELECT')
-       OR has_table_privilege('recipe_api', 'public.recipes', 'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
+       OR NOT has_table_privilege('recipe_api', 'public.recipes', 'DELETE')
+       OR has_table_privilege('recipe_api', 'public.recipes', 'INSERT,UPDATE,TRUNCATE,REFERENCES,TRIGGER')
        OR NOT has_column_privilege('recipe_api', 'public.recipes', 'title', 'INSERT')
        OR NOT has_column_privilege('recipe_api', 'public.recipes', 'ingredients', 'INSERT')
        OR NOT has_column_privilege('recipe_api', 'public.recipes', 'instructions', 'INSERT')
@@ -90,33 +99,52 @@ BEGIN
        OR has_column_privilege('recipe_api', 'public.recipes', 'id', 'INSERT')
        OR has_column_privilege('recipe_api', 'public.recipes', 'created_at', 'INSERT')
        OR has_column_privilege('recipe_api', 'public.recipes', 'is_pinned', 'INSERT')
+       OR NOT has_column_privilege('recipe_api', 'public.recipes', 'title', 'UPDATE')
+       OR NOT has_column_privilege('recipe_api', 'public.recipes', 'ingredients', 'UPDATE')
+       OR NOT has_column_privilege('recipe_api', 'public.recipes', 'instructions', 'UPDATE')
+       OR NOT has_column_privilege('recipe_api', 'public.recipes', 'is_work_in_progress', 'UPDATE')
+       OR has_column_privilege('recipe_api', 'public.recipes', 'id', 'UPDATE')
+       OR has_column_privilege('recipe_api', 'public.recipes', 'created_at', 'UPDATE')
+       OR has_column_privilege('recipe_api', 'public.recipes', 'is_pinned', 'UPDATE')
        OR has_table_privilege('recipe_api', 'public.shopping_lists', 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
        OR has_table_privilege('recipe_api', 'public.schema_migrations', 'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') THEN
-        RAISE EXCEPTION 'Expected a restricted API role with recipe reads and limited inserts';
+        RAISE EXCEPTION 'Expected a restricted API role with recipe reads/deletes and limited inserts/updates';
     END IF;
 END;
 $$;
 
 SET LOCAL ROLE recipe_api;
 DO $$
+DECLARE
+    recipe_id uuid;
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM public.recipes WHERE title = 'Migration verification') THEN
         RAISE EXCEPTION 'API role cannot read recipes through RLS';
     END IF;
-    INSERT INTO public.recipes (title, instructions) VALUES ('API creation verification', '{}');
+    INSERT INTO public.recipes (title, instructions) VALUES ('API creation verification', '{}')
+    RETURNING id INTO recipe_id;
     IF NOT EXISTS (SELECT 1 FROM public.recipes WHERE title = 'API creation verification') THEN
         RAISE EXCEPTION 'API role cannot create and read recipes through RLS';
     END IF;
+    UPDATE public.recipes SET title = 'API update verification',
+        ingredients = '[{"name":"eggs","quantity":"2","unit":""}]',
+        instructions = ARRAY['Mix'], is_work_in_progress = true
+    WHERE id = recipe_id;
+    IF NOT EXISTS (SELECT 1 FROM public.recipes WHERE id = recipe_id
+        AND title = 'API update verification' AND is_work_in_progress
+        AND instructions = ARRAY['Mix']
+        AND ingredients = '[{"name":"eggs","quantity":"2","unit":""}]'::jsonb) THEN
+        RAISE EXCEPTION 'API role cannot update recipe content through RLS';
+    END IF;
     BEGIN
-        UPDATE public.recipes SET title = 'Forbidden';
-        RAISE EXCEPTION 'API role unexpectedly updated a recipe';
+        UPDATE public.recipes SET is_pinned = true WHERE id = recipe_id;
+        RAISE EXCEPTION 'API role unexpectedly updated pin status';
     EXCEPTION WHEN insufficient_privilege THEN NULL;
     END;
-    BEGIN
-        DELETE FROM public.recipes;
-        RAISE EXCEPTION 'API role unexpectedly deleted recipes';
-    EXCEPTION WHEN insufficient_privilege THEN NULL;
-    END;
+    DELETE FROM public.recipes WHERE id = recipe_id;
+    IF EXISTS (SELECT 1 FROM public.recipes WHERE id = recipe_id) THEN
+        RAISE EXCEPTION 'API role cannot delete recipes through RLS';
+    END IF;
     BEGIN
         PERFORM 1 FROM public.shopping_lists;
         RAISE EXCEPTION 'API role unexpectedly read shopping lists';

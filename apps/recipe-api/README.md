@@ -2,7 +2,7 @@
 
 The Recipe backend uses Node.js and stable Effect 3. It will replace Supabase
 incrementally. Both `GET /recipes` and `GET /recipes/:id` read local PostgreSQL;
-`POST /recipes` creates recipes in the same database. The frontend still uses Supabase.
+`POST /recipes`, `PUT /recipes/:id`, and `DELETE /recipes/:id` create, edit, and delete recipes in the same database. The frontend still uses Supabase.
 
 ## Run locally
 
@@ -35,19 +35,21 @@ curl -i http://localhost:3000/recipes/unknown
 | `GET /recipes`     | `200`, persisted recipes ordered newest first; `[]` when empty                                         |
 | `POST /recipes`    | `201`, persisted recipe and `Location: /recipes/<id>`; invalid JSON or fields returns `400`            |
 | `GET /recipes/:id` | `200`, persisted recipe; missing or malformed UUID returns `404` with `{"message":"Recipe not found"}` |
+| `PUT /recipes/:id` | `200`, updated recipe; invalid body returns `400`; missing or malformed UUID returns `404` |
+| `DELETE /recipes/:id` | `204`, no body; missing or malformed UUID returns `404` |
 
 Recipe responses retain `id`, `title`, `ingredients`, `instructions`,
 `isWorkInProgress`, and `isPinned`. Database rows are validated before mapping;
 legacy ingredient strings are normalized using the shared model helper.
 A database query failure returns `503` with `{"message":"Recipe storage unavailable"}`;
 invalid stored data returns `500` with `{"message":"Unable to load recipe"}`.
-All recipe responses use `application/json` and omit database error details.
+All recipe responses except the empty `204` use `application/json` and omit database error details.
 
 There is no hardcoded collection fallback. Every listed recipe can be opened with
 its returned UUID (unless it is deleted between requests). To add a local example,
 run the [optional development seed](../../infra/recipe/README.md#local-development-seed).
 The seed's UUID is `00000000-0000-4000-8000-000000000001`; `/recipes/1` remains an
-invalid UUID and returns `404`. Data import, updates/deletes, authentication, and
+invalid UUID and returns `404`. Data import, pin/unpin, authentication, and
 frontend switching are subsequent slices.
 
 ## Create a recipe
@@ -72,11 +74,34 @@ before writing. Successful requests return the full recipe and its detail URL
 in the `Location` header. Repeating a POST creates another recipe.
 This local development endpoint has no authentication yet.
 
+## Edit or delete a recipe
+
+Apply migrations `0004_recipe_api_update` and `0005_recipe_api_delete` using the
+same migration runner before using these endpoints.
+
+`PUT /recipes/:id` replaces all editable fields using the same body and validation
+as POST. Title, ingredients, and instructions are required; omitting
+`isWorkInProgress` sets it to `false`. It preserves the ID, creation timestamp, and
+pin status. Partial bodies and unknown fields are rejected with `400`. An existing
+recipe returns `200` with the complete updated recipe; a missing recipe is never
+created. Update and response decoding share a transaction.
+
+`DELETE /recipes/:id` permanently deletes that recipe and returns `204` with no
+body. It does not modify other recipes or shopping lists. Repeating the deletion
+returns `404`. Both endpoints reject malformed UUIDs before querying PostgreSQL
+and return `404` with `{"message":"Recipe not found"}` for missing recipes.
+For PUT, the UUID is checked before the body; a valid UUID with an invalid body
+returns `400` before looking up the recipe.
+
+Use the [Bruno collection](../../tools/bruno/recipe-api/README.md) to create a sample,
+edit it, verify persistence, and delete it. These local development endpoints
+have no authentication yet.
+
 ## Verify
 
 For interactive testing, open the [Bruno collection](../../tools/bruno/recipe-api/README.md)
 and select **Local**. It covers every current endpoint, creates recipes, carries
-their IDs into GET requests, and checks validation and not-found responses.
+their IDs through reads, updates, and deletes, and checks validation and not-found responses.
 
 ```sh
 pnpm nx build recipe-api --configuration=production
@@ -89,8 +114,9 @@ Ordinary tests replace the repository with an Effect service. The opt-in integra
 suite uses the local Compose database, inserts a temporary recipe with a unique
 UUID through the bootstrap role, exercises HTTP responses using the real restricted
 PostgreSQL repository, creates a recipe through POST, follows it through both GET
-routes, checks denied updates/deletes and shopping-list reads, and deletes its
-fixtures afterward. Keep integration tests uncached because database state is
+routes, updates and deletes it, checks preservation of IDs/timestamps/pins and
+denied protected-field updates and shopping-list reads, and cleans up its fixtures
+afterward. Keep integration tests uncached because database state is
 external to Nx. An interrupted test may leave its uniquely identified fixture.
 
 ## Architecture
@@ -98,7 +124,7 @@ external to Nx. An interrupted test may leave its uniquely identified fixture.
 The app bootstraps Node and the HTTP server. The shell composes routes and provides
 `RecipeRepository` with a scoped `@effect/sql-pg` pool configured from `DATABASE_URL`.
 The recipes feature handles HTTP validation and status mapping. The backend
-`recipe-api-data-access` library owns SQL collection reads, parameterized ID lookup, transactional inserts, and shared row decoding;
+`recipe-api-data-access` library owns SQL collection reads, parameterized ID lookup, transactional inserts/updates, deletion, and shared row decoding;
 `recipe-model` supplies the existing Recipe type and ingredient normalization.
 The frontend `recipe-data-access` library remains separate from the Node adapter.
 

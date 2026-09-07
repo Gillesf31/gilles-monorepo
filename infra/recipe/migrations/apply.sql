@@ -42,4 +42,26 @@ SELECT NOT EXISTS (
     \echo '0003_recipe_api_create already applied'
 \endif
 
+SELECT NOT EXISTS (
+    SELECT 1 FROM public.schema_migrations WHERE version = '0004_recipe_api_update'
+) AS apply_0004 \gset
+
+\if :apply_0004
+    \ir 0004_recipe_api_update.sql
+    INSERT INTO public.schema_migrations (version) VALUES ('0004_recipe_api_update');
+\else
+    \echo '0004_recipe_api_update already applied'
+\endif
+
+SELECT NOT EXISTS (
+    SELECT 1 FROM public.schema_migrations WHERE version = '0005_recipe_api_delete'
+) AS apply_0005 \gset
+
+\if :apply_0005
+    \ir 0005_recipe_api_delete.sql
+    INSERT INTO public.schema_migrations (version) VALUES ('0005_recipe_api_delete');
+\else
+    \echo '0005_recipe_api_delete already applied'
+\endif
+
 COMMIT;

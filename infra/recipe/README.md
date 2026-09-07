@@ -1,8 +1,8 @@
 # Local Recipe database
 
 PostgreSQL 18 runs in Docker Compose for Recipe backend development. Versioned SQL
-migrations recreate the Recipe schema. API collection and recipe-by-ID reads and recipe creation
-use this database.
+migrations recreate the Recipe schema. API recipe reads, creation, updates, and
+deletion use this database.
 The [database decision](../../docs/adr/0001-recipe-postgresql.md) explains the scope.
 
 ## Start
@@ -43,7 +43,8 @@ rerunning skips recorded versions. Existing tables without a version record caus
 an error, rather than being silently accepted as the correct schema.
 
 `verify.sql` checks defaults, primary keys, required instructions, the seed,
-RLS, and the API role's allowed reads/inserts and denied updates/deletes. Its test writes are rolled back. Run verification as the
+RLS, and the API role's allowed reads/deletes and column-limited inserts/updates.
+Updates to IDs, timestamps, and pin status remain denied. Its test writes are rolled back. Run verification as the
 bootstrap database owner, just like migrations.
 
 To inspect the version history:
@@ -52,8 +53,8 @@ To inspect the version history:
 docker compose exec -T postgres sh -c 'psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "TABLE public.schema_migrations;"'
 ```
 
-For the next schema change, add `0004_<description>.sql` and its conditional
-include/version insert to `apply.sql`, after `0003`. Keep applied migration files
+For the next schema change, add `0006_<description>.sql` and its conditional
+include/version insert to `apply.sql`, after `0005`. Keep applied migration files
 immutable and correct mistakes with a new version; this small runner tracks
 versions, not file checksums. Migration files must be transactional SQL without
 their own `BEGIN`/`COMMIT`. There is no automatic down migration.
@@ -95,9 +96,12 @@ These adaptations are intentional:
 - The initial migration retained RLS without copying access policies. Migration
   `0002_recipe_api_reader` now grants `recipe_api` SELECT on recipes through an
   explicit RLS policy. Migration `0003_recipe_api_create` grants INSERT only on
-  title, ingredients, instructions, and is_work_in_progress, with an INSERT policy. The source has permissive public recipe
+  title, ingredients, instructions, and is_work_in_progress, with an INSERT policy.
+  Migration `0004_recipe_api_update` grants UPDATE only on those same columns;
+  `0005_recipe_api_delete` grants DELETE on recipes. Each adds its operation-specific
+  RLS policy. The source has permissive public recipe
   policies and three `anon` shopping-list policies limited to `id = 'default'`.
-  Locally, only `recipe_api` has policies allowing recipe reads and creation; shopping lists
+  Locally, only `recipe_api` has policies allowing recipe reads, creation, updates, and deletion; shopping lists
   still have no access policy. Owners and superusers bypass RLS; the API must not use the
   bootstrap superuser.
 - `gen_random_uuid()` is built into PostgreSQL 18, so these tables do not require
@@ -139,9 +143,10 @@ collection returns an empty array.
 
 ## API database login
 
-After applying migrations, `recipe_api` has SELECT access to recipes and INSERT
-access to creation fields, with explicit RLS policies. It cannot supply IDs,
-timestamps, or pin values on insert, update/delete recipes, access shopping lists
+After applying migrations, `recipe_api` has SELECT and DELETE access to recipes,
+and INSERT/UPDATE access only to title, ingredients, instructions, and
+is_work_in_progress, with explicit RLS policies. It cannot supply or change IDs,
+timestamps, or pin values, access shopping lists
 or the migration ledger, bypass RLS, or administer roles/databases. The role is cluster-wide; an
 existing role with elevated attributes or memberships causes migration `0002` to
 fail. It has a five-second statement timeout. No password is stored in SQL.

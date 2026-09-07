@@ -31,7 +31,7 @@ const admin = (query: string, fixtureId = id) =>
   );
 
 describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
-  'PostgreSQL recipe reads and creation',
+  'PostgreSQL recipe lifecycle',
   () => {
     let web: ReturnType<typeof HttpApp.toWebHandlerLayer>;
     let fixtureCreated = false;
@@ -162,6 +162,106 @@ describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
       expect(await response.json()).toEqual({ message: 'Recipe not found' });
     });
 
+    it('updates, preserves protected fields, rejects invalid writes, and deletes only the requested recipe', async () => {
+      if (!createdId) throw new Error('Creation test must succeed first');
+      admin(
+        "UPDATE public.recipes SET is_pinned = true WHERE id = :'fixture_id';",
+        createdId,
+      );
+      const protectedFields = () =>
+        admin(
+          "SELECT id, created_at, is_pinned FROM public.recipes WHERE id = :'fixture_id';",
+          createdId,
+        ).toString();
+      const before = protectedFields();
+      const input = {
+        title: "  Chef's updated omelette  ",
+        ingredients: [{ name: ' cheese ', quantity: ' 50 ', unit: ' g ' }],
+        instructions: [' Fold "gently", then rest.\\Serve. '],
+      };
+      const put = (body: unknown, recipeId = createdId) =>
+        web.handler(
+          new Request(`http://localhost/recipes/${recipeId}`, {
+            method: 'PUT',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+          }),
+        );
+      const response = await put(input);
+      expect(response.status).toBe(200);
+      const updated = await response.json();
+      expect(updated).toEqual({
+        id: createdId,
+        title: "Chef's updated omelette",
+        ingredients: [{ name: 'cheese', quantity: '50', unit: 'g' }],
+        instructions: ['Fold "gently", then rest.\\Serve.'],
+        isWorkInProgress: false,
+        isPinned: true,
+      });
+      expect(protectedFields()).toBe(before);
+      for (const invalid of [
+        { title: 'Partial update' },
+        { ...input, isPinned: false },
+        { ...input, ingredients: [] },
+      ]) {
+        expect((await put(invalid)).status).toBe(400);
+      }
+      const detail = await web.handler(
+        new Request(`http://localhost/recipes/${createdId}`),
+      );
+      expect(await detail.json()).toEqual(updated);
+      const list = await web.handler(new Request('http://localhost/recipes'));
+      expect(await list.json()).toContainEqual(updated);
+      const missingId = randomUUID();
+      expect((await put(input, missingId)).status).toBe(404);
+      expect(
+        (
+          await web.handler(
+            new Request(`http://localhost/recipes/${missingId}`),
+          )
+        ).status,
+      ).toBe(404);
+
+      const draft = await put({
+        ...input,
+        instructions: [],
+        isWorkInProgress: true,
+      });
+      expect(draft.status).toBe(200);
+      expect(await draft.json()).toMatchObject({
+        instructions: [],
+        isWorkInProgress: true,
+        isPinned: true,
+      });
+      const remove = () =>
+        web.handler(
+          new Request(`http://localhost/recipes/${createdId}`, {
+            method: 'DELETE',
+          }),
+        );
+      const deleted = await remove();
+      expect(deleted.status).toBe(204);
+      expect(await deleted.text()).toBe('');
+      expect((await remove()).status).toBe(404);
+      expect(
+        (
+          await web.handler(
+            new Request(`http://localhost/recipes/${createdId}`),
+          )
+        ).status,
+      ).toBe(404);
+      const remaining = await web.handler(
+        new Request('http://localhost/recipes'),
+      );
+      const recipes = await remaining.json();
+      expect(
+        recipes.some((recipe: { id: string }) => recipe.id === createdId),
+      ).toBe(false);
+      expect(recipes.some((recipe: { id: string }) => recipe.id === id)).toBe(
+        true,
+      );
+    });
+
     it('rejects invalid stored JSON without exposing it in the response', async () => {
       admin(
         "UPDATE public.recipes SET ingredients = '[42]' WHERE id = :'fixture_id';",
@@ -175,16 +275,19 @@ describe.runIf(process.env['RECIPE_DB_INTEGRATION'] === '1')(
       });
     });
 
-    it('cannot update or delete recipes or read shopping lists with the API credentials', async () => {
+    it('cannot update protected fields or read shopping lists with the API credentials', async () => {
       const results = await Effect.runPromise(
         Effect.gen(function* () {
           const sql = yield* PgClient.PgClient;
           return yield* Effect.all([
             Effect.either(
-              sql`UPDATE public.recipes SET title = 'Forbidden' WHERE id = ${id}::uuid`,
+              sql`UPDATE public.recipes SET is_pinned = false WHERE id = ${id}::uuid`,
             ),
             Effect.either(
-              sql`DELETE FROM public.recipes WHERE id = ${id}::uuid`,
+              sql`UPDATE public.recipes SET id = ${randomUUID()}::uuid WHERE id = ${id}::uuid`,
+            ),
+            Effect.either(
+              sql`UPDATE public.recipes SET created_at = now() WHERE id = ${id}::uuid`,
             ),
             Effect.either(sql`SELECT * FROM public.shopping_lists`),
           ]);

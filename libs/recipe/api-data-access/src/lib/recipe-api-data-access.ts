@@ -63,6 +63,25 @@ export class RecipeRepository extends Effect.Service<RecipeRepository>()(
               Effect.map(([recipe]) => recipe),
             ),
           ),
+        update: (id: string, recipe: Omit<Recipe, 'id' | 'isPinned'>) =>
+          sql.withTransaction(
+            sql`
+        UPDATE public.recipes SET
+          title = ${recipe.title},
+          ingredients = ${JSON.stringify(normalizeRecipeIngredients(recipe.ingredients))}::jsonb,
+          instructions = ${recipe.instructions},
+          is_work_in_progress = ${recipe.isWorkInProgress}
+        WHERE id = ${id}::uuid
+        RETURNING id, title, ingredients, instructions, is_work_in_progress, is_pinned
+      `.pipe(
+              Effect.flatMap(decodeRecipes),
+              Effect.map(([recipe]) => recipe),
+            ),
+          ),
+        delete: (id: string) =>
+          sql`DELETE FROM public.recipes WHERE id = ${id}::uuid RETURNING id`.pipe(
+            Effect.map((rows) => rows.length > 0),
+          ),
         findAll: () =>
           sql`
         SELECT id, title, ingredients, instructions, is_work_in_progress, is_pinned

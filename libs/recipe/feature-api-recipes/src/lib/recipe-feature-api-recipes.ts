@@ -7,7 +7,7 @@ import { RecipeRepository } from '@gilles-monorepo/recipe-api-data-access';
 import { Effect, Schema } from 'effect';
 
 const NonBlankText = Schema.Trim.pipe(Schema.minLength(1));
-const CreateRecipeBody = Schema.Struct({
+const RecipeBody = Schema.Struct({
   title: NonBlankText,
   ingredients: Schema.mutable(
     Schema.Array(
@@ -24,11 +24,17 @@ const CreateRecipeBody = Schema.Struct({
   }),
 });
 
+const isRecipeId = (id: string | undefined): id is string =>
+  !!id &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+const recipeNotFound = () =>
+  HttpServerResponse.json({ message: 'Recipe not found' }, { status: 404 });
+
 export const recipesRoutes = HttpRouter.empty.pipe(
   HttpRouter.post(
     '/recipes',
     Effect.gen(function* () {
-      const body = yield* HttpServerRequest.schemaBodyJson(CreateRecipeBody, {
+      const body = yield* HttpServerRequest.schemaBodyJson(RecipeBody, {
         onExcessProperty: 'error',
       }).pipe(Effect.either);
       if (body._tag === 'Left') {
@@ -45,6 +51,37 @@ export const recipesRoutes = HttpRouter.empty.pipe(
       });
     }),
   ),
+  HttpRouter.put(
+    '/recipes/:id',
+    Effect.gen(function* () {
+      const { id } = yield* HttpRouter.params;
+      if (!isRecipeId(id)) return yield* recipeNotFound();
+      const body = yield* HttpServerRequest.schemaBodyJson(RecipeBody, {
+        onExcessProperty: 'error',
+      }).pipe(Effect.either);
+      if (body._tag === 'Left') {
+        return yield* HttpServerResponse.json(
+          { message: 'Invalid recipe' },
+          { status: 400 },
+        );
+      }
+      const repository = yield* RecipeRepository;
+      const recipe = yield* repository.update(id, body.right);
+      return yield* recipe ? HttpServerResponse.json(recipe) : recipeNotFound();
+    }),
+  ),
+  HttpRouter.del(
+    '/recipes/:id',
+    Effect.gen(function* () {
+      const { id } = yield* HttpRouter.params;
+      if (!isRecipeId(id)) return yield* recipeNotFound();
+      const repository = yield* RecipeRepository;
+      const deleted = yield* repository.delete(id);
+      return yield* deleted
+        ? HttpServerResponse.empty({ status: 204 })
+        : recipeNotFound();
+    }),
+  ),
   HttpRouter.get(
     '/recipes',
     Effect.gen(function* () {
@@ -56,26 +93,10 @@ export const recipesRoutes = HttpRouter.empty.pipe(
     '/recipes/:id',
     Effect.gen(function* () {
       const { id } = yield* HttpRouter.params;
-      // Reject malformed UUIDs before they reach PostgreSQL; preserve the 404 contract.
-      if (
-        !id ||
-        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-          id,
-        )
-      ) {
-        return yield* HttpServerResponse.json(
-          { message: 'Recipe not found' },
-          { status: 404 },
-        );
-      }
+      if (!isRecipeId(id)) return yield* recipeNotFound();
       const reader = yield* RecipeRepository;
       const recipe = yield* reader.findById(id);
-      return yield* recipe
-        ? HttpServerResponse.json(recipe)
-        : HttpServerResponse.json(
-            { message: 'Recipe not found' },
-            { status: 404 },
-          );
+      return yield* recipe ? HttpServerResponse.json(recipe) : recipeNotFound();
     }),
   ),
   HttpRouter.catchTag('SqlError', () =>
