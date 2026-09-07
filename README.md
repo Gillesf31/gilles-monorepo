@@ -2,13 +2,14 @@
 
 An Nx workspace for several Angular applications, currently Recipe and Rituel.
 
-Recipe stores recipes in Supabase in production and uses an in-memory recipe service during local development. Rituel manages recurring home maintenance. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
+Recipe uses its Node.js/Effect HTTP API backed by PostgreSQL, with cached offline browsing. Shopping lists still use Supabase in production and local storage during development. Rituel manages recurring home maintenance. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
 
 ## Requirements
 
 - Node.js compatible with Angular 21
 - pnpm
-- Supabase project URL and anon key
+- Docker with Compose for local PostgreSQL
+- Supabase project URL and anon key for production shopping lists
 
 This repository enforces pnpm through `only-allow`. Run Nx through pnpm so commands use the workspace-local Nx version:
 
@@ -24,7 +25,7 @@ Install dependencies:
 pnpm install
 ```
 
-Recipe uses Supabase. Create its local environment files:
+Recipe still uses Supabase for production shopping lists. Create its Angular environment files:
 
 ```bash
 cp apps/recipe/src/environments/environment.template.ts apps/recipe/src/environments/environment.ts
@@ -37,10 +38,23 @@ Environment files are gitignored; only the `*.template.ts` files are committed.
 
 ## Development
 
-Serve an application:
+For Recipe, first follow the [database setup](infra/recipe/README.md) and configure
+`apps/recipe-api/.env` using the restricted database role. Start the API and Angular
+in separate terminals:
 
 ```bash
+pnpm nx serve recipe-api
 pnpm nx serve recipe
+```
+
+Angular requests `/api/recipes`; its development proxy forwards `/api/*` to
+`http://127.0.0.1:3000/*`. All recipe operations use the real database, including
+pin/unpin. Offline browsing uses `recipe-api-catalogue-cache`, separate from the
+old Supabase cache. A successful catalogue load creates the new local copy.
+
+Serve another application:
+
+```bash
 pnpm nx serve rituel
 ```
 
@@ -62,10 +76,19 @@ Run tests only:
 pnpm nx run-many -t test --parallel=3
 ```
 
-Run e2e tests:
+Recipe browser tests require the local database, all migrations, and API credentials.
+They start Angular and the API (or reuse an already-running API locally), create
+uniquely identified recipes, and delete their own fixtures afterward. Run them
+without Nx caching because database state is external:
 
 ```bash
-pnpm nx e2e recipe-e2e
+pnpm nx run recipe-e2e:e2e --skipNxCache -- --project=chromium
+pnpm nx run recipe-e2e:e2e-offline
+```
+
+Run other e2e tests:
+
+```bash
 pnpm nx e2e rituel-e2e
 ```
 
@@ -98,7 +121,7 @@ Recipe libraries:
 - `feature-detail` - recipe detail screen
 - `feature-edit` - edit recipe screen
 - `feature-app-version` - update notification behavior
-- `recipe-data-access` - recipe service contracts and Supabase/in-memory implementations
+- `recipe-data-access` - HTTP recipe adapter, offline cache, and shopping-list adapters
 - `recipe-model` - shared recipe types and pure ingredient helpers
 - `recipe-ui` - reusable recipe presentation components, including recipe cards
 - `recipe-ingredient-ui` - reusable ingredient editor and ingredient list components
@@ -183,7 +206,12 @@ The `recipe` app has a `deploy` target:
 pnpm nx deploy recipe
 ```
 
-It builds the production app, writes `version.json`, and syncs `dist/apps/recipe/browser/` to the configured remote host. Check `apps/recipe/project.json` before changing the deployment destination.
+The production host must run the Recipe API and route `/api/*` to it with the
+`/api` prefix stripped. The Angular development proxy does not apply to static
+production hosting. API hosting and authentication must be configured before
+publishing this frontend; the current API is intended for local development.
+
+The deploy target only publishes the frontend. It builds the production app, writes `version.json`, and syncs `dist/apps/recipe/browser/` to the configured remote host. Check `apps/recipe/project.json` before changing the deployment destination.
 
 ## Notes
 

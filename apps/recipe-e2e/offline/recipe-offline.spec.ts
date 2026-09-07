@@ -13,15 +13,14 @@ test('keeps the recipe catalogue and detail readable offline', async ({
   context,
   page,
 }) => {
+  await page.route('**/api/recipes**', (route) => route.abort());
   await page.goto('/');
-  await expect(page.getByRole('alert')).toContainText(
-    'Aucune copie locale',
-  );
+  await expect(page.getByRole('alert')).toContainText('Aucune copie locale');
 
   await page.evaluate(async (recipe) => {
     await navigator.serviceWorker.ready;
     localStorage.setItem(
-      'recipe-catalogue-cache',
+      'recipe-api-catalogue-cache',
       JSON.stringify({
         version: 1,
         savedAt: '2026-08-15T14:30:00.000Z',

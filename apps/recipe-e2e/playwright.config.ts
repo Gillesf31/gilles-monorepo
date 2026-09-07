@@ -23,12 +23,20 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'pnpm exec nx run recipe:serve --host 127.0.0.1 --port 4300',
-    url: 'http://127.0.0.1:4300',
-    reuseExistingServer: false,
-    cwd: workspaceRoot,
-  },
+  webServer: [
+    {
+      command: 'pnpm nx serve recipe-api',
+      url: 'http://127.0.0.1:3000/hello',
+      reuseExistingServer: !process.env['CI'],
+      cwd: workspaceRoot,
+    },
+    {
+      command: 'pnpm exec nx run recipe:serve --host 127.0.0.1 --port 4300',
+      url: 'http://127.0.0.1:4300',
+      reuseExistingServer: false,
+      cwd: workspaceRoot,
+    },
+  ],
   projects: [
     {
       name: 'chromium',

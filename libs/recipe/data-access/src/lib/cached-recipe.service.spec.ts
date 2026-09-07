@@ -12,11 +12,7 @@ import {
   CachedRecipeService,
   RECIPE_CACHE_STORAGE_KEY,
 } from './cached-recipe.service';
-import {
-  NewRecipe,
-  RecipeReadStatus,
-  RecipeService,
-} from './recipe.service';
+import { NewRecipe, RecipeReadStatus, RecipeService } from './recipe.service';
 
 const savedAt = new Date('2026-08-15T14:30:00.000Z');
 const soup = new Recipe(
@@ -41,20 +37,28 @@ class MemoryStorage implements Pick<Storage, 'getItem' | 'setItem'> {
 describe(CachedRecipeService.name, () => {
   it('persists a successful remote catalogue and reports live data', async () => {
     const storage = new MemoryStorage();
-    const service = createService(remoteService({ getRecipes: () => of([soup]) }), storage);
+    const service = createService(
+      remoteService({ getRecipes: () => of([soup]) }),
+      storage,
+    );
 
     expect(await firstValueFrom(service.getRecipes())).toEqual([soup]);
     expect(service.readStatus()).toEqual({
       mode: 'live',
       cachedAt: savedAt.toISOString(),
     });
-    expect(storage.getItem(RECIPE_CACHE_STORAGE_KEY)).toContain('"title":"Soupe"');
+    expect(storage.getItem(RECIPE_CACHE_STORAGE_KEY)).toContain(
+      '"title":"Soupe"',
+    );
   });
 
   it('emits the cached catalogue immediately and then refreshes it remotely', async () => {
     const storage = new MemoryStorage();
     await firstValueFrom(
-      createService(remoteService({ getRecipes: () => of([soup]) }), storage).getRecipes(),
+      createService(
+        remoteService({ getRecipes: () => of([soup]) }),
+        storage,
+      ).getRecipes(),
     );
     const freshSoup = new Recipe('soup', 'Soupe fraîche', [], ['Servir.']);
     const service = createService(
@@ -74,11 +78,14 @@ describe(CachedRecipeService.name, () => {
   it('keeps cached recipes when the remote catalogue is unavailable', async () => {
     const storage = new MemoryStorage();
     await firstValueFrom(
-      createService(remoteService({ getRecipes: () => of([soup]) }), storage).getRecipes(),
+      createService(
+        remoteService({ getRecipes: () => of([soup]) }),
+        storage,
+      ).getRecipes(),
     );
     const service = createService(
       remoteService({
-        getRecipes: () => throwError(() => new Error('Supabase paused')),
+        getRecipes: () => throwError(() => new Error('API unavailable')),
       }),
       storage,
     );
@@ -93,13 +100,13 @@ describe(CachedRecipeService.name, () => {
   it('reports unavailable and preserves the remote error without a cache', async () => {
     const service = createService(
       remoteService({
-        getRecipes: () => throwError(() => new Error('Supabase paused')),
+        getRecipes: () => throwError(() => new Error('API unavailable')),
       }),
       new MemoryStorage(),
     );
 
     await expect(firstValueFrom(service.getRecipes())).rejects.toThrow(
-      'Supabase paused',
+      'API unavailable',
     );
     expect(service.readStatus()).toEqual({
       mode: 'unavailable',
@@ -110,7 +117,10 @@ describe(CachedRecipeService.name, () => {
   it('serves a recipe detail from the cached catalogue', async () => {
     const storage = new MemoryStorage();
     await firstValueFrom(
-      createService(remoteService({ getRecipes: () => of([soup]) }), storage).getRecipes(),
+      createService(
+        remoteService({ getRecipes: () => of([soup]) }),
+        storage,
+      ).getRecipes(),
     );
     const service = createService(
       remoteService({
@@ -121,6 +131,48 @@ describe(CachedRecipeService.name, () => {
 
     expect(await lastValueFrom(service.getRecipe('soup'))).toEqual(soup);
     expect(service.readStatus().mode).toBe('cached');
+  });
+
+  it('does not read the previous Supabase catalogue as local API data', async () => {
+    const storage = new MemoryStorage();
+    storage.setItem(
+      'recipe-catalogue-cache',
+      JSON.stringify({
+        version: 1,
+        savedAt: savedAt.toISOString(),
+        recipes: [soup],
+      }),
+    );
+    const service = createService(
+      remoteService({
+        getRecipes: () => throwError(() => new Error('API unavailable')),
+      }),
+      storage,
+    );
+    await expect(firstValueFrom(service.getRecipes())).rejects.toThrow(
+      'API unavailable',
+    );
+    expect(service.readStatus().mode).toBe('unavailable');
+  });
+
+  it('evicts a cached detail when the API confirms it no longer exists', async () => {
+    const storage = new MemoryStorage();
+    const service = createService(
+      remoteService({
+        getRecipes: () => of([soup]),
+        getRecipe: () => of(undefined),
+      }),
+      storage,
+    );
+    await firstValueFrom(service.getRecipes());
+    expect(await lastValueFrom(service.getRecipe(soup.id))).toBeUndefined();
+    const offline = createService(
+      remoteService({
+        getRecipes: () => throwError(() => new Error('Offline')),
+      }),
+      storage,
+    );
+    expect(await lastValueFrom(offline.getRecipes())).toEqual([]);
   });
 
   it.each([
@@ -177,7 +229,9 @@ describe(CachedRecipeService.name, () => {
     await firstValueFrom(service.getRecipes());
 
     await firstValueFrom(service.addRecipe(newRecipe('Gâteau')));
-    await firstValueFrom(service.updateRecipe('soup', newRecipe('Soupe épicée')));
+    await firstValueFrom(
+      service.updateRecipe('soup', newRecipe('Soupe épicée')),
+    );
     await firstValueFrom(service.setPinned('soup', true));
     await firstValueFrom(service.deleteRecipe('cake'));
 

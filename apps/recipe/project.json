@@ -70,7 +70,10 @@
           "buildTarget": "recipe:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "apps/recipe/proxy.conf.json"
+      }
     },
     "lint": {
       "executor": "@nx/eslint:lint"

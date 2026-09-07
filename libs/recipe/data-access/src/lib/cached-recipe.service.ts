@@ -10,13 +10,9 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import {
-  NewRecipe,
-  RecipeReadStatus,
-  RecipeService,
-} from './recipe.service';
+import { NewRecipe, RecipeReadStatus, RecipeService } from './recipe.service';
 
-export const RECIPE_CACHE_STORAGE_KEY = 'recipe-catalogue-cache';
+export const RECIPE_CACHE_STORAGE_KEY = 'recipe-api-catalogue-cache';
 const RECIPE_CACHE_VERSION = 1;
 
 type RecipeCacheStorage = Pick<Storage, 'getItem' | 'setItem'>;
@@ -88,8 +84,12 @@ export class CachedRecipeService extends RecipeService {
       const remoteRecipe = this.remote.getRecipe(id).pipe(
         tap((recipe) => {
           const savedAt = recipe
-            ? this.updateCachedRecipes((recipes) => upsertRecipe(recipes, recipe))
-            : cached?.savedAt ?? null;
+            ? this.updateCachedRecipes((recipes) =>
+                upsertRecipe(recipes, recipe),
+              )
+            : this.updateCachedRecipes((recipes) =>
+                recipes.filter((item) => item.id !== id),
+              );
           this.setStatus('live', savedAt);
         }),
         catchError((error: unknown) => {

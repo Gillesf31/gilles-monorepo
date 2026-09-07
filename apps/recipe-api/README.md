@@ -3,7 +3,8 @@
 The Recipe backend uses Node.js and stable Effect 3. It will replace Supabase
 incrementally. Both `GET /recipes` and `GET /recipes/:id` read local PostgreSQL;
 `POST /recipes`, `PUT /recipes/:id`, and `DELETE /recipes/:id` create, edit, and delete recipes in the same database.
-`PATCH /recipes/:id/pin` sets pin status. The frontend still uses Supabase.
+`PATCH /recipes/:id/pin` sets pin status. Angular recipe operations now use this API through `/api/recipes`; its development
+proxy strips `/api`. Production shopping-list storage still uses Supabase.
 
 ## Run locally
 
@@ -51,8 +52,8 @@ There is no hardcoded collection fallback. Every listed recipe can be opened wit
 its returned UUID (unless it is deleted between requests). To add a local example,
 run the [optional development seed](../../infra/recipe/README.md#local-development-seed).
 The seed's UUID is `00000000-0000-4000-8000-000000000001`; `/recipes/1` remains an
-invalid UUID and returns `404`. Data import, authentication, and
-frontend switching are subsequent slices.
+invalid UUID and returns `404`. Data import, authentication, production API hosting, and shopping-list migration
+are subsequent slices.
 
 ## Create a recipe
 

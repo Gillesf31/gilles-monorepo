@@ -4,7 +4,6 @@ import { provideAppVersionCheck } from '@gilles-monorepo/feature-app-version';
 import {
   CachedRecipeService,
   RecipeApiService,
-  RecipeInMemoryService,
   RecipeService,
   ShoppingListApiService,
   ShoppingListInMemoryService,
@@ -30,9 +29,7 @@ export function createShellRoutes(
         {
           provide: RecipeService,
           useFactory: (apiService: RecipeApiService) =>
-            isDevMode()
-              ? new RecipeInMemoryService()
-              : new CachedRecipeService(apiService),
+            new CachedRecipeService(apiService),
           deps: [RecipeApiService],
         },
         {
