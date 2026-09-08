@@ -1,10 +1,10 @@
 # Recipe offline mode
 
-The Recipe application supports **cached, read-only browsing** when Supabase is
+The Recipe application supports **cached, read-only browsing** when the API is
 unreachable. After a successful online visit, users can reopen the production
 PWA and read the cached recipe catalogue and recipe details.
 
-This is deliberately not a full offline-sync system. Supabase remains the
+This is deliberately not a full offline-sync system. The API remains the
 source of truth, and offline writes are neither stored nor replayed later.
 
 ## Architecture
@@ -17,16 +17,16 @@ flowchart TD
   Browser --> CachedService["CachedRecipeService"]
 
   Worker --> Shell["Application shell<br/>HTML, JavaScript, CSS, manifest, icons"]
-  CachedService --> LocalStorage["localStorage<br/>recipe-catalogue-cache"]
+  CachedService --> LocalStorage["localStorage<br/>recipe-api-catalogue-cache"]
   CachedService --> ApiService["RecipeApiService"]
-  ApiService --> Supabase["Supabase"]
+  ApiService --> API["Recipe API + PostgreSQL"]
 
   LocalStorage -->|"Immediate cached value"| UI["Recipe list and detail"]
-  Supabase -->|"Fresh value when reachable"| CachedService
+  API -->|"Fresh value when reachable"| CachedService
 ```
 
 The Angular service worker makes the application itself loadable offline.
-`CachedRecipeService` is responsible for recipe data. Supabase responses are
+`CachedRecipeService` is responsible for recipe data. API responses are
 not cached by the service worker.
 
 ## Production composition
@@ -36,18 +36,14 @@ Features depend on the abstract `RecipeService`. Its contract also exposes a
 
 | Mode | Meaning |
 | --- | --- |
-| `checking` | A Supabase read is in progress. |
-| `live` | The latest Supabase read succeeded. |
-| `cached` | Supabase failed, but a local copy is available. |
-| `unavailable` | Supabase failed and there is no usable local copy. |
+| `checking` | An API read is in progress. |
+| `live` | The latest API read succeeded. |
+| `cached` | The API request failed, but a local copy is available. |
+| `unavailable` | The API request failed and there is no usable local copy. |
 
-The shell selects the implementation:
-
-- Development uses `RecipeInMemoryService` and its seeded recipes.
-- Production wraps `RecipeApiService` in `CachedRecipeService`.
-
-As a result, the normal development build does not exercise browser-backed
-offline mode. Use a production build or the dedicated offline E2E target.
+The shell wraps `RecipeApiService` in `CachedRecipeService` in development and
+production. Use a production build or the dedicated offline E2E target to
+exercise service-worker support.
 
 ## Catalogue reads
 
@@ -56,7 +52,7 @@ stale-while-revalidate flow:
 
 1. Read and validate the local catalogue.
 2. Set the read status to `checking`.
-3. Start the Supabase request even when a cache exists.
+3. Start the API request even when a cache exists.
 4. If the cache exists, emit it immediately.
 5. Handle the remote result in the background.
 
@@ -64,31 +60,31 @@ The outcome depends on the available data:
 
 ```text
 Cache exists
-|-- Supabase succeeds
+|-- API succeeds
 |   |-- emit the cached catalogue immediately
 |   |-- emit the fresh catalogue afterward
 |   |-- replace the local cache
 |   `-- status = live
 |
-`-- Supabase fails
+`-- API fails
     |-- keep the previously emitted catalogue
     |-- complete without surfacing the network error
     `-- status = cached
 
 No cache
-|-- Supabase succeeds
+|-- API succeeds
 |   |-- emit the remote catalogue
 |   |-- create the local cache
 |   `-- status = live
 |
-`-- Supabase fails
+`-- API fails
     |-- status = unavailable
     `-- propagate the error to the feature
 ```
 
-Offline detection is based on the real Supabase request result rather than
+Offline detection is based on the real API request result rather than
 `navigator.onLine`. This also handles cases where the device has a network
-connection but Supabase is unavailable.
+connection but the API is unavailable.
 
 ## Detail reads
 
@@ -96,7 +92,7 @@ connection but Supabase is unavailable.
 
 1. Search for the recipe in the cached catalogue.
 2. Emit the cached recipe immediately when found.
-3. Request the recipe from Supabase.
+3. Request the recipe from the API.
 4. On success, update that recipe in the existing catalogue cache.
 5. On failure, retain the cached recipe and switch to `cached` mode.
 
@@ -110,7 +106,7 @@ already exists.
 ## Cache document
 
 The catalogue is stored in `localStorage` under the key
-`recipe-catalogue-cache`:
+`recipe-api-catalogue-cache`:
 
 ```json
 {
@@ -145,7 +141,7 @@ indefinitely, and the UI displays `savedAt` so users can see its age.
 
 ## Writes and cache coherence
 
-Add, update, pin, and delete operations are always sent directly to Supabase.
+Add, update, pin, and delete operations are always sent directly to the API.
 Only a successful remote operation updates an existing catalogue cache:
 
 - adding appends the created recipe;
@@ -154,7 +150,7 @@ Only a successful remote operation updates an existing catalogue cache:
 - deleting removes the recipe.
 
 Failed operations are not applied locally, queued, or replayed later. This
-avoids synchronization conflicts and keeps Supabase authoritative.
+avoids synchronization conflicts and keeps the API authoritative.
 
 ## Read-only user interface
 
@@ -162,7 +158,6 @@ Mutation controls are available only when `readStatus.mode === 'live'`.
 While checking or using cached data, the UI hides:
 
 - Add recipe;
-- Shopping list;
 - Pin and unpin;
 - Delete;
 - Edit.
@@ -176,7 +171,7 @@ Users can still:
 - use the wake lock while following a recipe.
 
 Cached list and detail screens show an offline banner with the cache timestamp.
-When neither Supabase nor a valid cache is available, they show an explicit
+When neither the API nor a valid cache is available, they show an explicit
 error with a retry action instead of leaving the loading indicator active.
 
 ## Application-shell caching
@@ -196,8 +191,8 @@ handled exclusively by `RecipeApiService` and `CachedRecipeService`.
 ## Offline end-to-end test
 
 The `recipe-e2e:e2e-offline` Nx target runs a Chromium Playwright scenario
-against a production-like build. That build replaces the normal environment
-with an intentionally unreachable Supabase URL.
+against a production-like build. The test aborts `/api/recipes` requests to
+simulate an unreachable API.
 
 The scenario:
 
@@ -231,7 +226,6 @@ The implementation does not provide:
 - first-visit offline access;
 - offline creation, editing, pinning, or deletion;
 - a mutation queue or conflict resolution;
-- shopping-list caching;
 - cross-device cache synchronization;
 - automatic cache expiration.
 
@@ -239,7 +233,7 @@ The implementation does not provide:
 
 - Data contract: `libs/recipe/data-access/src/lib/recipe.service.ts`
 - Cache behavior: `libs/recipe/data-access/src/lib/cached-recipe.service.ts`
-- Supabase adapter: `libs/recipe/data-access/src/lib/recipe-api.service.ts`
+- API adapter: `libs/recipe/data-access/src/lib/recipe-api.service.ts`
 - Production composition: `libs/recipe/shell/src/lib/shell.routes.ts`
 - Service-worker registration: `apps/recipe/src/app/app.config.ts`
 - Service-worker assets: `apps/recipe/ngsw-config.json`

@@ -40,12 +40,6 @@
         },
         "offline-e2e": {
           "serviceWorker": "apps/recipe/ngsw-config.json",
-          "fileReplacements": [
-            {
-              "replace": "apps/recipe/src/environments/environment.ts",
-              "with": "apps/recipe-e2e/fixtures/environment.offline-e2e.ts"
-            }
-          ],
           "optimization": true,
           "extractLicenses": true,
           "sourceMap": false,

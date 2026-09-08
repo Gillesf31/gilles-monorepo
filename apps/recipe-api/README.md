@@ -4,7 +4,7 @@ The Recipe backend uses Node.js and stable Effect 3. It will replace Supabase
 incrementally. Both `GET /recipes` and `GET /recipes/:id` read local PostgreSQL;
 `POST /recipes`, `PUT /recipes/:id`, and `DELETE /recipes/:id` create, edit, and delete recipes in the same database.
 `PATCH /recipes/:id/pin` sets pin status. Angular recipe operations now use this API through `/api/recipes`; its development
-proxy strips `/api`. Production shopping-list storage still uses Supabase.
+proxy strips `/api`.
 
 ## Run locally
 
@@ -52,7 +52,7 @@ There is no hardcoded collection fallback. Every listed recipe can be opened wit
 its returned UUID (unless it is deleted between requests). To add a local example,
 run the [optional development seed](../../infra/recipe/README.md#local-development-seed).
 The seed's UUID is `00000000-0000-4000-8000-000000000001`; `/recipes/1` remains an
-invalid UUID and returns `404`. Data import, authentication, production API hosting, and shopping-list migration
+invalid UUID and returns `404`. Data import, authentication, and production API hosting
 are subsequent slices.
 
 ## Create a recipe
@@ -90,7 +90,7 @@ recipe returns `200` with the complete updated recipe; a missing recipe is never
 created. Update and response decoding share a transaction.
 
 `DELETE /recipes/:id` permanently deletes that recipe and returns `204` with no
-body. It does not modify other recipes or shopping lists. Repeating the deletion
+body. It does not modify other recipes. Repeating the deletion
 returns `404`. Both endpoints reject malformed UUIDs before querying PostgreSQL
 and return `404` with `{"message":"Recipe not found"}` for missing recipes.
 For PUT, the UUID is checked before the body; a valid UUID with an invalid body

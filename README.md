@@ -2,14 +2,13 @@
 
 An Nx workspace for several Angular applications, currently Recipe and Rituel.
 
-Recipe uses its Node.js/Effect HTTP API backed by PostgreSQL, with cached offline browsing. Shopping lists still use Supabase in production and local storage during development. Rituel manages recurring home maintenance. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
+Recipe uses its Node.js/Effect HTTP API backed by PostgreSQL, with cached offline browsing. Rituel manages recurring home maintenance. The workspace is organized around thin apps and tagged libraries so feature code stays outside `apps/*`.
 
 ## Requirements
 
 - Node.js compatible with Angular 21
 - pnpm
 - Docker with Compose for local PostgreSQL
-- Supabase project URL and anon key for production shopping lists
 
 This repository enforces pnpm through `only-allow`. Run Nx through pnpm so commands use the workspace-local Nx version:
 
@@ -25,16 +24,7 @@ Install dependencies:
 pnpm install
 ```
 
-Recipe still uses Supabase for production shopping lists. Create its Angular environment files:
-
-```bash
-cp apps/recipe/src/environments/environment.template.ts apps/recipe/src/environments/environment.ts
-cp apps/recipe/src/environments/environment.prod.template.ts apps/recipe/src/environments/environment.prod.ts
-```
-
-Fill both files with the Supabase project URL and anon key from Supabase Project Settings > API.
-
-Environment files are gitignored; only the `*.template.ts` files are committed.
+Recipe needs no frontend credentials or environment files. Configure its backend using the [database setup](infra/recipe/README.md).
 
 ## Development
 
@@ -121,7 +111,7 @@ Recipe libraries:
 - `feature-detail` - recipe detail screen
 - `feature-edit` - edit recipe screen
 - `feature-app-version` - update notification behavior
-- `recipe-data-access` - HTTP recipe adapter, offline cache, and shopping-list adapters
+- `recipe-data-access` - HTTP recipe adapter and offline cache
 - `recipe-model` - shared recipe types and pure ingredient helpers
 - `recipe-ui` - reusable recipe presentation components, including recipe cards
 - `recipe-ingredient-ui` - reusable ingredient editor and ingredient list components

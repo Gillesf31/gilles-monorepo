@@ -31,9 +31,6 @@
         "libs/recipe/feature-edit/src/index.ts"
       ],
       "@gilles-monorepo/recipe-ui": ["libs/recipe/ui/src/index.ts"],
-      "@gilles-monorepo/feature-shopping-list": [
-        "libs/recipe/feature-shopping-list/src/index.ts"
-      ],
       "@gilles-monorepo/feature-theme": [
         "libs/shared/feature-theme/src/index.ts"
       ],

@@ -1,29 +1,20 @@
-import { isDevMode } from '@angular/core';
 import { Route } from '@angular/router';
 import { provideAppVersionCheck } from '@gilles-monorepo/feature-app-version';
 import {
   CachedRecipeService,
   RecipeApiService,
   RecipeService,
-  ShoppingListApiService,
-  ShoppingListInMemoryService,
-  ShoppingListService,
 } from '@gilles-monorepo/recipe-data-access';
-import { provideSupabaseClient } from '@gilles-monorepo/util-supabase';
 import { provideTheme } from '@gilles-monorepo/feature-theme';
 import { ShellComponent } from './shell.component';
 
-export function createShellRoutes(
-  supabaseUrl: string,
-  supabaseAnonKey: string,
-): Route[] {
+export function createShellRoutes(): Route[] {
   return [
     {
       path: '',
       component: ShellComponent,
       providers: [
         provideAppVersionCheck(),
-        provideSupabaseClient(supabaseUrl, supabaseAnonKey),
         provideTheme(),
         RecipeApiService,
         {
@@ -31,12 +22,6 @@ export function createShellRoutes(
           useFactory: (apiService: RecipeApiService) =>
             new CachedRecipeService(apiService),
           deps: [RecipeApiService],
-        },
-        {
-          provide: ShoppingListService,
-          useClass: isDevMode()
-            ? ShoppingListInMemoryService
-            : ShoppingListApiService,
         },
       ],
       children: [
@@ -52,13 +37,6 @@ export function createShellRoutes(
           loadComponent: () =>
             import('@gilles-monorepo/feature-add').then(
               (m) => m.AddRecipeComponent,
-            ),
-        },
-        {
-          path: 'courses',
-          loadComponent: () =>
-            import('@gilles-monorepo/feature-shopping-list').then(
-              (m) => m.ShoppingListComponent,
             ),
         },
         {

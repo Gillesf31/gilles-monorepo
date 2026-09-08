@@ -5,6 +5,9 @@ migrations recreate the Recipe schema. API recipe reads, creation, updates, pin/
 deletion use this database.
 The [database decision](../../docs/adr/0001-recipe-postgresql.md) explains the scope.
 
+The shopping-list feature has been removed from Recipe. Its legacy table, seed,
+and migration history remain intact; the application no longer accesses them.
+
 ## Start
 
 Install Docker with Compose v2 and start its engine (Docker Desktop on macOS).

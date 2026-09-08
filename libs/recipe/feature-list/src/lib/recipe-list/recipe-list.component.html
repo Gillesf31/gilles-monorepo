@@ -36,16 +36,11 @@
       </div>
       @if (canMutate()) {
         <div class="flex flex-wrap gap-2 self-start sm:self-auto">
-        <a
-          routerLink="/courses"
-          class="rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
-          >Liste de courses</a
-        >
-        <a
-          routerLink="/add"
-          class="rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/10 transition-colors hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300"
-          >Ajouter une recette</a
-        >
+          <a
+            routerLink="/add"
+            class="rounded-full bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-zinc-950/10 transition-colors hover:bg-emerald-700 dark:bg-emerald-400 dark:text-zinc-950 dark:hover:bg-emerald-300"
+            >Ajouter une recette</a
+          >
         </div>
       }
     </div>
@@ -103,7 +98,7 @@
           Aucune copie locale des recettes n’est disponible.
         </p>
         <p class="mt-2 text-sm text-rose-700 dark:text-rose-300">
-          Reconnectez-vous ou réactivez Supabase, puis réessayez.
+          Vérifiez votre connexion, puis réessayez.
         </p>
         <button
           gillesMonorepoBtn

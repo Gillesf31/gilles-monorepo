@@ -91,6 +91,8 @@ describe(RecipeListComponent.name, () => {
     const element: HTMLElement = fixture.nativeElement;
 
     expect(element.textContent).toContain('Mes recettes');
+    expect(element.querySelector('a[href="/courses"]')).toBeNull();
+    expect(element.querySelector('a[href="/add"]')).not.toBeNull();
     expect(element.textContent).toContain('Soupe aux tomates');
   });
 
