@@ -111,6 +111,41 @@ test('supports the core recipe workflow', async ({
   ).toBeHidden();
 });
 
+test('removes a deleted recipe from the catalogue without reloading', async ({
+  page,
+  request,
+  recipeIds,
+}) => {
+  const title = `Catalogue deletion e2e ${Date.now()}`;
+  const created = await request.post('/api/recipes', {
+    data: {
+      title,
+      ingredients: [{ name: 'Citron', quantity: '1', unit: '' }],
+      instructions: ['Presser le citron.'],
+    },
+  });
+  expect(created.status()).toBe(201);
+  const { id } = await created.json();
+  recipeIds.push(id);
+
+  await page.goto('/');
+  const card = page.locator('article').filter({ hasText: title });
+  await expect(card).toBeVisible();
+  await card.getByRole('button', { name: 'Supprimer la recette' }).click();
+
+  const deletion = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'DELETE' &&
+      response.url().endsWith(`/api/recipes/${id}`),
+  );
+  await page.getByRole('button', { name: 'Supprimer', exact: true }).click();
+  expect((await deletion).status()).toBe(204);
+  expect((await request.get(`/api/recipes/${id}`)).status()).toBe(404);
+
+  // The server deletion has succeeded; the current catalogue must update too.
+  await expect(card).toBeHidden();
+});
+
 test('scales measured ingredient quantities with the multiplier controls', async ({
   browserName,
   page,

@@ -134,7 +134,14 @@ export class RecipeListComponent {
   protected confirmDelete(): void {
     const id = this.recipeToDelete()?.id;
     if (!id) return;
-    this.recipeService.deleteRecipe(id).subscribe();
+    this.recipeService
+      .deleteRecipe(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() =>
+        this.recipes.update((recipes) =>
+          recipes?.filter((recipe) => recipe.id !== id),
+        ),
+      );
     this.recipeToDelete.set(null);
   }
 
