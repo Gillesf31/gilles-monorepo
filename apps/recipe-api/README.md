@@ -55,6 +55,22 @@ The seed's UUID is `00000000-0000-4000-8000-000000000001`; `/recipes/1` remains 
 invalid UUID and returns `404`. Data import, authentication, and production API hosting
 are subsequent slices.
 
+## Production API image
+
+```sh
+pnpm nx run recipe-api:docker:build
+```
+
+The production build bundles its JavaScript dependencies into `main.js`. The
+image runs it directly with Node.js 24 as the unprivileged `node` user; no Nx,
+workspace dependencies, or credentials are copied into the image. The container
+listens on port 3000 and checks `/hello` for liveness.
+
+Supply `DATABASE_URL` at runtime using the restricted `recipe_api` role. The
+database hostname must be reachable from the container: use `postgres` on the
+Compose network, not `127.0.0.1` (which would refer to the API container itself).
+Missing credentials or an initial database connection failure prevent startup.
+
 ## Create a recipe
 
 Apply migration `0003_recipe_api_create` before using the endpoint. From the

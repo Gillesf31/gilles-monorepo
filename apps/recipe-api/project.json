@@ -28,6 +28,7 @@
       "configurations": {
         "development": {},
         "production": {
+          "thirdParty": true,
           "esbuildOptions": {
             "sourcemap": false,
             "outExtension": {
@@ -54,6 +55,10 @@
           "buildTarget": "recipe-api:build:production"
         }
       }
+    },
+    "docker:build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/recipe-api/Dockerfile -t gilles-recipe-api:local dist/apps/recipe-api"
     }
   }
 }
