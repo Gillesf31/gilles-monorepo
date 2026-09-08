@@ -1,0 +1,9 @@
+**
+!apps/
+!apps/recipe/
+!apps/recipe/nginx.conf
+!dist/
+!dist/apps/
+!dist/apps/recipe/
+!dist/apps/recipe/browser/
+!dist/apps/recipe/browser/**

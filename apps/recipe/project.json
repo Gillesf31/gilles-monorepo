@@ -76,6 +76,17 @@
       "executor": "@angular/build:unit-test",
       "options": {}
     },
+    "docker:build": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "node tools/write-build-version.mjs dist/apps/recipe/browser/version.json",
+          "docker build -f apps/recipe/Dockerfile -t gilles-recipe-web:local ."
+        ]
+      }
+    },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
