@@ -42,6 +42,15 @@ Angular requests `/api/recipes`; its development proxy forwards `/api/*` to
 pin/unpin. Offline browsing uses `recipe-api-catalogue-cache`, separate from the
 old Supabase cache. A successful catalogue load creates the new local copy.
 
+To run production builds of Angular and the API alongside PostgreSQL locally,
+complete the one-time [container setup](apps/recipe/CONTAINERS.md), then run:
+
+```sh
+pnpm nx run recipe:runtime-up
+```
+
+The complete app is available at <http://localhost:8080>.
+
 Serve another application:
 
 ```bash

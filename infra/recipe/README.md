@@ -8,6 +8,10 @@ The [database decision](../../docs/adr/0001-recipe-postgresql.md) explains the s
 The shopping-list feature has been removed from Recipe. Its legacy table, seed,
 and migration history remain intact; the application no longer accesses them.
 
+To run production Angular and API containers against this same database, follow
+the [container guide](../../apps/recipe/CONTAINERS.md). Its Compose overlay adds
+migration verification, the API, and an Nginx proxy while preserving this volume.
+
 ## Start
 
 Install Docker with Compose v2 and start its engine (Docker Desktop on macOS).

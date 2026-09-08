@@ -87,6 +87,15 @@
         ]
       }
     },
+    "runtime-up": {
+      "dependsOn": [
+        { "target": "docker:build", "projects": ["recipe", "recipe-api"] }
+      ],
+      "command": "docker compose -f infra/recipe/compose.yaml -f infra/recipe/compose.runtime.yaml up -d --wait --wait-timeout 90"
+    },
+    "runtime-check": {
+      "command": "node tools/recipe-runtime-smoke.mjs"
+    },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {

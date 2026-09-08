@@ -57,6 +57,9 @@ are subsequent slices.
 
 ## Production API image
 
+For the complete Angular/API/PostgreSQL setup, see the
+[container guide](../recipe/CONTAINERS.md).
+
 ```sh
 pnpm nx run recipe-api:docker:build
 ```

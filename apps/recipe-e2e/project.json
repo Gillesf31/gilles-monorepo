@@ -6,6 +6,13 @@
   "implicitDependencies": ["recipe"],
   "// targets": "to see all targets run: nx show project recipe-e2e --web",
   "targets": {
+    "e2e-runtime": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/recipe-e2e",
+        "command": "playwright test --config=playwright.runtime.config.ts"
+      }
+    },
     "e2e-offline": {
       "executor": "nx:run-commands",
       "options": {

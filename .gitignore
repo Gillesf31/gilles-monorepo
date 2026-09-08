@@ -66,6 +66,7 @@ apps/recipe/src/environments/environment*.ts
 # Local Recipe database credentials
 /infra/recipe/.env
 /apps/recipe-api/.env
+/apps/recipe-api/.env.runtime
 
 # Local workspace artifacts
 /workspace/

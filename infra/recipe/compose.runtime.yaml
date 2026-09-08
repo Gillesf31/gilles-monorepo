@@ -1,0 +1,43 @@
+# Add to compose.yaml to run production builds against the same local database.
+services:
+  migrate:
+    image: postgres:18
+    environment:
+      PGHOST: postgres
+      PGDATABASE: ${POSTGRES_DB:?Copy .env.example to .env first}
+      PGUSER: ${POSTGRES_USER:?Copy .env.example to .env first}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - ./migrations:/migrations:ro
+    command:
+      [
+        'psql',
+        '-X',
+        '-v',
+        'ON_ERROR_STOP=1',
+        '-f',
+        '/migrations/apply.sql',
+        '-f',
+        '/migrations/verify.sql',
+      ]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    image: gilles-recipe-api:local
+    env_file:
+      - ../../apps/recipe-api/.env.runtime
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    image: gilles-recipe-web:local
+    ports:
+      - '127.0.0.1:8080:8080'
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
