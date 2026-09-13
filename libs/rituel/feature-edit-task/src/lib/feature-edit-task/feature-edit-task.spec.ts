@@ -19,6 +19,7 @@ class TestRoutineFacade {
       note: 'Run the drum-clean cycle.',
       firstDueDate: '2026-07-01',
       nextDueDate: '2026-07-18',
+      notificationTime: '19:15',
       frequency: routineFrequencies.monthly,
     },
   ]);
@@ -38,7 +39,10 @@ class TestRoutineFacade {
 
   async update(
     id: string,
-    input: Pick<Routine, 'name' | 'note' | 'nextDueDate' | 'frequency'>,
+    input: Pick<
+      Routine,
+      'name' | 'note' | 'nextDueDate' | 'notificationTime' | 'frequency'
+    >,
   ): Promise<Routine> {
     const existing = await this.get(id);
     if (!existing) throw new Error(`Routine not found: ${id}`);
@@ -105,9 +109,33 @@ describe('EditRoutineComponent', () => {
       name: 'Clean the washing machine',
       note: 'Run the drum-clean cycle.',
       nextDueDate: '2026-07-18',
+      notificationTime: '19:15',
       frequency: routineFrequencies.monthly,
     });
+    const input = fixture.nativeElement.querySelector(
+      '#routine-notification-time',
+    ) as HTMLInputElement;
+    expect(input.type).toBe('time');
+    expect(input.value).toBe('19:15');
   });
+
+  it.each(['', '24:00', '12:60', '8:30', '08:30:15'])(
+    'rejects the invalid notification time "%s"',
+    async (notificationTime) => {
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.form.controls.notificationTime.setValue(notificationTime);
+      await component.submit();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Choisissez une heure de rappel valide.',
+      );
+      expect((await repository.get('routine-1'))?.notificationTime).toBe(
+        '19:15',
+      );
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    },
+  );
 
   it('should make today the earliest selectable next due date when editing a routine', async () => {
     fixture.detectChanges();
@@ -144,8 +172,15 @@ describe('EditRoutineComponent', () => {
       name: 'Clean the dryer',
       note: 'Empty the lint trap first.',
       nextDueDate: '2026-07-22',
+      notificationTime: '19:15',
       frequency: routineFrequencies.everyThreeWeeks,
     });
+
+    const timeInput = fixture.nativeElement.querySelector(
+      '#routine-notification-time',
+    ) as HTMLInputElement;
+    timeInput.value = '07:45';
+    timeInput.dispatchEvent(new Event('input'));
 
     await component.submit();
 
@@ -155,6 +190,7 @@ describe('EditRoutineComponent', () => {
       note: 'Empty the lint trap first.',
       firstDueDate: '2026-07-01',
       nextDueDate: '2026-07-22',
+      notificationTime: '07:45',
       frequency: routineFrequencies.everyThreeWeeks,
     });
     expect(router.navigateByUrl).toHaveBeenCalledWith('/');

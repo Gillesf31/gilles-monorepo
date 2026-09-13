@@ -19,6 +19,8 @@ export type Routine = {
   note?: string;
   firstDueDate: RoutineDate;
   nextDueDate: RoutineDate;
+  /** Local notification time encoded as HH:mm, interpreted per receiving device. */
+  notificationTime: string;
   frequency: RoutineFrequency;
 };
 

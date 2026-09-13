@@ -53,6 +53,13 @@ export class CreateRoutineComponent {
       validators: [requiredTrimmed],
     }),
     note: new FormControl('', { nonNullable: true }),
+    notificationTime: new FormControl('08:00', {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.pattern(/^([01]\d|2[0-3]):[0-5]\d$/),
+      ],
+    }),
     firstDueDate: new FormControl(this.minimumDueDate, {
       nonNullable: true,
       validators: [Validators.required],
@@ -75,7 +82,8 @@ export class CreateRoutineComponent {
       return;
     }
 
-    const { name, note, firstDueDate, frequency } = this.form.getRawValue();
+    const { name, note, firstDueDate, notificationTime, frequency } =
+      this.form.getRawValue();
 
     if (!frequency) {
       return;
@@ -89,6 +97,7 @@ export class CreateRoutineComponent {
         note: note.trim() || undefined,
         firstDueDate,
         nextDueDate: firstDueDate,
+        notificationTime,
         frequency,
       });
       await this.router.navigateByUrl('/');

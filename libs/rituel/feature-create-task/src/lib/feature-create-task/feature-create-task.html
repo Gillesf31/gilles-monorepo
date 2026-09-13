@@ -51,6 +51,39 @@
     </div>
 
     <div class="grid gap-2">
+      <label
+        for="routine-notification-time"
+        class="font-[750] text-rituel-ink-strong dark:text-rituel-dark-ink-strong"
+        >Heure du rappel</label
+      >
+      <input
+        id="routine-notification-time"
+        type="time"
+        step="60"
+        required
+        formControlName="notificationTime"
+        [attr.aria-invalid]="form.controls.notificationTime.invalid && (form.controls.notificationTime.touched || submitted())"
+        aria-describedby="routine-notification-time-hint routine-notification-time-error"
+        class="min-h-11 w-full rounded-[0.65rem] border border-rituel-input-border bg-rituel-surface px-3 py-[0.55rem] leading-[1.4] text-rituel-ink-strong outline-[3px] outline-offset-2 focus:outline-rituel-focus-soft dark:border-rituel-dark-input-border dark:bg-rituel-dark-surface dark:text-rituel-dark-ink-strong dark:focus:outline-rituel-dark-focus-soft"
+      />
+      <p
+        id="routine-notification-time-hint"
+        class="m-0 text-[0.9rem] text-rituel-subtle dark:text-rituel-dark-subtle"
+      >
+        Heure locale de chaque appareil sur lequel les rappels sont activés.
+      </p>
+      @if (form.controls.notificationTime.invalid &&
+      (form.controls.notificationTime.touched || submitted())) {
+      <p
+        id="routine-notification-time-error"
+        class="m-0 text-[0.9rem] text-rituel-error dark:text-rituel-dark-error"
+      >
+        Choisissez une heure de rappel valide.
+      </p>
+      }
+    </div>
+
+    <div class="grid gap-2">
       <label for="routine-frequency" class="font-[750] text-rituel-ink-strong dark:text-rituel-dark-ink-strong">À quelle fréquence ?</label>
       <select
         id="routine-frequency"

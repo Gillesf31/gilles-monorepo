@@ -57,6 +57,13 @@ export class EditRoutineComponent implements OnInit {
       validators: [requiredTrimmed],
     }),
     note: new FormControl('', { nonNullable: true }),
+    notificationTime: new FormControl('08:00', {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.pattern(/^([01]\d|2[0-3]):[0-5]\d$/),
+      ],
+    }),
     nextDueDate: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
@@ -80,6 +87,7 @@ export class EditRoutineComponent implements OnInit {
       name: this.routine.name,
       note: this.routine.note ?? '',
       nextDueDate: this.routine.nextDueDate,
+      notificationTime: this.routine.notificationTime,
       frequency: this.routine.frequency,
     });
   }
@@ -97,7 +105,8 @@ export class EditRoutineComponent implements OnInit {
       return;
     }
 
-    const { name, note, nextDueDate, frequency } = this.form.getRawValue();
+    const { name, note, nextDueDate, notificationTime, frequency } =
+      this.form.getRawValue();
 
     if (!frequency) {
       return;
@@ -111,6 +120,7 @@ export class EditRoutineComponent implements OnInit {
         name: name.trim(),
         note: note.trim() || undefined,
         nextDueDate,
+        notificationTime,
         frequency,
       });
       await this.router.navigateByUrl('/');

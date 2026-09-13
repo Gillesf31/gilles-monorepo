@@ -6,6 +6,16 @@
   "sourceRoot": "apps/rituel/src",
   "tags": ["scope:rituel", "type:app"],
   "targets": {
+    "test-reminders": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "deno check --config supabase/rituel/supabase/functions/deliver-reminders/deno.json --no-lock --node-modules-dir=none supabase/rituel/supabase/functions/deliver-reminders/index.ts",
+          "deno test --no-config supabase/rituel/supabase/functions/deliver-reminders/schedule_test.ts"
+        ]
+      }
+    },
     "build": {
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],

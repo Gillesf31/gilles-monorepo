@@ -424,7 +424,9 @@ export class SupabaseRoutineGateway implements RoutineServerGateway {
   async listRoutines(householdId: string): Promise<readonly Routine[]> {
     const { data, error } = await this.client
       .from('routines')
-      .select('id, name, note, first_due_date, next_due_date, frequency')
+      .select(
+        'id, name, note, first_due_date, next_due_date, notification_time, frequency',
+      )
       .eq('household_id', householdId)
       .order('next_due_date');
     if (error) {
@@ -440,7 +442,9 @@ export class SupabaseRoutineGateway implements RoutineServerGateway {
   ): Promise<Routine | undefined> {
     const { data, error } = await this.client
       .from('routines')
-      .select('id, name, note, first_due_date, next_due_date, frequency')
+      .select(
+        'id, name, note, first_due_date, next_due_date, notification_time, frequency',
+      )
       .eq('household_id', householdId)
       .eq('id', id)
       .maybeSingle();
@@ -458,7 +462,9 @@ export class SupabaseRoutineGateway implements RoutineServerGateway {
     const { data, error } = await this.client
       .from('routines')
       .insert({ household_id: householdId, ...toRoutineRow(input) })
-      .select('id, name, note, first_due_date, next_due_date, frequency')
+      .select(
+        'id, name, note, first_due_date, next_due_date, notification_time, frequency',
+      )
       .single();
     if (error) {
       throw error;
@@ -477,7 +483,9 @@ export class SupabaseRoutineGateway implements RoutineServerGateway {
       .update(toRoutineRow(input))
       .eq('household_id', householdId)
       .eq('id', id)
-      .select('id, name, note, first_due_date, next_due_date, frequency')
+      .select(
+        'id, name, note, first_due_date, next_due_date, notification_time, frequency',
+      )
       .single();
     if (error) {
       throw error;
@@ -584,6 +592,7 @@ type RoutineRow = {
   note: string | null;
   first_due_date: string;
   next_due_date: string;
+  notification_time: string;
   frequency: RoutineFrequency;
 };
 
@@ -594,6 +603,7 @@ function toRoutine(row: RoutineRow): Routine {
     note: row.note ?? undefined,
     firstDueDate: row.first_due_date,
     nextDueDate: row.next_due_date,
+    notificationTime: row.notification_time.slice(0, 5),
     frequency: row.frequency,
   };
 }
@@ -604,6 +614,7 @@ function toRoutineRow(input: CreateRoutineInput | UpdateRoutineInput) {
     note: input.note ?? null,
     first_due_date: input.firstDueDate,
     next_due_date: input.nextDueDate,
+    notification_time: input.notificationTime,
     frequency: input.frequency,
   };
 }
@@ -647,6 +658,7 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       note: 'Run the drum-clean cycle before the next load.',
       firstDueDate: addDaysToRoutineDate(today, -16),
       nextDueDate: addDaysToRoutineDate(today, -2),
+      notificationTime: '08:00',
       frequency: routineFrequencies.everyTwoWeeks,
     },
     {
@@ -655,6 +667,7 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       note: 'Refresh the towels before the next guests arrive.',
       firstDueDate: addDaysToRoutineDate(today, -11),
       nextDueDate: addDaysToRoutineDate(today, -1),
+      notificationTime: '08:00',
       frequency: routineFrequencies.weekly,
     },
     {
@@ -663,6 +676,7 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       note: 'A small reset for the week ahead.',
       firstDueDate: addDaysToRoutineDate(today, -14),
       nextDueDate: today,
+      notificationTime: '08:00',
       frequency: routineFrequencies.everyTwoWeeks,
     },
     {
@@ -671,6 +685,7 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       note: 'A quick polish keeps the morning routine bright.',
       firstDueDate: addDaysToRoutineDate(today, -7),
       nextDueDate: today,
+      notificationTime: '08:00',
       frequency: routineFrequencies.weekly,
     },
     {
@@ -679,6 +694,7 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       note: 'Use the descaling cycle.',
       firstDueDate: addDaysToRoutineDate(today, -27),
       nextDueDate: addDaysToRoutineDate(today, 3),
+      notificationTime: '08:00',
       frequency: routineFrequencies.monthly,
     },
     {
@@ -687,6 +703,7 @@ function createSeedRoutines(today: RoutineDate): Routine[] {
       note: 'Do it before the next grocery run.',
       firstDueDate: addDaysToRoutineDate(today, -80),
       nextDueDate: addDaysToRoutineDate(today, 9),
+      notificationTime: '08:00',
       frequency: routineFrequencies.everyThreeMonths,
     },
   ];

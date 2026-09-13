@@ -38,6 +38,34 @@ describe('CreateRoutineComponent', () => {
     expect(component.form.controls.firstDueDate.value).toBe(today);
   });
 
+  it('defaults the native minute-precision time picker to 08:00', () => {
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector(
+      '#routine-notification-time',
+    ) as HTMLInputElement;
+    expect(input.type).toBe('time');
+    expect(input.step).toBe('60');
+    expect(input.value).toBe('08:00');
+  });
+
+  it.each(['', '24:00', '12:60', '8:30', '08:30:15'])(
+    'rejects the invalid notification time "%s"',
+    async (notificationTime) => {
+      component.form.patchValue({
+        name: 'Water the plants',
+        frequency: routineFrequencies.weekly,
+        notificationTime,
+      });
+      await component.submit();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Choisissez une heure de rappel valide.',
+      );
+      expect(await repository.list()).toHaveLength(0);
+      expect(navigateByUrl).not.toHaveBeenCalled();
+    },
+  );
+
   it('should make today the earliest selectable first due date when creating a routine', () => {
     fixture.detectChanges();
 
@@ -77,12 +105,20 @@ describe('CreateRoutineComponent', () => {
   });
 
   it('trims and saves a valid routine before returning to the dashboard', async () => {
+    fixture.detectChanges();
     component.form.setValue({
       name: '  Water the plants  ',
       note: '  Use the rain barrel.  ',
       firstDueDate: '2026-07-20',
+      notificationTime: '08:00',
       frequency: routineFrequencies.everyThreeWeeks,
     });
+
+    const timeInput = fixture.nativeElement.querySelector(
+      '#routine-notification-time',
+    ) as HTMLInputElement;
+    timeInput.value = '19:15';
+    timeInput.dispatchEvent(new Event('input'));
 
     await component.submit();
 
@@ -92,6 +128,7 @@ describe('CreateRoutineComponent', () => {
       note: 'Use the rain barrel.',
       firstDueDate: '2026-07-20',
       nextDueDate: '2026-07-20',
+      notificationTime: '19:15',
       frequency: routineFrequencies.everyThreeWeeks,
     });
     expect(navigateByUrl).toHaveBeenCalledWith('/');
@@ -105,6 +142,7 @@ describe('CreateRoutineComponent', () => {
       name: 'Clean the dryer',
       note: '',
       firstDueDate: '2026-07-20',
+      notificationTime: '08:00',
       frequency: routineFrequencies.monthly,
     });
 

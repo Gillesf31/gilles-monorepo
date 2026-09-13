@@ -352,6 +352,7 @@ function routine(
     id,
     name: id,
     firstDueDate: nextDueDate,
+    notificationTime: '08:00',
     nextDueDate,
     frequency,
   };

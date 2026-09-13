@@ -5,6 +5,7 @@ import {
   Urgency,
 } from '@negrel/webpush';
 import { createClient } from '@supabase/supabase-js';
+import { getLocalTime, isReminderDue } from './schedule.ts';
 
 type PushSubscriptionRow = {
   id: string;
@@ -20,6 +21,7 @@ type RoutineRow = {
   household_id: string;
   name: string;
   next_due_date: string;
+  notification_time: string;
 };
 
 Deno.serve(async (request) => {
@@ -49,25 +51,23 @@ Deno.serve(async (request) => {
     return Response.json({ error: subscriptionsError.message }, { status: 500 });
   }
 
-  const dueSubscriptions = (subscriptions ?? []).flatMap((subscription) => {
+  const localSubscriptions = (subscriptions ?? []).flatMap((subscription) => {
     const localTime = getLocalTime(subscription.time_zone, now);
-    return localTime?.hour === 8 && localTime.minute < 5
-      ? [{ subscription, localTime }]
-      : [];
+    return localTime ? [{ subscription, localTime }] : [];
   });
 
-  if (dueSubscriptions.length === 0) {
+  if (localSubscriptions.length === 0) {
     return Response.json({ sent: 0 });
   }
 
-  const latestLocalDate = dueSubscriptions.reduce(
+  const latestLocalDate = localSubscriptions.reduce(
     (latest, { localTime }) =>
       localTime.date > latest ? localTime.date : latest,
-    dueSubscriptions[0].localTime.date,
+    localSubscriptions[0].localTime.date,
   );
   const { data: routines, error: routinesError } = await adminClient
     .from('routines')
-    .select('id, household_id, name, next_due_date')
+    .select('id, household_id, name, next_due_date, notification_time')
     .lte('next_due_date', latestLocalDate)
     .returns<RoutineRow[]>();
 
@@ -82,10 +82,10 @@ Deno.serve(async (request) => {
   const applicationServer = await createApplicationServer(supabaseUrl);
   let sent = 0;
 
-  for (const { subscription, localTime } of dueSubscriptions) {
+  for (const { subscription, localTime } of localSubscriptions) {
     const householdRoutines = routinesByHousehold.get(subscription.household_id) ?? [];
     for (const routine of householdRoutines) {
-      if (routine.next_due_date > localTime.date) {
+      if (!isReminderDue(routine, localTime)) {
         continue;
       }
 
@@ -143,42 +143,6 @@ Deno.serve(async (request) => {
 
   return Response.json({ sent });
 });
-
-function getLocalTime(
-  timeZone: string,
-  now: Date,
-): { date: string; hour: number; minute: number } | null {
-  try {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h23',
-    }).formatToParts(now);
-    const value = (type: Intl.DateTimeFormatPartTypes) =>
-      parts.find((part) => part.type === type)?.value;
-    const year = value('year');
-    const month = value('month');
-    const day = value('day');
-    const hour = value('hour');
-    const minute = value('minute');
-
-    if (!year || !month || !day || !hour || !minute) {
-      return null;
-    }
-    return {
-      date: `${year}-${month}-${day}`,
-      hour: Number(hour),
-      minute: Number(minute),
-    };
-  } catch {
-    console.error('Ignoring invalid Push subscription time zone', timeZone);
-    return null;
-  }
-}
 
 async function createApplicationServer(supabaseUrl: string) {
   const vapidKeys = await importVapidKeys(
