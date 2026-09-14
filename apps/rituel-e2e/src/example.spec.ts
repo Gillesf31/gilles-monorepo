@@ -1,5 +1,26 @@
 import { test, expect } from '@playwright/test';
 
+test('keeps the document and browser background in sync with the theme', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  for (const [color, scheme, toggle] of [
+    ['rgb(22, 22, 22)', 'dark', 'Passer au thème clair'],
+    ['rgb(247, 246, 244)', 'light', 'Passer au thème sombre'],
+    ['rgb(22, 22, 22)', 'dark', 'Passer au thème clair'],
+  ]) {
+    await expect(page.locator('html')).toHaveCSS('background-color', color);
+    await expect(page.locator('body')).toHaveCSS('background-color', color);
+    await expect(page.locator('html')).toHaveCSS('color-scheme', scheme);
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+      'content',
+      color,
+    );
+    await page.getByRole('button', { name: toggle }).click();
+  }
+});
+
 test('shows routines that need attention', async ({ page }) => {
   await page.goto('/');
 

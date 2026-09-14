@@ -1,3 +1,10 @@
+@import '../../../libs/shared/feature-theme/src/styles.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --theme-background-light: theme('colors.rituel.background');
+  --theme-background-dark: theme('colors.rituel.dark-background');
+}

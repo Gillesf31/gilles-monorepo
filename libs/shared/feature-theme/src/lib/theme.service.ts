@@ -1,8 +1,6 @@
 import { signal } from '@angular/core';
 
 const STORAGE_KEY = 'theme';
-const DARK_THEME_COLOR = '#111827';
-const LIGHT_THEME_COLOR = '#f9fafb';
 
 export class ThemeService {
   readonly isDark = signal(true);
@@ -22,6 +20,9 @@ export class ThemeService {
     localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light');
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', dark ? DARK_THEME_COLOR : LIGHT_THEME_COLOR);
+      ?.setAttribute(
+        'content',
+        getComputedStyle(document.documentElement).backgroundColor,
+      );
   }
 }

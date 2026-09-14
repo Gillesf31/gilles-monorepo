@@ -1,0 +1,13 @@
+/* iOS safe areas use the document background, including before Angular boots. */
+html,
+body {
+  min-height: 100%;
+  background-color: var(--theme-background-light);
+  color-scheme: light;
+}
+
+html.dark,
+html.dark body {
+  background-color: var(--theme-background-dark);
+  color-scheme: dark;
+}
