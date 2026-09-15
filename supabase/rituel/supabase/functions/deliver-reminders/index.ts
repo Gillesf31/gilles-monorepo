@@ -178,7 +178,7 @@ async function sendReminder(
         },
       },
     }),
-    { ttl: 60 * 60, urgency: Urgency.High, topic: `rituel-${routine.id}` },
+    { ttl: 60 * 60, urgency: Urgency.High, topic: routine.id.replaceAll('-', '') },
   );
 }
 
